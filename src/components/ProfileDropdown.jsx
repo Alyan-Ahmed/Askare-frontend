@@ -13,8 +13,8 @@ const DOCTOR_PROFILE = {
 }
 
 const PATIENT_PROFILE = {
-  name: 'Sarah Chen', id: '#88219',
-  img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCh5YHMpg9q2P8To_WZo1zaP4I-WcSdeI5CxDkTosRo8kU9N_x8CQw7h4AgCatSdV88_tWcluJ28MGsDSVdYIQri0Ei8vA0B-ltLst3fBiarXF-MIp-RwyMdivtpmyea2kNLVsMoNqR_-my_EfSObYhEcdxDmc1P0yByP7nN--A3PAhD-6cRS7zW3eLrDfhrhyp8cJxRksbZertrCJuEz275ZTLwLbwwq7e-VXFAz8s6OpJt2iChKkMuxEm1JLHjZ-Sg8vLxxQdQys',
+  name: 'Alyan Ahmed', id: '#88219',
+  img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAox2cELp727nc8F0QqlouZa__6ZAv4-XcyEzgKe10NFebkQZ6zwt1AVi5A40vtPQlgILrsZO4LEBhgNSHYHes6nqyU_4kjT4LRk4umkaWEpp9o_VpetLVnbbB9Zd2jNVNrpUvg_5U6PulVe0fwMTqmJQ8iB76aIZ86NAX_D7f-WEhXXum1-y8GdUP44sNRoZKGW9TEuwIYHcU_HCp90mV_Ha_VHzhFzOMyeHQw2z7EjJ1H95UUmUeqoJLIy7TscjeCBzVcGXi2ZYY',
   links: [
     { href: '/patient-dashboard', icon: 'person', label: 'View Profile' },
     { href: '/appointments', icon: 'medical_services', label: 'My Consultations' },
@@ -25,9 +25,10 @@ const PATIENT_PROFILE = {
 export default function ProfileDropdown({ role = 'patient' }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
-  const { logout } = useAuth()
+  const { logout, user } = useAuth()
   const navigate = useNavigate()
-  const profile = role === 'doctor' ? DOCTOR_PROFILE : PATIENT_PROFILE
+  const defaultProfile = role === 'doctor' ? DOCTOR_PROFILE : PATIENT_PROFILE
+  const profile = { ...defaultProfile, name: user?.name || defaultProfile.name, img: user?.avatar || defaultProfile.img }
 
   useEffect(() => {
     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }

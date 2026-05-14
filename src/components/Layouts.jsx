@@ -71,11 +71,11 @@ export function BareLayout() {
 }
 
 export function PatientSettingsLayout() {
-  return <FixedHeaderLayout role="patient" />
+  return <FixedHeaderLayout role="patient" footer />
 }
 
 export function DoctorSettingsLayout() {
-  return <FixedHeaderLayout role="doctor" />
+  return <FixedHeaderLayout role="doctor" footer />
 }
 
 export function BookingLayout() {

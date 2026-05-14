@@ -4,8 +4,20 @@ import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 
 const fakeAccounts = {
-  patient: { email: 'sarah.chen@askare.com', password: 'patient123' },
-  doctor: { email: 'dr.arsalan@askare.com', password: 'doctor123' },
+  patient: {
+    name: 'Alyan Ahmed',
+    email: 'alyan.patient@askare.com',
+    password: 'patient123',
+    gender: 'male',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAox2cELp727nc8F0QqlouZa__6ZAv4-XcyEzgKe10NFebkQZ6zwt1AVi5A40vtPQlgILrsZO4LEBhgNSHYHes6nqyU_4kjT4LRk4umkaWEpp9o_VpetLVnbbB9Zd2jNVNrpUvg_5U6PulVe0fwMTqmJQ8iB76aIZ86NAX_D7f-WEhXXum1-y8GdUP44sNRoZKGW9TEuwIYHcU_HCp90mV_Ha_VHzhFzOMyeHQw2z7EjJ1H95UUmUeqoJLIy7TscjeCBzVcGXi2ZYY',
+  },
+  doctor: {
+    name: 'Dr. Arsalan Khan',
+    email: 'dr.arsalan@askare.com',
+    password: 'doctor123',
+    gender: 'male',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuATjjHmze-FPbpcsPti5gE9P6DmTWdj7N_V9NOsOwt2sGMXJiFOE0OuiMVrdsq_lsC5GrV3RjgcT80enDRKSfiQ_9oDOx4Jd0RELfP9PwU5r9t0WNsS4sCCiPtdEn7jcbfow-3oUoUt3LJNpvWa5wc6zABuVTDxD5_9K7jtcoP6Ulf2rH7VfKy0vrJZT8bMrtJDI6-dWqhsFZGtmZ4iiUxjGNOxOpy9DSk2Kq1WWaWu7BvsxElA4Vp_enUn2ZHwfVID-y-ToYzyE7w',
+  },
 }
 
 export default function LoginPage() {
@@ -27,12 +39,12 @@ export default function LoginPage() {
     const em = email.trim().toLowerCase()
     const pw = password
     if (em === fakeAccounts.patient.email && pw === fakeAccounts.patient.password) {
-      login('patient')
+      login('patient', fakeAccounts.patient)
       navigate('/patient-dashboard')
       return
     }
     if (em === fakeAccounts.doctor.email && pw === fakeAccounts.doctor.password) {
-      login('doctor')
+      login('doctor', fakeAccounts.doctor)
       navigate('/doctor-dashboard')
       return
     }

@@ -1,11 +1,58 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+
+const initialAgenda = [
+  {
+    id: 'zubair-ahmed',
+    patient: 'Zubair Ahmed',
+    time: '10:30 AM',
+    badge: 'Follow-up',
+    badgeClass: 'bg-primary/10 text-primary',
+    description: 'Post-Op Recovery Check | Video Consult',
+    joinLabel: 'Join Room',
+    videoTo: '/video-call?role=doctor&patient=Zubair%20Ahmed',
+    slots: ['01:30 PM', '03:00 PM', '05:15 PM'],
+  },
+  {
+    id: 'sara-mansoor',
+    patient: 'Sara Mansoor',
+    time: '11:45 AM',
+    badge: 'Emergency',
+    badgeClass: 'bg-tertiary-container/30 text-tertiary',
+    description: 'Acute Respiratory Distress | Audio Call',
+    joinLabel: 'Join Call',
+    videoTo: '/video-call?role=doctor&patient=Sara%20Mansoor',
+    slots: ['02:15 PM', '04:00 PM', '06:30 PM'],
+  },
+]
 
 export default function DoctorDashboardPage() {
+  const [agenda, setAgenda] = useState(initialAgenda)
+  const [rescheduleItem, setRescheduleItem] = useState(null)
+  const [selectedTime, setSelectedTime] = useState('')
+  const [toast, setToast] = useState('')
+  const { user } = useAuth()
+  const displayName = user?.name || 'Dr. Arsalan Khan'
+
+  const openReschedule = (item) => {
+    setRescheduleItem(item)
+    setSelectedTime(item.slots[0])
+  }
+
+  const confirmReschedule = () => {
+    if (!rescheduleItem || !selectedTime) return
+    setAgenda(prev => prev.map(item => item.id === rescheduleItem.id ? { ...item, time: selectedTime } : item))
+    setRescheduleItem(null)
+    setToast(`${rescheduleItem.patient} rescheduled to ${selectedTime}`)
+    setTimeout(() => setToast(''), 3000)
+  }
+
   return (
     <div className="flex-1 p-8 max-w-7xl mx-auto w-full">
       {/* Header Welcome */}
       <header className="mb-12">
-        <h1 className="text-4xl font-medium text-on-background tracking-tight mb-2">Welcome back, <span className="font-extrabold text-primary">Dr. Khan</span></h1>
+        <h1 className="text-4xl font-medium text-on-background tracking-tight mb-2">Welcome back, <span className="font-extrabold text-primary">{displayName}</span></h1>
         <p className="text-on-surface-variant max-w-2xl leading-relaxed">Your clinical agenda is ready. You have 4 video consultations scheduled for today and 3 pending booking requests.</p>
       </header>
 
@@ -36,42 +83,28 @@ export default function DoctorDashboardPage() {
           <div className="flex justify-between items-end mb-4">
             <h2 className="text-2xl font-semibold tracking-tight">Today's Agenda</h2>
           </div>
-          {/* Agenda Item 1 */}
-          <div className="bg-surface-container-lowest p-6 rounded-xl editorial-shadow border border-white flex flex-col md:flex-row gap-6 items-start md:items-center">
-            <div className="bg-primary-container/30 p-4 rounded-xl text-center min-w-[80px]">
-              <p className="text-xs font-bold text-primary uppercase">10:30</p>
-              <p className="text-lg font-bold text-primary">AM</p>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-lg font-bold text-on-surface">Zubair Ahmed</h3>
-                <span className="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Follow-up</span>
+          {agenda.map((item, index) => {
+            const [clock, meridiem] = item.time.split(' ')
+            return (
+              <div key={item.id} className="bg-surface-container-lowest p-6 rounded-xl editorial-shadow border border-white flex flex-col md:flex-row gap-6 items-start md:items-center">
+                <div className={`${index === 0 ? 'bg-primary-container/30' : 'bg-surface-container'} p-4 rounded-xl text-center min-w-[80px]`}>
+                  <p className={`text-xs font-bold uppercase ${index === 0 ? 'text-primary' : 'text-on-surface-variant'}`}>{clock}</p>
+                  <p className={`text-lg font-bold ${index === 0 ? 'text-primary' : 'text-on-surface-variant'}`}>{meridiem}</p>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-lg font-bold text-on-surface">{item.patient}</h3>
+                    <span className={`${item.badgeClass} text-[10px] px-2 py-0.5 rounded-full font-bold uppercase`}>{item.badge}</span>
+                  </div>
+                  <p className="text-sm text-on-surface-variant">{item.description}</p>
+                </div>
+                <div className="flex gap-2 w-full md:w-auto">
+                  <Link to={item.videoTo} className="flex-1 md:flex-none px-6 py-2.5 bg-primary text-on-primary rounded-full text-sm font-bold hover:opacity-90 transition-all text-center no-underline">{item.joinLabel}</Link>
+                  <button type="button" onClick={() => openReschedule(item)} className="flex-1 md:flex-none px-5 py-2.5 bg-surface-container text-on-surface rounded-full text-sm font-semibold hover:bg-surface-container-high transition-all">Reschedule</button>
+                </div>
               </div>
-              <p className="text-sm text-on-surface-variant">Post-Op Recovery Check | Video Consult</p>
-            </div>
-            <div className="flex gap-2 w-full md:w-auto">
-              <Link to="/video-call?role=doctor&patient=Zubair%20Ahmed" className="flex-1 md:flex-none px-6 py-2.5 bg-primary text-on-primary rounded-full text-sm font-bold hover:opacity-90 transition-all text-center no-underline">Join Room</Link>
-              <button className="flex-1 md:flex-none px-5 py-2.5 bg-surface-container text-on-surface rounded-full text-sm font-semibold hover:bg-surface-container-high transition-all">Reschedule</button>
-            </div>
-          </div>
-          {/* Agenda Item 2 */}
-          <div className="bg-surface-container-lowest p-6 rounded-xl editorial-shadow border border-white flex flex-col md:flex-row gap-6 items-start md:items-center">
-            <div className="bg-surface-container p-4 rounded-xl text-center min-w-[80px]">
-              <p className="text-xs font-bold text-on-surface-variant uppercase">11:45</p>
-              <p className="text-lg font-bold text-on-surface-variant">AM</p>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-lg font-bold text-on-surface">Sara Mansoor</h3>
-                <span className="bg-tertiary-container/30 text-tertiary text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Emergency</span>
-              </div>
-              <p className="text-sm text-on-surface-variant">Acute Respiratory Distress | Audio Call</p>
-            </div>
-            <div className="flex gap-2 w-full md:w-auto">
-              <Link to="/video-call?role=doctor&patient=Sara%20Mansoor" className="flex-1 md:flex-none px-6 py-2.5 bg-primary text-on-primary rounded-full text-sm font-bold hover:opacity-90 transition-all text-center no-underline">Join Call</Link>
-              <button className="flex-1 md:flex-none px-5 py-2.5 bg-surface-container text-on-surface rounded-full text-sm font-semibold hover:bg-surface-container-high transition-all">Reschedule</button>
-            </div>
-          </div>
+            )
+          })}
         </section>
 
         {/* Right Sidebar */}
@@ -128,6 +161,45 @@ export default function DoctorDashboardPage() {
       <button className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center editorial-shadow lg:hidden z-50">
         <span className="material-symbols-outlined">add</span>
       </button>
+      {rescheduleItem && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={() => setRescheduleItem(null)}></div>
+          <div className="relative bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl z-10 overflow-hidden">
+            <div className="p-6 border-b border-outline-variant/10 flex justify-between items-start">
+              <div>
+                <h2 className="text-lg font-bold text-on-surface">Reschedule Consultation</h2>
+                <p className="text-xs text-secondary mt-1">{rescheduleItem.patient}</p>
+              </div>
+              <button type="button" className="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high" onClick={() => setRescheduleItem(null)}>close</button>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-on-surface-variant">Choose an available time for today.</p>
+              <div className="grid grid-cols-1 gap-2">
+                {rescheduleItem.slots.map((slot) => (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => setSelectedTime(slot)}
+                    className={`p-4 rounded-xl border text-left transition-all ${selectedTime === slot ? 'border-primary bg-primary/5 text-primary' : 'border-outline-variant/20 bg-surface-container-low hover:border-primary/40 text-on-surface'}`}
+                  >
+                    <span className="block text-sm font-bold">{slot}</span>
+                    <span className="text-xs text-secondary">Available</span>
+                  </button>
+                ))}
+              </div>
+              <button type="button" onClick={confirmReschedule} className="w-full py-3 bg-primary text-on-primary rounded-xl text-sm font-bold hover:opacity-90 transition-all">Confirm Reschedule</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {toast && (
+        <div className="fixed bottom-8 right-8 z-[110]">
+          <div className="bg-primary text-on-primary px-6 py-3 rounded-xl shadow-xl flex items-center gap-3 font-semibold text-sm">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>check_circle</span>
+            <span>{toast}</span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

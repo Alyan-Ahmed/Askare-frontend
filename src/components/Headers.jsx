@@ -41,7 +41,7 @@ export function PublicHeader({ showNotifications = true }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const notifRef = useRef(null)
   const location = useLocation()
-  const isDoctorView = new URLSearchParams(location.search).get('role') === 'doctor'
+  const isDoctorView = new URLSearchParams(location.search).get('role') === 'doctor' || user?.role === 'doctor'
   const links = isDoctorView ? doctorLinks : patientLinks
   const profileRole = isDoctorView ? 'doctor' : user?.role
 

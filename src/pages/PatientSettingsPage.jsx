@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
 
 export default function PatientSettingsPage() {
   const [twoFA, setTwoFA] = useState(true)
@@ -11,6 +12,10 @@ export default function PatientSettingsPage() {
   const [showPwNew, setShowPwNew] = useState(false)
   const [confirmModal, setConfirmModal] = useState(null) // 'deactivate' | 'delete' | null
   const [toast, setToast] = useState(null)
+  const { user } = useAuth()
+  const profileName = user?.name || 'Alyan Ahmed'
+  const profileEmail = user?.email || 'alyan.patient@askare.com'
+  const profileAvatar = user?.avatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAox2cELp727nc8F0QqlouZa__6ZAv4-XcyEzgKe10NFebkQZ6zwt1AVi5A40vtPQlgILrsZO4LEBhgNSHYHes6nqyU_4kjT4LRk4umkaWEpp9o_VpetLVnbbB9Zd2jNVNrpUvg_5U6PulVe0fwMTqmJQ8iB76aIZ86NAX_D7f-WEhXXum1-y8GdUP44sNRoZKGW9TEuwIYHcU_HCp90mV_Ha_VHzhFzOMyeHQw2z7EjJ1H95UUmUeqoJLIy7TscjeCBzVcGXi2ZYY'
 
   useEffect(() => {
     if (confirmModal) document.body.style.overflow = 'hidden'
@@ -47,15 +52,15 @@ export default function PatientSettingsPage() {
             <div className="flex items-center space-x-6 pb-6 border-b border-surface-container">
               <div className="relative">
                 <div className="w-20 h-20 rounded-full overflow-hidden">
-                  <img alt="Profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDB6x8tI6gdjn7Tr8KdeOQ1A6ydSLUhHmzal2cJTrZ70eO3uwqDxycaQYHSizfqYEpIWNE7IFYg2thu9rz-FK3jA8j1xw9smWWMFPeim0Zxk4s5zVaF7es1JDsZBmiGKcLcFge-fIaP5XB9PaJLG_8TfWdArE_Z11RaTlgJKwL7xhH7u5c54TgFzBY8525oOPJM6OQ8q0JevbQHFbeIqdA2_1DUwMefJHRgPjDrG5mX_O9jVfRofxsInxZqBY2I6M7oMYUU9Un_g9k" />
+                  <img alt={`${profileName} profile`} className="w-full h-full object-cover" src={profileAvatar} />
                 </div>
                 <button className="absolute -bottom-1 -right-1 bg-primary text-white p-1.5 rounded-full shadow-lg border-2 border-surface-container-lowest"><span className="material-symbols-outlined text-xs">edit</span></button>
               </div>
-              <div><p className="text-lg font-bold">Sarah Chen</p><p className="text-sm text-secondary">Verified Healthcare Practitioner</p></div>
+              <div><p className="text-lg font-bold">{profileName}</p><p className="text-sm text-secondary">Verified Healthcare Practitioner</p></div>
             </div>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Full Name</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="text" defaultValue="Sarah Chen" /></div>
-              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Email Address</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="email" defaultValue="sarah.chen@healthcare.io" /></div>
+              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Full Name</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="text" defaultValue={profileName} /></div>
+              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Email Address</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="email" defaultValue={profileEmail} /></div>
               <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Phone Number</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="tel" defaultValue="+92 300 1234567" /></div>
             </div>
           </div>

@@ -19,6 +19,7 @@ const CONTACT_TEMPLATES = [
 ]
 
 export default function MySchedulePage() {
+  const [appointments, setAppointments] = useState(() => APPTS.map((appt, id) => ({ ...appt, id })))
   const [anchor, setAnchor] = useState(new Date(2026, 9, 21))
   const [selIdx, setSelIdx] = useState(0)
   const [menuOpen, setMenuOpen] = useState(null)
@@ -41,6 +42,7 @@ export default function MySchedulePage() {
 
   const openAction=(action,appt)=>{setMenuOpen(null);setDetailPatient(appt);setContactMessage('');setModal(action)}
   const closeModal=()=>{setModal(null);setDetailPatient(null);setContactMessage('')}
+  const cancelAppointment=()=>{const patientName=detailPatient.name;setAppointments(prev=>prev.filter(appt=>appt.id!==detailPatient.id));closeModal();showToast(`Appointment for ${patientName} cancelled`)}
 
   return (
     <div className="flex-1 px-12 py-10 max-w-7xl mx-auto w-full">
@@ -76,8 +78,14 @@ export default function MySchedulePage() {
 
           {/* Appointment Cards */}
           <div className="space-y-4">
-            {APPTS.map((a,i)=>(
-              <div key={i} className="bg-surface-container-lowest p-6 rounded-xl flex items-center group hover:bg-surface transition-colors cursor-pointer border border-transparent hover:border-outline-variant/10 shadow-sm">
+            {appointments.length === 0 ? (
+              <div className="bg-surface-container-lowest p-10 rounded-xl border border-outline-variant/10 text-center shadow-sm">
+                <span className="material-symbols-outlined text-4xl text-outline mb-3">event_busy</span>
+                <h3 className="text-lg font-bold text-on-surface">No schedule or upcoming meetings</h3>
+                <p className="text-sm text-on-surface-variant mt-1">Your schedule is clear for the selected day.</p>
+              </div>
+            ) : appointments.map((a,i)=>(
+              <div key={a.id} className="bg-surface-container-lowest p-6 rounded-xl flex items-center group hover:bg-surface transition-colors cursor-pointer border border-transparent hover:border-outline-variant/10 shadow-sm">
                 <div className={`w-24 text-on-surface-variant font-medium ${a.faded?'opacity-70':''}`}>{a.time}</div>
                 <div className={`w-1 ${a.color} self-stretch rounded-full mx-6 ${a.faded?'opacity-70':''}`}></div>
                 <div className={`flex-1 ${a.faded?'opacity-70':''}`}>
@@ -267,7 +275,7 @@ export default function MySchedulePage() {
               <textarea className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface resize-none" rows="3" placeholder="Additional notes..."></textarea>
               <div className="flex gap-3 pt-2">
                 <button className="flex-1 py-3 rounded-xl font-semibold text-sm text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/20" onClick={closeModal}>Keep</button>
-                <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-error text-on-error hover:opacity-90" onClick={()=>{closeModal();showToast(`Appointment for ${detailPatient.name} cancelled`)}}>Cancel Appointment</button>
+                <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-error text-on-error hover:opacity-90" onClick={cancelAppointment}>Cancel Appointment</button>
               </div>
             </div>
           </div>

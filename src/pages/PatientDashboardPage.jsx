@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const summaryData = {
   vance: { doctor: 'Dr. Julian Vance', date: 'September 12, 2025', illness: 'Mild Hypertension with elevated LDL cholesterol levels. Blood pressure readings averaging 138/88 mmHg over the past two weeks.', recommendations: 'Continue monitoring blood pressure twice daily. Maintain a low-sodium diet (less than 2,300mg sodium/day) and increase physical activity to at least 30 minutes of moderate exercise daily. Reduce stress through mindfulness and adequate sleep. Schedule a follow-up in 3 months for re-evaluation.', medicines: [{ name: 'Lisinopril 10mg', dosage: 'Once daily (Morning)' }, { name: 'Atorvastatin 20mg', dosage: 'Once daily (Before bed)' }, { name: 'Aspirin 75mg', dosage: 'Once daily (After lunch)' }], precautions: ['Avoid excessive salt and processed food intake', 'Monitor blood pressure at home twice daily and log readings', 'Limit caffeine to 1-2 cups per day', 'Avoid strenuous exercise without medical clearance', 'Report any dizziness, persistent headaches, or vision changes immediately'], type: 'Video Consultation', typeIcon: 'videocam' },
@@ -24,6 +25,8 @@ const listRows = [
 export default function PatientDashboardPage() {
   const [archiveView, setArchiveView] = useState('timeline')
   const [modal, setModal] = useState(null)
+  const { user } = useAuth()
+  const displayName = user?.name?.split(' ')[0] || 'Alyan'
 
   useEffect(() => {
     if (modal) document.body.style.overflow = 'hidden'
@@ -39,7 +42,7 @@ export default function PatientDashboardPage() {
     <div className="flex-1 px-12 py-10 max-w-7xl mx-auto w-full">
       {/* Welcome */}
       <section className="mb-12">
-        <h2 className="text-5xl font-medium text-on-surface tracking-tight mb-2">Good morning, Sarah.</h2>
+        <h2 className="text-5xl font-medium text-on-surface tracking-tight mb-2">Good morning, {displayName}.</h2>
         <p className="text-secondary text-lg font-light">Your clinical overview is balanced today. You have one upcoming consultation.</p>
       </section>
 

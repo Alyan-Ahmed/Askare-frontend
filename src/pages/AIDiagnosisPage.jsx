@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
 const AI_RESPONSES = [
   "Thank you for sharing that information. I'd like to ask a few follow-up questions to better understand your symptoms. When did you first notice this change?",
@@ -25,13 +26,27 @@ const INITIAL_MESSAGES = [
   },
 ]
 
+function getCurrentTime() {
+  return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
 function formatFileSize(size) {
   const kb = size / 1024
   return kb > 1024 ? `${(kb / 1024).toFixed(1)} MB` : `${kb.toFixed(1)} KB`
 }
 
 export default function AIDiagnosisPage() {
-  const [messages, setMessages] = useState(INITIAL_MESSAGES)
+  const location = useLocation()
+  const incomingMessage = typeof location.state?.initialMessage === 'string' ? location.state.initialMessage.trim() : ''
+  const [messages, setMessages] = useState(() => {
+    if (!incomingMessage) return INITIAL_MESSAGES
+    const time = getCurrentTime()
+    return [
+      INITIAL_MESSAGES[0],
+      { role: 'user', text: incomingMessage, time },
+      { role: 'ai', text: AI_RESPONSES[0], time },
+    ]
+  })
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [attachMenuOpen, setAttachMenuOpen] = useState(false)
@@ -87,7 +102,7 @@ export default function AIDiagnosisPage() {
     const text = input.trim()
     if (!text && !attachment) return
 
-    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const time = getCurrentTime()
     setMessages(prev => [...prev, { role: 'user', text, attachment, time }])
     setInput('')
     removeAttachment()
@@ -96,7 +111,7 @@ export default function AIDiagnosisPage() {
 
     setTimeout(() => {
       const response = AI_RESPONSES[Math.floor(Math.random() * AI_RESPONSES.length)]
-      const replyTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      const replyTime = getCurrentTime()
       setMessages(prev => [...prev, { role: 'ai', text: response, time: replyTime }])
       setIsTyping(false)
     }, 1500 + Math.random() * 1500)

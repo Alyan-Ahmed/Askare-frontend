@@ -1,6 +1,24 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function HomePage() {
+  const [symptoms, setSymptoms] = useState('')
+  const { isLoggedIn } = useAuth()
+  const navigate = useNavigate()
+  const aiLink = isLoggedIn ? '/ai-diagnosis' : '/login'
+  const bookingLink = isLoggedIn ? '/book-video-call' : '/login'
+
+  const handleSymptomSubmit = (e) => {
+    e.preventDefault()
+    const message = symptoms.trim()
+    if (!isLoggedIn) {
+      navigate('/login')
+      return
+    }
+    navigate('/ai-diagnosis', { state: message ? { initialMessage: message } : undefined })
+  }
+
   return (
     <main className="pt-24">
       {/* Hero Section */}
@@ -22,24 +40,26 @@ export default function HomePage() {
             health insights and seamless professional care.
           </p>
           {/* AI Symptom Input Box */}
-          <div className="bg-surface-container-lowest p-2 rounded-2xl shadow-xl shadow-on-surface/5 border border-surface-container flex flex-col md:flex-row gap-2">
+          <form onSubmit={handleSymptomSubmit} className="bg-surface-container-lowest p-2 rounded-2xl shadow-xl shadow-on-surface/5 border border-surface-container flex flex-col md:flex-row gap-2">
             <div className="flex-1 flex items-center px-4 py-3 gap-3">
               <span className="material-symbols-outlined text-outline">psychology</span>
               <input
+                value={symptoms}
+                onChange={(e) => setSymptoms(e.target.value)}
                 className="w-full bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-medium"
                 placeholder="Describe your symptoms (e.g. Sharp pain in left shoulder)" type="text" />
             </div>
-            <Link to="/login"
+            <button type="submit"
               className="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-dim transition-colors">
               Ask AI <span className="material-symbols-outlined text-sm">arrow_forward</span>
-            </Link>
-          </div>
+            </button>
+          </form>
           <div className="flex flex-wrap items-center gap-6 pt-4">
-            <Link to="/login" className="flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all">
+            <Link to={aiLink} className="flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all">
               Talk to AI <span className="material-symbols-outlined">chat</span>
             </Link>
             <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
-            <Link to="/login" className="flex items-center gap-2 text-secondary font-bold hover:text-primary transition-colors">
+            <Link to={bookingLink} className="flex items-center gap-2 text-secondary font-bold hover:text-primary transition-colors">
               Book Doctor Video Call <span className="material-symbols-outlined">videocam</span>
             </Link>
           </div>
@@ -115,7 +135,7 @@ export default function HomePage() {
             <span className="font-bold text-lg mb-4 block">02. Video Link</span>
             <h3 className="text-2xl font-semibold mb-4 leading-tight">Direct connection to Karachi's top specialists</h3>
             <p className="text-on-primary/80 mb-8">Skip the waiting room. Speak to a board-certified doctor from your home within 15 minutes.</p>
-            <Link to="/login" className="w-full bg-white text-primary py-4 rounded-xl font-bold flex items-center justify-center gap-2">
+            <Link to={bookingLink} className="w-full bg-white text-primary py-4 rounded-xl font-bold flex items-center justify-center gap-2">
               Get Started <span className="material-symbols-outlined">chevron_right</span>
             </Link>
           </div>
@@ -225,7 +245,7 @@ export default function HomePage() {
           <h2 className="text-4xl md:text-5xl font-semibold mb-8 max-w-2xl mx-auto leading-tight">Your health shouldn't have to wait.</h2>
           <p className="text-on-primary/80 text-xl mb-12 max-w-xl mx-auto">Start your first AI diagnosis for free and experience the future of care in Karachi.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/login" className="bg-white text-primary px-10 py-5 rounded-2xl font-bold text-lg hover:bg-on-primary transition-colors">Book Your First Call</Link>
+            <Link to={bookingLink} className="bg-white text-primary px-10 py-5 rounded-2xl font-bold text-lg hover:bg-on-primary transition-colors">Book Your First Call</Link>
             <Link to="/about" className="bg-primary/20 backdrop-blur-md text-white border border-white/20 px-10 py-5 rounded-2xl font-bold text-lg hover:bg-primary/30 transition-colors">Learn More</Link>
           </div>
         </div>

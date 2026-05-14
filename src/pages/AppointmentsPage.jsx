@@ -7,18 +7,74 @@ const apptSummaryData = {
   raza: { doctor: 'Dr. Ahmed Raza', date: 'August 15, 2026', type: 'General Practice Visit', typeIcon: 'stethoscope', notes: 'Annual physical examination completed. Blood work ordered. BMI within healthy range. Blood pressure 122/78 mmHg — optimal. Cholesterol panel pending lab results.', medicines: [{ name: 'Multivitamin Complex', dosage: 'Once daily (With breakfast)' }, { name: 'Omega-3 Fish Oil 1000mg', dosage: 'Once daily (With meals)' }], followup: 'Return in 2 weeks for lab results review. Annual physical next year.' },
 }
 
+const initialUpcomingAppointments = [
+  { id: 'khalil-upcoming', doc: 'Dr. Sarah Khalil', spec: 'Cardiology Specialist', date: 'October 24, 2026', time: '10:30 AM' },
+  { id: 'raza-upcoming', doc: 'Dr. Ahmed Raza', spec: 'General Practitioner', date: 'October 28, 2026', time: '02:15 PM' },
+]
+
+const doctorAvailability = {
+  'Dr. Sarah Khalil': [
+    { date: 'October 26, 2026', time: '09:00 AM' },
+    { date: 'October 27, 2026', time: '10:30 AM' },
+    { date: 'October 29, 2026', time: '04:00 PM' },
+  ],
+  'Dr. Ahmed Raza': [
+    { date: 'October 29, 2026', time: '11:00 AM' },
+    { date: 'October 30, 2026', time: '02:15 PM' },
+    { date: 'November 2, 2026', time: '05:30 PM' },
+  ],
+}
+
 export default function AppointmentsPage() {
+  const [appointments, setAppointments] = useState(initialUpcomingAppointments)
   const [modal, setModal] = useState(null)
+  const [rescheduleModal, setRescheduleModal] = useState(null)
+  const [cancelModal, setCancelModal] = useState(null)
+  const [selectedSlot, setSelectedSlot] = useState(null)
+  const [toast, setToast] = useState(null)
 
   useEffect(() => {
-    if (modal) document.body.style.overflow = 'hidden'
+    if (modal || rescheduleModal || cancelModal) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
-    const handler = (e) => { if (e.key === 'Escape') setModal(null) }
+    const handler = (e) => {
+      if (e.key === 'Escape') {
+        setModal(null)
+        setRescheduleModal(null)
+        setCancelModal(null)
+      }
+    }
     document.addEventListener('keydown', handler)
     return () => { document.removeEventListener('keydown', handler); document.body.style.overflow = '' }
-  }, [modal])
+  }, [modal, rescheduleModal, cancelModal])
 
   const data = modal ? apptSummaryData[modal] : null
+  const showToast = (message) => { setToast(message); setTimeout(() => setToast(null), 3000) }
+
+  const openReschedule = (appointment) => {
+    const slots = doctorAvailability[appointment.doc] || []
+    setSelectedSlot(slots[0] || null)
+    setRescheduleModal(appointment)
+  }
+
+  const confirmReschedule = () => {
+    if (!rescheduleModal || !selectedSlot) return
+    setAppointments(prev => {
+      const updated = prev.map(appt => (
+        appt.id === rescheduleModal.id ? { ...appt, date: selectedSlot.date, time: selectedSlot.time } : appt
+      ))
+      if (updated.some(appt => appt.id === rescheduleModal.id)) return updated
+      return [...updated, { ...rescheduleModal, date: selectedSlot.date, time: selectedSlot.time }]
+    })
+    setRescheduleModal(null)
+    showToast('Appointment rescheduled successfully.')
+  }
+
+  const confirmCancel = () => {
+    if (!cancelModal) return
+    setAppointments(prev => prev.filter(appt => appt.id !== cancelModal.id))
+    setCancelModal(null)
+    showToast('Appointment cancelled. The payment is non-refundable.')
+  }
 
   return (
     <div className="flex-1 px-12 py-10 max-w-7xl mx-auto w-full">
@@ -38,12 +94,16 @@ export default function AppointmentsPage() {
             Schedule New <span className="material-symbols-outlined text-lg">add</span>
           </Link>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {[
-            { doc: 'Dr. Sarah Khalil', spec: 'Cardiology Specialist', date: 'October 24, 2026', time: '10:30 AM' },
-            { doc: 'Dr. Ahmed Raza', spec: 'General Practitioner', date: 'October 28, 2026', time: '02:15 PM' },
-          ].map((a, i) => (
-            <div key={i} className="bg-surface-container-lowest p-6 rounded-[1.5rem] border-l-4 border-primary shadow-sm hover:shadow-md transition-shadow">
+        {appointments.length === 0 ? (
+          <div className="bg-surface-container-lowest border border-outline-variant/10 rounded-[1.5rem] p-10 text-center">
+            <span className="material-symbols-outlined text-4xl text-outline mb-3">event_busy</span>
+            <h3 className="text-lg font-bold text-on-surface">No upcoming meetings</h3>
+            <p className="text-sm text-secondary mt-1">You do not have any scheduled appointments right now.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {appointments.map((a) => (
+            <div key={a.id} className="bg-surface-container-lowest p-6 rounded-[1.5rem] border-l-4 border-primary shadow-sm hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-4">
                 <div><h3 className="text-lg font-bold text-on-surface">{a.doc}</h3><p className="text-sm text-secondary font-medium">{a.spec}</p></div>
                 <span className="px-3 py-1 bg-primary-container text-on-primary-container text-[10px] font-bold rounded-full tracking-wider uppercase">Confirmed</span>
@@ -53,12 +113,13 @@ export default function AppointmentsPage() {
                 <div className="flex items-center gap-2"><span className="material-symbols-outlined text-lg">schedule</span><span className="text-sm font-medium">{a.time}</span></div>
               </div>
               <div className="flex gap-3">
-                <button className="flex-1 py-2.5 bg-surface-container-high text-primary rounded-xl text-sm font-semibold hover:bg-primary hover:text-on-primary transition-all">Reschedule</button>
-                <button className="px-4 py-2.5 text-tertiary text-sm font-semibold border-b border-transparent hover:border-tertiary transition-all">Cancel</button>
+                <button type="button" onClick={() => openReschedule(a)} className="flex-1 py-2.5 bg-surface-container-high text-primary rounded-xl text-sm font-semibold hover:bg-primary hover:text-on-primary transition-all">Reschedule</button>
+                <button type="button" onClick={() => setCancelModal(a)} className="px-4 py-2.5 text-tertiary text-sm font-semibold border-b border-transparent hover:border-tertiary transition-all">Cancel</button>
               </div>
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Completed */}
@@ -81,7 +142,7 @@ export default function AppointmentsPage() {
                     <td className="px-6 py-6 text-secondary font-medium">{r.spec}</td>
                     <td className="px-6 py-6 text-on-surface-variant">{r.date}</td>
                     <td className="px-6 py-6"><span className={`inline-flex items-center gap-1.5 text-xs font-bold ${r.statusColor}`}><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: '"FILL" 1' }}>{r.statusIcon}</span>{r.status}</span></td>
-                    <td className="px-6 py-6 text-right"><button onClick={() => setModal(r.key)} className="text-primary font-bold text-xs hover:underline uppercase tracking-wider">{r.action}</button></td>
+                    <td className="px-6 py-6 text-right"><button onClick={() => r.action === 'Reschedule' ? openReschedule({ id: `missed-${r.key}`, doc: r.doc, spec: r.spec, date: r.date, time: '10:30 AM' }) : setModal(r.key)} className="text-primary font-bold text-xs hover:underline uppercase tracking-wider">{r.action}</button></td>
                   </tr>
                 ))}
               </tbody>
@@ -113,6 +174,63 @@ export default function AppointmentsPage() {
               </div>
               <div><p className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-1">Follow-up</p><p className="text-sm text-on-surface">{data.followup}</p></div>
             </div>
+          </div>
+        </div>
+      )}
+      {rescheduleModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setRescheduleModal(null)}></div>
+          <div className="relative bg-surface-container-lowest rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div className="p-6 border-b border-outline-variant/10 flex justify-between items-start">
+              <div>
+                <h3 className="font-bold text-on-surface">Reschedule Appointment</h3>
+                <p className="text-xs text-secondary mt-1">{rescheduleModal.doc}</p>
+              </div>
+              <button type="button" onClick={() => setRescheduleModal(null)} className="p-2 rounded-full hover:bg-surface-container-high text-secondary"><span className="material-symbols-outlined">close</span></button>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-on-surface-variant">Choose from the doctor's available slots.</p>
+              <div className="space-y-2">
+                {(doctorAvailability[rescheduleModal.doc] || []).map((slot) => (
+                  <button
+                    key={`${slot.date}-${slot.time}`}
+                    type="button"
+                    onClick={() => setSelectedSlot(slot)}
+                    className={`w-full p-4 rounded-xl border text-left transition-all ${selectedSlot?.date === slot.date && selectedSlot?.time === slot.time ? 'border-primary bg-primary/5 text-primary' : 'border-outline-variant/20 bg-surface-container-low hover:border-primary/40 text-on-surface'}`}
+                  >
+                    <span className="block text-sm font-bold">{slot.date}</span>
+                    <span className="text-xs text-secondary">{slot.time}</span>
+                  </button>
+                ))}
+              </div>
+              <button type="button" onClick={confirmReschedule} className="w-full py-3 bg-primary text-on-primary rounded-xl text-sm font-bold hover:bg-primary-dim transition-all">Confirm Reschedule</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {cancelModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setCancelModal(null)}></div>
+          <div className="relative bg-surface-container-lowest rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div className="p-6 border-b border-outline-variant/10 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-tertiary-container/30 flex items-center justify-center text-tertiary"><span className="material-symbols-outlined">warning</span></div>
+              <div><h3 className="font-bold text-on-surface">Cancel Appointment?</h3><p className="text-xs text-secondary">{cancelModal.doc}</p></div>
+            </div>
+            <div className="p-6 space-y-5">
+              <p className="text-sm text-on-surface-variant leading-relaxed">If you cancel this meeting, the payment you already made for the appointment will not be refunded.</p>
+              <div className="flex justify-end gap-3">
+                <button type="button" onClick={() => setCancelModal(null)} className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-all">Keep Appointment</button>
+                <button type="button" onClick={confirmCancel} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-tertiary text-on-tertiary hover:opacity-90 transition-all">Cancel Appointment</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {toast && (
+        <div className="fixed bottom-8 right-8 z-[110]">
+          <div className="bg-primary text-on-primary px-6 py-3 rounded-xl shadow-xl flex items-center gap-3 font-semibold text-sm">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>check_circle</span>
+            <span>{toast}</span>
           </div>
         </div>
       )}

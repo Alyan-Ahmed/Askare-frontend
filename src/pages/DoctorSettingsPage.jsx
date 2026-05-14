@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
 
 function Toggle({ checked, onChange, size = 'lg' }) {
   return (
@@ -19,6 +20,10 @@ export default function DoctorSettingsPage() {
   const [showPwConfirm, setShowPwConfirm] = useState(false)
   const [deactivateModal, setDeactivateModal] = useState(false)
   const [toast, setToast] = useState(null)
+  const { user } = useAuth()
+  const profileName = user?.name || 'Dr. Arsalan Khan'
+  const profileEmail = user?.email || 'dr.arsalan@askare.com'
+  const profileAvatar = user?.avatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuATjjHmze-FPbpcsPti5gE9P6DmTWdj7N_V9NOsOwt2sGMXJiFOE0OuiMVrdsq_lsC5GrV3RjgcT80enDRKSfiQ_9oDOx4Jd0RELfP9PwU5r9t0WNsS4sCCiPtdEn7jcbfow-3oUoUt3LJNpvWa5wc6zABuVTDxD5_9K7jtcoP6Ulf2rH7VfKy0vrJZT8bMrtJDI6-dWqhsFZGtmZ4iiUxjGNOxOpy9DSk2Kq1WWaWu7BvsxElA4Vp_enUn2ZHwfVID-y-ToYzyE7w'
 
   useEffect(() => {
     if (deactivateModal) document.body.style.overflow = 'hidden'
@@ -47,14 +52,14 @@ export default function DoctorSettingsPage() {
           <div className="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/20 space-y-8">
             <div className="flex items-center gap-6 pb-6 border-b border-surface-container">
               <div className="relative shrink-0">
-                <img alt="Profile" className="w-20 h-20 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvV4obyrQ9IbATCzzS-WKq_WjDg6bVKH2E-Npm-J3sudARFKKL_Wkam7FmODdmuRX6oKm4EQEs6CcoaOwPsXZVrVj7JXBRIYLUA3v92Ekq0z2h2cmbnq8aAuIOIekwtHdEArD_dUu1zhF-GNfb2LKoim2yGSTQI0iQ5ps9LAervYpHGfZH0BsS3I_qGO6as27ZdaaITBQqK6ex6SdTX8uGN5N4gl3D0rc6fkU88j4CzMjrT6Pl8qCp0aXrO3LYYx411cL7xZGCMNQ" />
+                <img alt={`${profileName} profile`} className="w-20 h-20 rounded-full object-cover" src={profileAvatar} />
                 <button className="absolute -bottom-1 -right-1 p-1.5 bg-primary text-on-primary rounded-full shadow-lg border-2 border-surface-container-lowest"><span className="material-symbols-outlined text-xs">edit</span></button>
               </div>
-              <div><p className="text-lg font-bold">Dr. Sarah Chen</p><p className="text-sm text-on-surface-variant">Verified Healthcare Practitioner</p></div>
+              <div><p className="text-lg font-bold">{profileName}</p><p className="text-sm text-on-surface-variant">Verified Healthcare Practitioner</p></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Full Name</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="text" defaultValue="Dr. Sarah Chen" /></div>
-              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Professional Email</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="email" defaultValue="s.chen@askare.health" /></div>
+              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Full Name</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="text" defaultValue={profileName} /></div>
+              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Professional Email</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="email" defaultValue={profileEmail} /></div>
               <div className="space-y-1.5 md:col-span-2"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Phone Number</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="tel" defaultValue="+1 (555) 012-3456" /></div>
             </div>
           </div>

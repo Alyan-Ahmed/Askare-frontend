@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import {
   PublicLayout,
   DoctorLayout,
@@ -34,6 +34,21 @@ import AIDiagnosisPage from './pages/AIDiagnosisPage'
 import PaymentDetailsPage from './pages/PaymentDetailsPage'
 import PaymentConfirmationPage from './pages/PaymentConfirmationPage'
 import VideoCallPage from './pages/VideoCallPage'
+import { useAuth } from './context/AuthContext'
+
+function RequireAuth({ role }) {
+  const { isLoggedIn, userRole } = useAuth()
+  const location = useLocation()
+
+  if (!isLoggedIn) return <Navigate to="/login" replace state={{ from: location }} />
+
+  if (role && userRole !== role) {
+    const fallback = userRole === 'doctor' ? '/doctor-dashboard' : userRole === 'patient' ? '/patient-dashboard' : '/login'
+    return <Navigate to={fallback} replace />
+  }
+
+  return <Outlet />
+}
 
 export default function App() {
   return (
@@ -45,8 +60,8 @@ export default function App() {
         <Route path="/contact" element={<ContactPage />} />
       </Route>
 
-      {/* Legal pages use the public header without the notification bell */}
-      <Route element={<PublicLayout showNotifications={false} />}>
+      {/* Legal pages */}
+      <Route element={<PublicLayout />}>
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-use" element={<TermsOfUsePage />} />
       </Route>
@@ -56,47 +71,53 @@ export default function App() {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-      {/* Patient Portal (sidebar layout) */}
-      <Route element={<PatientLayout />}>
-        <Route path="/patient-dashboard" element={<PatientDashboardPage />} />
-        <Route path="/appointments" element={<AppointmentsPage />} />
-        <Route path="/medical-records" element={<MedicalRecordsPage />} />
+      <Route element={<RequireAuth role="patient" />}>
+        {/* Patient Portal (sidebar layout) */}
+        <Route element={<PatientLayout />}>
+          <Route path="/patient-dashboard" element={<PatientDashboardPage />} />
+          <Route path="/appointments" element={<AppointmentsPage />} />
+          <Route path="/medical-records" element={<MedicalRecordsPage />} />
+        </Route>
+
+        {/* Patient fixed-header pages (no sidebar) */}
+        <Route element={<PatientSettingsLayout />}>
+          <Route path="/patient-settings" element={<PatientSettingsPage />} />
+        </Route>
+        <Route element={<BookingLayout />}>
+          <Route path="/book-video-call" element={<BookVideoCallPage />} />
+        </Route>
+        <Route element={<PatientPaymentLayout />}>
+          <Route path="/payment-details" element={<PaymentDetailsPage />} />
+          <Route path="/payment-confirmation" element={<PaymentConfirmationPage />} />
+        </Route>
+
+        {/* AI Diagnosis */}
+        <Route element={<AILayout />}>
+          <Route path="/ai-diagnosis" element={<AIDiagnosisPage />} />
+        </Route>
       </Route>
 
-      {/* Patient fixed-header pages (no sidebar) */}
-      <Route element={<PatientSettingsLayout />}>
-        <Route path="/patient-settings" element={<PatientSettingsPage />} />
-      </Route>
-      <Route element={<BookingLayout />}>
-        <Route path="/book-video-call" element={<BookVideoCallPage />} />
-      </Route>
-      <Route element={<PatientPaymentLayout />}>
-        <Route path="/payment-details" element={<PaymentDetailsPage />} />
-        <Route path="/payment-confirmation" element={<PaymentConfirmationPage />} />
+      <Route element={<RequireAuth role="doctor" />}>
+        {/* Doctor Portal (sidebar layout) */}
+        <Route element={<DoctorLayout />}>
+          <Route path="/doctor-dashboard" element={<DoctorDashboardPage />} />
+          <Route path="/patient-records" element={<PatientRecordsPage />} />
+        </Route>
+        <Route element={<DoctorScheduleLayout />}>
+          <Route path="/my-schedule" element={<MySchedulePage />} />
+        </Route>
+
+        {/* Doctor Settings */}
+        <Route element={<DoctorSettingsLayout />}>
+          <Route path="/doctor-settings" element={<DoctorSettingsPage />} />
+        </Route>
       </Route>
 
-      {/* AI Diagnosis */}
-      <Route element={<AILayout />}>
-        <Route path="/ai-diagnosis" element={<AIDiagnosisPage />} />
-      </Route>
-
-      {/* Doctor Portal (sidebar layout) */}
-      <Route element={<DoctorLayout />}>
-        <Route path="/doctor-dashboard" element={<DoctorDashboardPage />} />
-        <Route path="/patient-records" element={<PatientRecordsPage />} />
-      </Route>
-      <Route element={<DoctorScheduleLayout />}>
-        <Route path="/my-schedule" element={<MySchedulePage />} />
-      </Route>
-
-      {/* Doctor Settings */}
-      <Route element={<DoctorSettingsLayout />}>
-        <Route path="/doctor-settings" element={<DoctorSettingsPage />} />
-      </Route>
-
-      {/* Video Call (bare layout) */}
-      <Route element={<BareLayout />}>
-        <Route path="/video-call" element={<VideoCallPage />} />
+      <Route element={<RequireAuth />}>
+        {/* Video Call (bare layout) */}
+        <Route element={<BareLayout />}>
+          <Route path="/video-call" element={<VideoCallPage />} />
+        </Route>
       </Route>
 
       {/* Catch all */}

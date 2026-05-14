@@ -53,7 +53,7 @@ export default function BookVideoCallPage() {
   }
 
   return (
-    <main className="pt-32 pb-32 max-w-[88rem] mx-auto px-6 w-full">
+    <main className="flex-1 pt-32 pb-32 max-w-[88rem] mx-auto px-6 w-full">
       <header className="mb-12">
         <h1 className="text-[3.5rem] leading-tight font-medium text-on-surface mb-2 font-headline">Find your specialist.</h1>
         <p className="text-lg text-on-surface-variant max-w-2xl font-body leading-relaxed">Verified medical professionals in Karachi, available for instant high-definition video consultations.</p>
