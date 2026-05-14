@@ -16,12 +16,26 @@ const statusStyles = {
   Observation: 'bg-tertiary-container text-on-tertiary-container',
 }
 
+const dateFilterOptions = ['All Time', 'Last 30 Days', 'Last 90 Days', 'Last Year']
+
+function parseVisitDate(value) {
+  return new Date(value)
+}
+
+const latestVisitDate = records.reduce((latest, record) => {
+  const date = parseVisitDate(record.lastVisit)
+  return date > latest ? date : latest
+}, parseVisitDate(records[0].lastVisit))
+
 export default function PatientRecordsPage() {
   const [search, setSearch] = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
   const [newRecordOpen, setNewRecordOpen] = useState(false)
   const [recordModal, setRecordModal] = useState(null)
   const [statusFilter, setStatusFilter] = useState('all')
+  const [dateFilter, setDateFilter] = useState('All Time')
+  const [draftStatusFilter, setDraftStatusFilter] = useState('all')
+  const [draftDateFilter, setDraftDateFilter] = useState('All Time')
 
   useEffect(() => {
     if (filterOpen || newRecordOpen || recordModal) document.body.style.overflow = 'hidden'
@@ -32,8 +46,23 @@ export default function PatientRecordsPage() {
   const filtered = records.filter(r => {
     const matchSearch = r.name.toLowerCase().includes(search.toLowerCase()) || r.id.toLowerCase().includes(search.toLowerCase()) || r.condition.toLowerCase().includes(search.toLowerCase())
     const matchStatus = statusFilter === 'all' || r.status.toLowerCase() === statusFilter
-    return matchSearch && matchStatus
+    const visitDate = parseVisitDate(r.lastVisit)
+    const daysAgo = (latestVisitDate - visitDate) / (1000 * 60 * 60 * 24)
+    const matchDate = dateFilter === 'All Time' || (dateFilter === 'Last 30 Days' && daysAgo <= 30) || (dateFilter === 'Last 90 Days' && daysAgo <= 90) || (dateFilter === 'Last Year' && daysAgo <= 365)
+    return matchSearch && matchStatus && matchDate
   })
+
+  const openFilters = () => {
+    setDraftStatusFilter(statusFilter)
+    setDraftDateFilter(dateFilter)
+    setFilterOpen(true)
+  }
+
+  const applyFilters = () => {
+    setStatusFilter(draftStatusFilter)
+    setDateFilter(draftDateFilter)
+    setFilterOpen(false)
+  }
 
   return (
     <div className="flex-1 px-8 py-10 max-w-7xl mx-auto w-full">
@@ -45,7 +74,7 @@ export default function PatientRecordsPage() {
             <div className="relative"><span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span><input value={search} onChange={(e) => setSearch(e.target.value)} className="w-full h-14 pl-12 bg-surface-container-low border-none rounded-xl text-body-lg focus:ring-2 focus:ring-primary/20 transition-shadow" placeholder="Patient name, ID, or condition..." type="text" /></div>
           </div>
           <div className="flex gap-4">
-            <button className="h-14 px-6 bg-surface-container-high text-primary rounded-xl font-semibold hover:bg-white transition-colors flex items-center gap-2" onClick={() => setFilterOpen(true)}><span className="material-symbols-outlined text-[20px]">filter_list</span>Filter</button>
+            <button className="h-14 px-6 bg-surface-container-high text-primary rounded-xl font-semibold hover:bg-white transition-colors flex items-center gap-2" onClick={openFilters}><span className="material-symbols-outlined text-[20px]">filter_list</span>Filter</button>
             <button className="h-14 px-8 bg-primary text-on-primary rounded-xl font-semibold shadow-md hover:bg-primary-dim transition-all flex items-center gap-2" onClick={() => setNewRecordOpen(true)}><span className="material-symbols-outlined text-[20px]">add</span>New Record</button>
           </div>
         </div>
@@ -83,9 +112,9 @@ export default function PatientRecordsPage() {
           <div className="relative bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl p-8 z-10">
             <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-bold text-on-surface">Filter Records</h2><button className="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high" onClick={() => setFilterOpen(false)}>close</button></div>
             <div className="space-y-6">
-              <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Status</label><div className="flex flex-wrap gap-2">{['all','Active','Critical','Stable','Observation'].map(s => <button key={s} onClick={() => setStatusFilter(s.toLowerCase())} className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${statusFilter === s.toLowerCase() ? 'bg-primary border-primary text-white' : 'border-outline-variant/20 hover:border-primary hover:text-primary'}`}>{s === 'all' ? 'All' : s}</button>)}</div></div>
-              <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Date Range</label><select className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20"><option>All Time</option><option>Last 30 Days</option><option>Last 90 Days</option><option>Last Year</option></select></div>
-              <button className="w-full py-4 bg-primary text-on-primary rounded-xl font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition-all" onClick={() => setFilterOpen(false)}>Apply Filters</button>
+              <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Status</label><div className="flex flex-wrap gap-2">{['all','Active','Critical','Stable','Observation'].map(s => <button key={s} onClick={() => setDraftStatusFilter(s.toLowerCase())} className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${draftStatusFilter === s.toLowerCase() ? 'bg-primary border-primary text-white' : 'border-outline-variant/20 hover:border-primary hover:text-primary'}`}>{s === 'all' ? 'All' : s}</button>)}</div></div>
+              <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Date Range</label><select value={draftDateFilter} onChange={(e) => setDraftDateFilter(e.target.value)} className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20">{dateFilterOptions.map(option => <option key={option}>{option}</option>)}</select></div>
+              <button className="w-full py-4 bg-primary text-on-primary rounded-xl font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition-all" onClick={applyFilters}>Apply Filters</button>
             </div>
           </div>
         </div>

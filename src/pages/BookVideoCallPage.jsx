@@ -2,18 +2,37 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 const doctors = [
-  { name: 'Dr. Arsalan Khan', spec: 'General Physician', rating: '4.9', location: 'Clifton, Karachi', price: 'PKR 2,500', gender: 'male', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJ4LyJ5urRhYWaNc0fAHi1aTPLnVNXCr9Jt3_5dGQkr4oLP2ZKJVy6rIpZrwq0M2pRVXyd9husXHlkwbu953qA9NJcmVQTAwcoY5vO9R0WOEZVtm2ycNh4gYQqj8ef4G7tyZBVvySBVcnN79uOgWnsxrVhjq2L1tbDDu3svWyhtYP5QWFMxpJExQVH5qNCL1n71mb-T_7bbgRMoxc4ZKChtFLv2MhapV1uxN-3cexn7PW6JJV9r95g4ia08RxSTMZipeYxtApQyHQ', about: 'Dr. Arsalan is a highly experienced General Physician with over 12 years in family medicine. He specializes in chronic disease management and preventive care, serving the Clifton community with dedication.', available: true },
-  { name: 'Dr. Sarah Ahmed', spec: 'Pediatrician', rating: '5.0', location: 'DHA Phase VI, Karachi', price: 'PKR 3,000', gender: 'female', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-KawnVanuKt14ZQFtYKaRGkXXXSy_dSCBaDU6_oWWDI5SkQxorawLqkFKaF28GKp9625EUcBiNzTKK07YeNngi0A4y91Wo6DBSKJSuFG4_A9Lqkh4KAeEXbCq0r8CxB8Q7egHxfNXcwNwJwjuFZtM2QXRDaEk3eaFm4b0dNFhihp70seNnWVEl5xw7SdlbO2ARt_0cMPWiTz7Z_ZGDtSwtYoXJQVrNdrAAXSne880taIH5w9NCdSq17vWdMaMszuEhamhlP5Ea58', about: 'Dr. Sarah Ahmed is a board-certified pediatrician known for her gentle approach with children. She has extensive training in neonatal care and childhood vaccinations at Aga Khan University Hospital.' },
-  { name: 'Dr. Mansoor Ali', spec: 'Psychiatrist', rating: '4.8', location: 'Gulshan-e-Iqbal, Karachi', price: 'PKR 5,000', gender: 'male', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0R2oB8OJVQzikzuZsZ6-yi1yy7TSmFjQDJBvIqUptz-S9nkEMSg7m_2T8bN8g_MJqvKANbPxrqi0lLknSMt_nyI9WJBrd-_N38Hw2SvMNxS3IAr74fExUA_bY83zpTQVvIgt4QdZRoEmxfDVX84ATLqB64VZJCC1orZaIXsv38DyxOX1VgVLzUrqJ4_LSzdGgCGca54Kr2iMwFYlHICqj9RGSPgEb1rOvglrTyexlyQPcdJ-6hOenL48N__8-akZdUgGcu8bQ38A', about: 'Dr. Mansoor Ali is a senior consultant psychiatrist specializing in cognitive behavioral therapy and mood disorders. He offers compassionate, evidence-based care for adults and seniors.' },
+  { name: 'Dr. Arsalan Khan', spec: 'General Physician', rating: '4.9', location: 'Clifton, Karachi', price: 'PKR 2,500', gender: 'male', availability: ['today', 'tomorrow'], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJ4LyJ5urRhYWaNc0fAHi1aTPLnVNXCr9Jt3_5dGQkr4oLP2ZKJVy6rIpZrwq0M2pRVXyd9husXHlkwbu953qA9NJcmVQTAwcoY5vO9R0WOEZVtm2ycNh4gYQqj8ef4G7tyZBVvySBVcnN79uOgWnsxrVhjq2L1tbDDu3svWyhtYP5QWFMxpJExQVH5qNCL1n71mb-T_7bbgRMoxc4ZKChtFLv2MhapV1uxN-3cexn7PW6JJV9r95g4ia08RxSTMZipeYxtApQyHQ', about: 'Dr. Arsalan is a highly experienced General Physician with over 12 years in family medicine. He specializes in chronic disease management and preventive care, serving the Clifton community with dedication.', available: true },
+  { name: 'Dr. Sarah Ahmed', spec: 'Pediatrician', rating: '5.0', location: 'DHA Phase VI, Karachi', price: 'PKR 3,000', gender: 'female', availability: ['tomorrow', 'weekend'], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-KawnVanuKt14ZQFtYKaRGkXXXSy_dSCBaDU6_oWWDI5SkQxorawLqkFKaF28GKp9625EUcBiNzTKK07YeNngi0A4y91Wo6DBSKJSuFG4_A9Lqkh4KAeEXbCq0r8CxB8Q7egHxfNXcwNwJwjuFZtM2QXRDaEk3eaFm4b0dNFhihp70seNnWVEl5xw7SdlbO2ARt_0cMPWiTz7Z_ZGDtSwtYoXJQVrNdrAAXSne880taIH5w9NCdSq17vWdMaMszuEhamhlP5Ea58', about: 'Dr. Sarah Ahmed is a board-certified pediatrician known for her gentle approach with children. She has extensive training in neonatal care and childhood vaccinations at Aga Khan University Hospital.' },
+  { name: 'Dr. Mansoor Ali', spec: 'Psychiatrist', rating: '4.8', location: 'Gulshan-e-Iqbal, Karachi', price: 'PKR 5,000', gender: 'male', availability: ['weekend'], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0R2oB8OJVQzikzuZsZ6-yi1yy7TSmFjQDJBvIqUptz-S9nkEMSg7m_2T8bN8g_MJqvKANbPxrqi0lLknSMt_nyI9WJBrd-_N38Hw2SvMNxS3IAr74fExUA_bY83zpTQVvIgt4QdZRoEmxfDVX84ATLqB64VZJCC1orZaIXsv38DyxOX1VgVLzUrqJ4_LSzdGgCGca54Kr2iMwFYlHICqj9RGSPgEb1rOvglrTyexlyQPcdJ-6hOenL48N__8-akZdUgGcu8bQ38A', about: 'Dr. Mansoor Ali is a senior consultant psychiatrist specializing in cognitive behavioral therapy and mood disorders. He offers compassionate, evidence-based care for adults and seniors.' },
 ]
 
 const timeSlots = ['09:00 AM', '10:30 AM', '11:00 AM', '01:30 PM', '04:00 PM', '06:30 PM']
 const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December']
+const defaultFilters = { specialty: 'All Specialties', gender: [], availability: [], price: 'Any Price' }
+const availabilityOptions = [
+  { label: 'Available Today', value: 'today' },
+  { label: 'Available Tomorrow', value: 'tomorrow' },
+  { label: 'Available this Weekend', value: 'weekend' },
+]
+const priceOptions = ['Any Price','0 - 2,500','2,500 - 5,000','5,000+']
+
+function getPriceAmount(price) {
+  return Number(price.replace(/\D/g, ''))
+}
+
+function matchesPrice(price, selectedRange) {
+  const amount = getPriceAmount(price)
+  if (selectedRange === '0 - 2,500') return amount <= 2500
+  if (selectedRange === '2,500 - 5,000') return amount >= 2500 && amount <= 5000
+  if (selectedRange === '5,000+') return amount >= 5000
+  return true
+}
 
 export default function BookVideoCallPage() {
-  const [specialty, setSpecialty] = useState('All Specialties')
+  const [filters, setFilters] = useState(defaultFilters)
+  const [draftFilters, setDraftFilters] = useState(defaultFilters)
   const [filterOpen, setFilterOpen] = useState(false)
-  const [genderFilter, setGenderFilter] = useState([])
   const [modal, setModal] = useState(null)
   const [selectedTime, setSelectedTime] = useState('11:00 AM')
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
@@ -27,9 +46,11 @@ export default function BookVideoCallPage() {
   }, [modal, filterOpen])
 
   const filtered = doctors.filter(d => {
-    const matchSpec = specialty === 'All Specialties' || d.spec.toLowerCase().includes(specialty.toLowerCase())
-    const matchGender = genderFilter.length === 0 || genderFilter.includes(d.gender)
-    return matchSpec && matchGender
+    const matchSpec = filters.specialty === 'All Specialties' || d.spec.toLowerCase().includes(filters.specialty.toLowerCase())
+    const matchGender = filters.gender.length === 0 || filters.gender.includes(d.gender)
+    const matchAvailability = filters.availability.length === 0 || filters.availability.some(option => d.availability.includes(option))
+    const matchPrice = matchesPrice(d.price, filters.price)
+    return matchSpec && matchGender && matchAvailability && matchPrice
   })
 
   const calendarDays = useMemo(() => {
@@ -52,6 +73,29 @@ export default function BookVideoCallPage() {
     setCurrentMonth(m); setCurrentYear(y); setSelectedDay(null)
   }
 
+  const openFilters = () => {
+    setDraftFilters({
+      specialty: filters.specialty,
+      gender: [...filters.gender],
+      availability: [...filters.availability],
+      price: filters.price,
+    })
+    setFilterOpen(true)
+  }
+
+  const setDraftArrayFilter = (key, value, checked) => {
+    setDraftFilters(prev => ({
+      ...prev,
+      [key]: checked ? [...prev[key], value] : prev[key].filter(item => item !== value),
+    }))
+  }
+
+  const resetFilters = () => {
+    setFilters(defaultFilters)
+    setDraftFilters(defaultFilters)
+    setFilterOpen(false)
+  }
+
   return (
     <main className="flex-1 pt-32 pb-32 max-w-[88rem] mx-auto px-6 w-full">
       <header className="mb-12">
@@ -63,12 +107,12 @@ export default function BookVideoCallPage() {
       <section className="mb-10 flex flex-col md:flex-row gap-4 items-end">
         <div className="w-full md:w-1/3">
           <label className="block text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2 ml-1">Specialty</label>
-          <select value={specialty} onChange={(e) => setSpecialty(e.target.value)} className="w-full bg-surface-container-low border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all">
+          <select value={filters.specialty} onChange={(e) => setFilters(prev => ({ ...prev, specialty: e.target.value }))} className="w-full bg-surface-container-low border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all">
             <option>All Specialties</option><option>General Physician</option><option>Pediatrician</option><option>Psychiatrist</option><option>Cardiologist</option>
           </select>
         </div>
         <div className="pb-1">
-          <button className="flex items-center gap-2 px-6 py-4 bg-surface-container-low text-on-surface rounded-xl font-bold text-sm hover:bg-surface-container-high transition-colors border-none" onClick={() => setFilterOpen(true)}>
+          <button className="flex items-center gap-2 px-6 py-4 bg-surface-container-low text-on-surface rounded-xl font-bold text-sm hover:bg-surface-container-high transition-colors border-none" onClick={openFilters}>
             <span className="material-symbols-outlined text-xl">tune</span>Filters
           </button>
         </div>
@@ -107,14 +151,14 @@ export default function BookVideoCallPage() {
               <button className="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant" onClick={() => setFilterOpen(false)}>close</button>
             </div>
             <div className="flex-1 overflow-y-auto p-8 space-y-10">
-              <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Specialty</h4><div className="flex flex-wrap gap-2">{['All Specialties','General Physician','Pediatrician','Psychiatrist','Cardiologist','Neurologist'].map(s => <button key={s} onClick={() => setSpecialty(s)} className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${specialty === s ? 'border-2 border-primary bg-primary/5 text-primary font-bold' : 'border border-outline-variant/20 hover:bg-primary/5 hover:border-primary'}`}>{s}</button>)}</div></div>
-              <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Availability</h4><div className="space-y-4">{['Available Today','Available Tomorrow','Available this Weekend'].map(a => <label key={a} className="flex items-center gap-3 cursor-pointer group"><input className="w-5 h-5 rounded border-outline-variant/30 text-primary focus:ring-primary/20" type="checkbox" /><span className="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">{a}</span></label>)}</div></div>
-              <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Price Range (PKR)</h4><div className="space-y-4">{['Any Price','0 - 2,500','2,500 - 5,000','5,000+'].map(p => <label key={p} className="flex items-center gap-3 cursor-pointer group"><input className="w-5 h-5 border-outline-variant/30 text-primary focus:ring-primary/20 cursor-pointer" name="price" type="radio" /><span className="text-sm font-medium text-on-surface">{p}</span></label>)}</div></div>
-              <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Gender</h4><div className="flex gap-6">{['Male','Female'].map(g => <label key={g} className="flex items-center gap-2 cursor-pointer group"><input className="w-5 h-5 rounded border-outline-variant/30 text-primary cursor-pointer" type="checkbox" checked={genderFilter.includes(g.toLowerCase())} onChange={(e) => { if (e.target.checked) setGenderFilter(prev => [...prev, g.toLowerCase()]); else setGenderFilter(prev => prev.filter(x => x !== g.toLowerCase())) }} /><span className="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">{g}</span></label>)}</div></div>
+              <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Specialty</h4><div className="flex flex-wrap gap-2">{['All Specialties','General Physician','Pediatrician','Psychiatrist','Cardiologist','Neurologist'].map(s => <button key={s} onClick={() => setDraftFilters(prev => ({ ...prev, specialty: s }))} className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${draftFilters.specialty === s ? 'border-2 border-primary bg-primary/5 text-primary font-bold' : 'border border-outline-variant/20 hover:bg-primary/5 hover:border-primary'}`}>{s}</button>)}</div></div>
+              <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Availability</h4><div className="space-y-4">{availabilityOptions.map(a => <label key={a.value} className="flex items-center gap-3 cursor-pointer group"><input className="w-5 h-5 rounded border-outline-variant/30 text-primary focus:ring-primary/20" type="checkbox" checked={draftFilters.availability.includes(a.value)} onChange={(e) => setDraftArrayFilter('availability', a.value, e.target.checked)} /><span className="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">{a.label}</span></label>)}</div></div>
+              <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Price Range (PKR)</h4><div className="space-y-4">{priceOptions.map(p => <label key={p} className="flex items-center gap-3 cursor-pointer group"><input className="w-5 h-5 border-outline-variant/30 text-primary focus:ring-primary/20 cursor-pointer" name="price" type="radio" checked={draftFilters.price === p} onChange={() => setDraftFilters(prev => ({ ...prev, price: p }))} /><span className="text-sm font-medium text-on-surface">{p}</span></label>)}</div></div>
+              <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Gender</h4><div className="flex gap-6">{['Male','Female'].map(g => <label key={g} className="flex items-center gap-2 cursor-pointer group"><input className="w-5 h-5 rounded border-outline-variant/30 text-primary cursor-pointer" type="checkbox" checked={draftFilters.gender.includes(g.toLowerCase())} onChange={(e) => setDraftArrayFilter('gender', g.toLowerCase(), e.target.checked)} /><span className="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">{g}</span></label>)}</div></div>
             </div>
             <div className="p-6 border-t border-outline-variant/10 bg-surface-container-low flex gap-4">
-              <button className="flex-1 py-4 px-4 rounded-xl bg-primary text-on-primary font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition-all" onClick={() => setFilterOpen(false)}>Apply Filters</button>
-              <button className="px-6 py-4 rounded-xl bg-surface-container-lowest text-on-surface border border-outline-variant/10 font-bold hover:bg-surface-container-high transition-all" onClick={() => { setSpecialty('All Specialties'); setGenderFilter([]); setFilterOpen(false) }}>Reset</button>
+              <button className="flex-1 py-4 px-4 rounded-xl bg-primary text-on-primary font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition-all" onClick={() => { setFilters(draftFilters); setFilterOpen(false) }}>Apply Filters</button>
+              <button className="px-6 py-4 rounded-xl bg-surface-container-lowest text-on-surface border border-outline-variant/10 font-bold hover:bg-surface-container-high transition-all" onClick={resetFilters}>Reset</button>
             </div>
           </div>
         </div>
