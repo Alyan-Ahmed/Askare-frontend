@@ -46,7 +46,7 @@ export default function MySchedulePage() {
 
   return (
     <div className="flex-1 px-12 py-10 max-w-7xl mx-auto w-full">
-      <header className="mb-10 flex justify-between items-end">
+      <header className="mb-10 flex justify-between items-end reveal">
         <div>
           <h1 className="text-4xl font-semibold text-on-surface tracking-tight mb-2">My Schedule</h1>
           <p className="text-on-surface-variant text-lg">{dateStr}</p>
@@ -55,7 +55,7 @@ export default function MySchedulePage() {
 
       <div className="grid grid-cols-12 gap-6">
         {/* Timeline */}
-        <div className="col-span-12 lg:col-span-8 space-y-6">
+        <div className="col-span-12 lg:col-span-8 space-y-6 reveal reveal-delay-1">
           {/* Day Nav */}
           <div className="bg-surface-container-lowest p-6 rounded-xl shadow-sm">
             <div className="flex justify-between items-center mb-4">
@@ -128,7 +128,7 @@ export default function MySchedulePage() {
         </div>
 
         {/* Side Stats */}
-        <div className="col-span-12 lg:col-span-4 space-y-6">
+        <div className="col-span-12 lg:col-span-4 space-y-6 reveal reveal-delay-2">
           {/* Summary Card */}
           <div className="bg-primary text-on-primary p-8 rounded-xl relative overflow-hidden shadow-lg">
             <div className="relative z-10">

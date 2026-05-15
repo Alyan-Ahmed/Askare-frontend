@@ -51,7 +51,7 @@ export default function DoctorDashboardPage() {
   return (
     <div className="flex-1 p-8 max-w-7xl mx-auto w-full">
       {/* Header Welcome */}
-      <header className="mb-12">
+      <header className="mb-12 reveal">
         <h1 className="text-4xl font-medium text-on-background tracking-tight mb-2">Welcome back, <span className="font-extrabold text-primary">{displayName}</span></h1>
         <p className="text-on-surface-variant max-w-2xl leading-relaxed">Your clinical agenda is ready. You have 4 video consultations scheduled for today and 3 pending booking requests.</p>
       </header>
@@ -59,7 +59,7 @@ export default function DoctorDashboardPage() {
       {/* Bento Grid */}
       <div className="grid grid-cols-12 gap-8">
         {/* Stats */}
-        <section className="col-span-12 grid grid-cols-1 md:grid-cols-5 gap-6 mb-4">
+        <section className="col-span-12 grid grid-cols-1 md:grid-cols-5 gap-6 mb-4 reveal">
           {[
             { label: 'Patients Today', value: '24', icon: 'trending_up', sub: '12% from yesterday', subColor: 'text-secondary' },
             { label: 'Pending Reports', value: '08', icon: 'error', sub: 'High priority needed', subColor: 'text-tertiary', fill: true },
@@ -79,7 +79,7 @@ export default function DoctorDashboardPage() {
         </section>
 
         {/* Today's Agenda */}
-        <section className="col-span-12 lg:col-span-8 space-y-6">
+        <section className="col-span-12 lg:col-span-8 space-y-6 reveal reveal-delay-1">
           <div className="flex justify-between items-end mb-4">
             <h2 className="text-2xl font-semibold tracking-tight">Today's Agenda</h2>
           </div>
@@ -108,7 +108,7 @@ export default function DoctorDashboardPage() {
         </section>
 
         {/* Right Sidebar */}
-        <aside className="col-span-12 lg:col-span-4 space-y-8">
+        <aside className="col-span-12 lg:col-span-4 space-y-8 reveal reveal-delay-2">
           {/* New Requests */}
           <div className="bg-white rounded-2xl p-6 editorial-shadow">
             <h2 className="text-xl font-bold mb-6">New Requests</h2>

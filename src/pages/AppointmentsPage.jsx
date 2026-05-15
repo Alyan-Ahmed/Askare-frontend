@@ -78,13 +78,13 @@ export default function AppointmentsPage() {
 
   return (
     <div className="flex-1 px-12 py-10 max-w-7xl mx-auto w-full">
-      <header className="mb-12">
+      <header className="mb-12 reveal">
         <h1 className="text-4xl font-medium tracking-tight text-on-surface font-headline mb-2">My Appointments</h1>
         <div className="w-16 h-1 bg-primary rounded-full"></div>
       </header>
 
       {/* Upcoming */}
-      <section className="flex flex-col gap-6 mb-16">
+      <section className="flex flex-col gap-6 mb-16 reveal reveal-delay-1">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-on-surface flex items-center gap-3">
             Upcoming Appointments
@@ -123,7 +123,7 @@ export default function AppointmentsPage() {
       </section>
 
       {/* Completed */}
-      <section className="flex flex-col gap-6">
+      <section className="flex flex-col gap-6 reveal reveal-delay-2">
         <h2 className="text-xl font-semibold text-on-surface">Completed Appointments</h2>
         <div className="bg-surface-container-lowest rounded-[1.5rem] overflow-hidden border border-outline-variant/10 shadow-sm">
           <div className="overflow-x-auto">

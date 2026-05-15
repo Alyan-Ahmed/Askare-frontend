@@ -23,7 +23,7 @@ export default function HomePage() {
     <main className="pt-24">
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-8 pt-12 md:pt-24 pb-20 grid lg:grid-cols-2 gap-16 items-center">
-        <div className="space-y-8">
+        <div className="space-y-8 reveal">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/30 text-on-primary-container border border-primary-container/50">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -65,9 +65,9 @@ export default function HomePage() {
           </div>
         </div>
         {/* Hero Image Layered */}
-        <div className="relative">
-          <div className="absolute -top-12 -left-12 w-64 h-64 bg-primary-container/20 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-12 -right-12 w-80 h-80 bg-tertiary-container/10 rounded-full blur-3xl"></div>
+        <div className="relative reveal reveal-delay-2">
+          <div className="absolute -top-12 -left-12 w-64 h-64 bg-primary-container/20 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute -bottom-12 -right-12 w-80 h-80 bg-tertiary-container/10 rounded-full blur-3xl animate-float"></div>
           <div className="relative rounded-3xl overflow-hidden shadow-2xl">
             <img className="w-full h-[500px] object-cover"
               alt="Modern high-end clinical setting in Karachi"
@@ -76,9 +76,9 @@ export default function HomePage() {
             <div className="absolute bottom-6 left-6 right-6 p-4 bg-white/70 backdrop-blur-md rounded-2xl border border-white/30">
               <div className="flex items-center gap-4">
                 <div className="flex -space-x-2">
-                  <div className="w-10 h-10 rounded-full border-2 border-white bg-surface-container"></div>
-                  <div className="w-10 h-10 rounded-full border-2 border-white bg-surface-container"></div>
-                  <div className="w-10 h-10 rounded-full border-2 border-white bg-surface-container"></div>
+                  <img className="w-10 h-10 rounded-full border-2 border-white object-cover object-top" alt="Dr. Arsalan" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ4LyJ5urRhYWaNc0fAHi1aTPLnVNXCr9Jt3_5dGQkr4oLP2ZKJVy6rIpZrwq0M2pRVXyd9husXHlkwbu953qA9NJcmVQTAwcoY5vO9R0WOEZVtm2ycNh4gYQqj8ef4G7tyZBVvySBVcnN79uOgWnsxrVhjq2L1tbDDu3svWyhtYP5QWFMxpJExQVH5qNCL1n71mb-T_7bbgRMoxc4ZKChtFLv2MhapV1uxN-3cexn7PW6JJV9r95g4ia08RxSTMZipeYxtApQyHQ" />
+                  <img className="w-10 h-10 rounded-full border-2 border-white object-cover object-top" alt="Dr. Sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-KawnVanuKt14ZQFtYKaRGkXXXSy_dSCBaDU6_oWWDI5SkQxorawLqkFKaF28GKp9625EUcBiNzTKK07YeNngi0A4y91Wo6DBSKJSuFG4_A9Lqkh4KAeEXbCq0r8CxB8Q7egHxfNXcwNwJwjuFZtM2QXRDaEk3eaFm4b0dNFhihp70seNnWVEl5xw7SdlbO2ARt_0cMPWiTz7Z_ZGDtSwtYoXJQVrNdrAAXSne880taIH5w9NCdSq17vWdMaMszuEhamhlP5Ea58" />
+                  <img className="w-10 h-10 rounded-full border-2 border-white object-cover object-top" alt="Dr. Mansoor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0R2oB8OJVQzikzuZsZ6-yi1yy7TSmFjQDJBvIqUptz-S9nkEMSg7m_2T8bN8g_MJqvKANbPxrqi0lLknSMt_nyI9WJBrd-_N38Hw2SvMNxS3IAr74fExUA_bY83zpTQVvIgt4QdZRoEmxfDVX84ATLqB64VZJCC1orZaIXsv38DyxOX1VgVLzUrqJ4_LSzdGgCGca54Kr2iMwFYlHICqj9RGSPgEb1rOvglrTyexlyQPcdJ-6hOenL48N__8-akZdUgGcu8bQ38A" />
                 </div>
                 <div>
                   <p className="text-xs font-bold text-on-surface">Verified Specialists</p>
@@ -91,7 +91,7 @@ export default function HomePage() {
       </section>
 
       {/* Trust & Compliance Bar */}
-      <section className="bg-surface-container-low py-10">
+      <section className="bg-surface-container-low py-10 reveal">
         <div className="max-w-7xl mx-auto px-8 flex flex-wrap justify-between items-center gap-8 opacity-70">
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-primary">security</span>
@@ -114,12 +114,12 @@ export default function HomePage() {
 
       {/* Features: How it Works (Editorial Bento) */}
       <section className="py-32 max-w-7xl mx-auto px-8">
-        <div className="max-w-2xl mb-20">
+        <div className="max-w-2xl mb-20 reveal">
           <h2 className="text-3xl font-semibold mb-6">A smarter journey to wellness</h2>
           <p className="text-on-surface-variant text-lg">We've redesigned medical consultation for the modern age, focusing on speed without compromising accuracy.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto md:h-[600px]">
-          <div className="md:col-span-8 bg-surface-container-lowest rounded-[2rem] p-12 flex flex-col justify-between shadow-sm border border-surface-container">
+          <div className="md:col-span-8 bg-surface-container-lowest rounded-[2rem] p-12 flex flex-col justify-between shadow-sm border border-surface-container reveal reveal-delay-1">
             <div className="max-w-md">
               <span className="text-primary font-bold text-lg mb-4 block">01. AI Analysis</span>
               <h3 className="text-3xl font-semibold mb-4 leading-tight">Instant cognitive symptom mapping</h3>
@@ -131,7 +131,7 @@ export default function HomePage() {
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3VCV3c-1s7Z4UG_g5Cp4mX9258g2RYB3R1vgGkviRD2-EpTVxgiQoyavTY2RCz3PPWjL13qzGcjtHNRI1f4XcQaxzBWhgAZq6ozWWGdYsu7nSFuw-45CFEVBTWX69C_t1c9INe5cWij6QzbJhIrli2iu7gTvNqz0D0yUO7bJA7oXy2hvLpGqmqgqdNu8K9A5PegJ2RJJOomDNotUHyaPgbuUDGNwJT8CNWtwyQewvwTMUz6q-zeyyT78VDh3hDOcE2gSL36S2oMo" />
             </div>
           </div>
-          <div className="md:col-span-4 bg-primary text-on-primary rounded-[2rem] p-10 flex flex-col justify-end">
+          <div className="md:col-span-4 bg-primary text-on-primary rounded-[2rem] p-10 flex flex-col justify-end reveal reveal-delay-2">
             <span className="font-bold text-lg mb-4 block">02. Video Link</span>
             <h3 className="text-2xl font-semibold mb-4 leading-tight">Direct connection to Karachi's top specialists</h3>
             <p className="text-on-primary/80 mb-8">Skip the waiting room. Speak to a board-certified doctor from your home within 15 minutes.</p>
@@ -139,14 +139,14 @@ export default function HomePage() {
               Get Started <span className="material-symbols-outlined">chevron_right</span>
             </Link>
           </div>
-          <div className="md:col-span-4 bg-tertiary-container text-on-tertiary-container rounded-[2rem] p-10 flex flex-col justify-between">
+          <div className="md:col-span-4 bg-tertiary-container text-on-tertiary-container rounded-[2rem] p-10 flex flex-col justify-between reveal reveal-delay-3">
             <span className="material-symbols-outlined text-4xl">prescriptions</span>
             <div>
               <h3 className="text-xl font-bold mb-2">Digital Prescription</h3>
               <p className="text-sm opacity-80">Instant e-prescriptions accepted at all leading pharmacies across Karachi.</p>
             </div>
           </div>
-          <div className="md:col-span-8 bg-surface-container rounded-[2rem] p-10 flex items-center justify-between gap-8">
+          <div className="md:col-span-8 bg-surface-container rounded-[2rem] p-10 flex items-center justify-between gap-8 reveal reveal-delay-4">
             <div className="max-w-xs">
               <h3 className="text-xl font-bold mb-2">Patient Benefits</h3>
               <p className="text-sm text-on-surface-variant">24/7 access to your records, recurring health tracking, and priority scheduling for families.</p>
@@ -166,7 +166,7 @@ export default function HomePage() {
       {/* Specialties Section */}
       <section className="bg-surface py-24">
         <div className="max-w-7xl mx-auto px-8">
-          <div className="flex justify-between items-end mb-16">
+          <div className="flex justify-between items-end mb-16 reveal">
             <div className="max-w-xl">
               <h2 className="text-3xl font-semibold mb-4">Specialized care for every need</h2>
               <p className="text-on-surface-variant">Our network includes the most respected medical professionals in Karachi across diverse fields.</p>
@@ -180,7 +180,7 @@ export default function HomePage() {
               { name: 'Psychiatry', docs: '15 Available Doctors', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCq8IAZRnys-KxbQ16MAroyCeNottECx4hAgDncF2TShfaFb8GniPCP7qYsa7cnnFtTPlgfzhGEY7jQZLzJIkP-Mu_hHkRXvoObGKONYM3nHb2MXPMKpMrbZqmOCY5tl55XC0cq9mz0zEdN-UVmAsr89beh7DR1Soh5FVai2-w7O_TwDoUvf9nCYbuhrYAM-Uar_z2e8-R6rY4eeWzUqz43f24LE0Wi5Q5_wb-bixJYxvReW4pmlOw8saz2tNmFffvAub9dATVUTyk' },
               { name: 'Pediatrics', docs: '20 Available Doctors', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAzOItay6eeZ9g3d8XlHR7HDRnxG3s6VDD3rPuzaaicfEUrTLIrnb-vWJQu1umzvUdJyJO0USN6JYvhMoTyBuL7-cO8tkcSIcqbaKDRFo7KxAmsk-zE7XlkhHxvM5S-FuOow9MXVGfvi2RnI-xGXMI45zdnxCnKx4qrveM2C54LObBj_lWoLEapplUs9Rn4WQpayK2cwn9zcv4UmBBxQqbyq_uk6rgxgLm1O6KvQkE3GMp8_yn83vzePTkbrX9mdLFDd9m2Sbk36b0' },
             ].map((s, i) => (
-              <div key={i} className="group cursor-pointer">
+              <div key={i} className="group cursor-pointer reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
                 <div className="aspect-square rounded-3xl overflow-hidden mb-6 bg-surface-container-high">
                   <img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={s.name} src={s.img} />
                 </div>
@@ -197,7 +197,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-8 relative">
           <span className="text-7xl font-black text-on-surface/5 absolute -top-12 left-8">TRUSTED</span>
           <div className="grid md:grid-cols-2 gap-20 items-center">
-            <div className="space-y-12">
+            <div className="space-y-12 reveal">
               <div className="bg-surface-container-lowest p-10 rounded-[2rem] shadow-sm relative z-10">
                 <div className="flex gap-1 text-tertiary mb-6">
                   {[...Array(5)].map((_, j) => <span key={j} className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>)}
@@ -230,7 +230,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            <div className="hidden md:block relative">
+            <div className="hidden md:block relative reveal reveal-delay-2">
               <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl scale-125"></div>
               <img className="relative rounded-[3rem] shadow-2xl z-10" alt="Video consultation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbciumz1EY_TurOcPX6XjrJjU9x4WP-9aXeVnXQcPo8SaZrNY1DeVAwl8yuwVLfp1QljBFKTXyTNpgQTAXL6BYEUmHWq4C7UWfgPOax8Z88hiqof8_Q4jl25ilaN2z5B8lBpIOJLfiAT5tBxXvovdSKHZwja5QjDPn4RlgRaUiy3_iw9pkIqeUch0b3eb_w-zasS84TGZuJd_5laJ7G--hVK7ZLOP5gDPXibpkZR0NhYT8KspsYavzrUazBCnX9fJFCbaPYHFkifU" />
             </div>
@@ -240,7 +240,7 @@ export default function HomePage() {
 
       {/* Final CTA */}
       <section className="py-24 px-8 max-w-7xl mx-auto">
-        <div className="bg-primary-dim rounded-[3rem] p-16 text-center text-on-primary relative overflow-hidden">
+        <div className="bg-primary-dim rounded-[3rem] p-16 text-center text-on-primary relative overflow-hidden reveal">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
           <h2 className="text-4xl md:text-5xl font-semibold mb-8 max-w-2xl mx-auto leading-tight">Your health shouldn't have to wait.</h2>
           <p className="text-on-primary/80 text-xl mb-12 max-w-xl mx-auto">Start your first AI diagnosis for free and experience the future of care in Karachi.</p>

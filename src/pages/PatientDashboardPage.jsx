@@ -41,7 +41,7 @@ export default function PatientDashboardPage() {
   return (
     <div className="flex-1 px-12 py-10 max-w-7xl mx-auto w-full">
       {/* Welcome */}
-      <section className="mb-12">
+      <section className="mb-12 reveal">
         <h2 className="text-5xl font-medium text-on-surface tracking-tight mb-2">Good morning, {displayName}.</h2>
         <p className="text-secondary text-lg font-light">Your clinical overview is balanced today. You have one upcoming consultation.</p>
       </section>
@@ -49,7 +49,7 @@ export default function PatientDashboardPage() {
       {/* Top Grid */}
       <div className="grid grid-cols-12 gap-8 mb-16">
         {/* Hero Card */}
-        <div className="col-span-12 lg:col-span-7 bg-primary rounded-[2rem] p-8 text-on-primary flex flex-col md:flex-row justify-between relative overflow-hidden group">
+        <div className="col-span-12 lg:col-span-7 bg-primary rounded-[2rem] p-8 text-on-primary flex flex-col md:flex-row justify-between relative overflow-hidden group reveal">
           <div className="relative z-10 flex-1">
             <div className="inline-flex items-center gap-2 bg-primary-dim/40 px-3 py-1 rounded-full mb-6">
               <span className="health-pulse"></span>
@@ -71,7 +71,7 @@ export default function PatientDashboardPage() {
         </div>
 
         {/* Right Stack */}
-        <div className="col-span-12 lg:col-span-5 flex flex-col gap-8">
+        <div className="col-span-12 lg:col-span-5 flex flex-col gap-8 reveal reveal-delay-2">
           <div className="bg-surface-container-lowest p-6 rounded-[1.5rem] border-l-4 border-primary">
             <div className="flex justify-between items-start mb-4">
               <p className="text-xs font-bold text-outline uppercase tracking-widest">Active Diagnosis</p>
@@ -102,7 +102,7 @@ export default function PatientDashboardPage() {
       </div>
 
       {/* Clinical Archive */}
-      <section className="mt-16">
+      <section className="mt-16 reveal">
         <div className="flex items-center justify-between mb-8">
           <h3 className="text-2xl font-bold text-on-surface">Clinical Archive</h3>
           <div className="flex gap-2">

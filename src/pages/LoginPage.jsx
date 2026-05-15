@@ -57,7 +57,7 @@ export default function LoginPage() {
       <main className="flex-grow flex items-center justify-center p-6 md:p-12 min-h-screen">
         <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
-          <div className="hidden lg:flex flex-col justify-center space-y-12 pr-12 border-r border-outline-variant/10">
+          <div className="hidden lg:flex flex-col justify-center space-y-12 pr-12 border-r border-outline-variant/10 reveal">
             <div className="space-y-6">
               <div className="flex items-center gap-2">
                 <Logo />
@@ -97,7 +97,7 @@ export default function LoginPage() {
           </div>
 
           {/* Auth Card */}
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center reveal reveal-delay-2">
             <div className="bg-surface-container-lowest rounded-[2rem] p-8 md:p-12 shadow-[0_12px_32px_rgba(44,52,54,0.04)] ring-1 ring-outline-variant/5">
               {/* Role Toggle (Signup Only) */}
               {authMode === 'signup' && (

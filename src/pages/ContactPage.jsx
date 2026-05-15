@@ -107,7 +107,7 @@ export default function ContactPage() {
   return (
     <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
       {/* Hero & Emergency Disclaimer */}
-      <header className="mb-16">
+      <header className="mb-16 reveal">
         <h1 className="text-5xl md:text-7xl font-medium text-on-background tracking-tight mb-8">Connect with <span className="text-primary italic">Askare</span></h1>
         <div className="bg-tertiary-container/30 border-l-4 border-tertiary p-6 rounded-xl max-w-3xl">
           <div className="flex items-start gap-4">
@@ -124,7 +124,7 @@ export default function ContactPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Left Column */}
-        <div className="lg:col-span-7 space-y-8">
+        <div className="lg:col-span-7 space-y-8 reveal">
           <section className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
             <h2 className="text-2xl font-semibold mb-6">Send a Message</h2>
             <form className="space-y-6" onSubmit={e => e.preventDefault()}>
@@ -172,7 +172,7 @@ export default function ContactPage() {
         </div>
 
         {/* Right Column */}
-        <div className="lg:col-span-5 space-y-8">
+        <div className="lg:col-span-5 space-y-8 reveal reveal-delay-2">
           <div className="grid grid-cols-1 gap-4">
             <div className="bg-surface-container-high/50 p-6 rounded-xl flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary"><span className="material-symbols-outlined">mail</span></div>

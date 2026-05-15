@@ -66,7 +66,7 @@ export default function PatientRecordsPage() {
 
   return (
     <div className="flex-1 px-8 py-10 max-w-7xl mx-auto w-full">
-      <header className="mb-12">
+      <header className="mb-12 reveal">
         <h1 className="text-4xl font-medium text-on-surface leading-tight tracking-tight mb-8">Patient Records</h1>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="w-full max-w-xl">
@@ -81,9 +81,9 @@ export default function PatientRecordsPage() {
       </header>
 
       {/* Records Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 reveal">
         {filtered.map((rec, i) => (
-          <div key={i} className="bg-surface-container-lowest p-6 rounded-[1.5rem] group hover:bg-surface-container-high transition-colors duration-300">
+          <div key={i} className={`bg-surface-container-lowest p-6 rounded-[1.5rem] group hover:bg-surface-container-high transition-colors duration-300`}>
             <div className="flex justify-between items-start mb-4">
               <div className="w-12 h-12 rounded-full overflow-hidden bg-surface-container"><img alt={rec.name} className="w-full h-full object-cover" src={rec.img} /></div>
               <span className={`${statusStyles[rec.status]} text-[0.7rem] px-3 py-1 rounded-full font-bold uppercase tracking-wider`}>{rec.status}</span>

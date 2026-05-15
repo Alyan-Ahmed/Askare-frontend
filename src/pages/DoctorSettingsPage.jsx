@@ -37,7 +37,7 @@ export default function DoctorSettingsPage() {
 
   return (
     <main className="mb-16 flex-grow container max-w-3xl mx-auto px-6 lg:px-8 pt-24">
-      <header className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <header className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4 reveal">
         <div><h1 className="text-3xl font-semibold text-primary tracking-tight">Account Settings</h1><p className="text-on-surface-variant mt-1">Manage your professional identity and security preferences.</p></div>
         <div className="flex gap-3">
           <button className="bg-surface-container-low text-on-surface-variant px-6 py-2.5 rounded-xl font-semibold shadow-sm hover:bg-surface-container-high transition-all active:scale-95 border border-outline-variant/20" onClick={() => window.location.reload()}>Discard</button>
@@ -45,7 +45,7 @@ export default function DoctorSettingsPage() {
         </div>
       </header>
 
-      <div className="space-y-12">
+      <div className="space-y-12 reveal reveal-delay-1">
         {/* Account Details */}
         <section className="space-y-6">
           <h2 className="text-sm font-bold uppercase tracking-widest text-outline">Account Details</h2>
@@ -142,6 +142,7 @@ export default function DoctorSettingsPage() {
               <div className="flex items-center space-x-4"><div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-secondary"><span className="material-symbols-outlined text-sm">notifications_active</span></div><div><p className="font-bold">Urgent Patient Alerts</p><p className="text-xs text-on-surface-variant">Direct mobile push notifications for critical patient metrics.</p></div></div>
               <Toggle checked={urgentAlerts} onChange={setUrgentAlerts} />
             </div>
+
           </div>
         </section>
 

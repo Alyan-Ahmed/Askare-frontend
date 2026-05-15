@@ -36,13 +36,13 @@ export default function PaymentDetailsPage() {
 
   return (
     <main className="pt-12 pb-20 px-6 max-w-7xl mx-auto">
-      <header className="mb-16 max-w-3xl">
+      <header className="mb-16 max-w-3xl reveal">
         <span className="text-primary font-bold tracking-[0.2em] uppercase text-xs mb-4 block">Secure Checkout</span>
         <h1 className="text-5xl font-medium tracking-tight text-on-surface leading-tight">Complete your <span className="text-primary italic">Askare</span> session.</h1>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-8 reveal reveal-delay-1">
           {/* Booking Summary */}
           <section className="bg-surface-container-low rounded-xl p-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -129,7 +129,7 @@ export default function PaymentDetailsPage() {
         </div>
 
         {/* Right Sidebar */}
-        <aside className="lg:col-span-4 space-y-8">
+        <aside className="lg:col-span-4 space-y-8 reveal reveal-delay-2">
           <div className="bg-surface-container-low rounded-xl p-8 sticky top-28">
             <h4 className="text-label-md font-bold text-on-surface-variant uppercase tracking-[0.2em] mb-6">Payment Summary</h4>
             <ul className="space-y-4 mb-8">

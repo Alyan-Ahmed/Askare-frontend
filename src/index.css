@@ -6,6 +6,8 @@ body {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f0f5f6;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .material-symbols-outlined {
@@ -548,7 +550,7 @@ select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23006977' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 16px;
@@ -577,3 +579,216 @@ select {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ── Scroll Reveal Animations ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── Floating animation ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-float-slow { animation: float 6s ease-in-out infinite; }
+
+/* ── Shine sweep ── */
+@keyframes shine {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+.shine-hover:hover::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  animation: shine 0.6s ease-out;
+}
+
+/* ── Dark Mode — Comprehensive ── */
+html.dark { color-scheme: dark; }
+
+.dark body {
+  background-color: #0f1517;
+  color: #dde3e5;
+}
+
+/* ── Surface / Background colors ── */
+.dark .bg-surface-container-lowest { background-color: #141b1d !important; }
+.dark .bg-surface-container-low   { background-color: #1a2225 !important; }
+.dark .bg-surface-container       { background-color: #1f282b !important; }
+.dark .bg-surface-container-high  { background-color: #263032 !important; }
+.dark .bg-surface-container-highest { background-color: #2d3739 !important; }
+.dark .bg-surface                 { background-color: #141b1d !important; }
+.dark .bg-surface-bright          { background-color: #1e2628 !important; }
+.dark .bg-background              { background-color: #0f1517 !important; }
+.dark .bg-white                   { background-color: #1a2225 !important; }
+
+/* ── Primary (brighter on dark for contrast) ── */
+.dark .text-primary     { color: #4dd0e1 !important; }
+.dark .text-secondary   { color: #8aaab7 !important; }
+.dark .bg-primary       { background-color: #00838f !important; }
+.dark .bg-primary-dim   { background-color: #006977 !important; }
+
+/* ── Text colors ── */
+.dark .text-on-surface          { color: #dde3e5 !important; }
+.dark .text-on-surface-variant  { color: #9aa3a6 !important; }
+.dark .text-outline             { color: #7a8385 !important; }
+.dark .text-outline-variant     { color: #4d5658 !important; }
+.dark .text-on-background       { color: #dde3e5 !important; }
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #dde3e5;
+}
+.dark p { color: #b0b8bb; }
+.dark label { color: #9aa3a6; }
+.dark span:not([class*="material-symbols"]):not([class*="text-"]):not([class*="bg-"]) { color: inherit; }
+
+/* ── Borders ── */
+.dark .border-surface-container     { border-color: #263032 !important; }
+.dark .border-outline-variant       { border-color: #3d4648 !important; }
+.dark .divide-surface-container > * + * { border-color: #263032 !important; }
+.dark .border-white { border-color: #263032 !important; }
+
+/* ── Inputs, Selects, Textareas ── */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark select,
+.dark textarea {
+  background-color: #1a2225 !important;
+  color: #dde3e5 !important;
+  border-color: #3d4648 !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #6a7275 !important;
+}
+
+/* ── Select arrow in dark mode ── */
+.dark select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+}
+
+/* ── Glass Header ── */
+.dark .glass-header {
+  background-color: rgba(15, 21, 23, 0.88) !important;
+  border-color: rgba(60, 70, 72, 0.2) !important;
+}
+
+/* ── Mobile Menu ── */
+.dark .mobile-menu-wrapper {
+  background: rgba(15, 21, 23, 0.97) !important;
+  border-color: rgba(60, 70, 72, 0.15) !important;
+}
+
+/* ── Sidebar ── */
+.dark #sidebar {
+  background-color: #111a1c !important;
+  border-color: #263032 !important;
+}
+.dark .sidebar-link-active,
+.dark .sidebar-link.active {
+  background-color: #1a2225 !important;
+  color: #4dd0e1 !important;
+}
+
+/* ── Footer ── */
+.dark footer {
+  background-color: #0a0f11 !important;
+  color: #9aa3a6 !important;
+}
+.dark footer a { color: #8aaab7 !important; }
+.dark footer a:hover { color: #4dd0e1 !important; }
+
+/* ── Cards / Panels ── */
+.dark .ring-1 { --tw-ring-color: rgba(60, 70, 72, 0.2) !important; }
+.dark .shadow-sm { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important; }
+.dark .shadow-xl { box-shadow: 0 20px 25px rgba(0, 0, 0, 0.4) !important; }
+.dark .shadow-2xl { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important; }
+
+/* ── Gradient overlays ── */
+.dark .from-background\/80 { --tw-gradient-from: rgba(15, 21, 23, 0.8) !important; }
+.dark .bg-gradient-to-t { background-image: linear-gradient(to top, rgba(15, 21, 23, 0.7), transparent) !important; }
+
+/* ── Scrollbar ── */
+.dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #3d4648; }
+
+/* ── Toggle switches ── */
+.dark .toggle-slider { background-color: rgba(60, 70, 72, 0.4); }
+
+/* ── Error / Tertiary containers ── */
+.dark .bg-error-container { background-color: #4a1c1b !important; }
+.dark .bg-tertiary-container { background-color: #4a2a1e !important; }
+.dark .bg-primary-container { background-color: #004d58 !important; }
+.dark .bg-secondary-container { background-color: #2a434e !important; }
+
+/* ── Selection ── */
+.dark ::selection {
+  background-color: #006977;
+  color: white;
+}
+
+/* ── Date/time picker icons ── */
+.dark input[type="date"]::-webkit-calendar-picker-indicator,
+.dark input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* ── Profile dropdown ── */
+.dark .profile-dropdown .dropdown-menu {
+  background-color: #141b1d;
+  border-color: #263032;
+}
+
+/* ── Specific patterns ── */
+.dark .bg-white\/70 { background-color: rgba(20, 27, 29, 0.85) !important; }
+.dark .bg-on-surface\/30 { background-color: rgba(0, 0, 0, 0.5) !important; }
+.dark .bg-on-surface\/40 { background-color: rgba(0, 0, 0, 0.5) !important; }
+.dark .bg-on-background\/40 { background-color: rgba(0, 0, 0, 0.5) !important; }
+
+/* ════════════════════════════════════════════════════════════
+   SCROLL REVEAL ANIMATION SYSTEM
+   ════════════════════════════════════════════════════════════ */
+
+/* Base hidden state — elements start invisible and shifted down */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* Visible state — triggered by IntersectionObserver */
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered delay variants */
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* Generic fade-in keyframe (for modals and overlays) */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+

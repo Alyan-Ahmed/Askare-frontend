@@ -9,14 +9,14 @@ export default function MedicalRecordsPage() {
 
   return (
     <div className="flex-1 px-8 py-12 md:px-12 overflow-y-auto">
-      <header className="mb-12 max-w-4xl">
+      <header className="mb-12 max-w-4xl reveal">
         <h1 className="text-4xl font-medium tracking-tight text-on-surface mb-2 font-headline leading-tight">Medical Records</h1>
         <div className="w-16 h-1 bg-primary rounded-full"></div>
       </header>
 
       <div className="grid grid-cols-1 gap-6 max-w-5xl">
         {records.map((r, i) => (
-          <div key={i} className="group bg-surface-container-lowest p-6 rounded-xl flex items-center justify-between hover:bg-surface-bright transition-all duration-300 border border-transparent hover:shadow-[0_12px_32px_rgba(44,52,54,0.06)]">
+          <div key={i} className={`group bg-surface-container-lowest p-6 rounded-xl flex items-center justify-between hover:bg-surface-bright transition-all duration-300 border border-transparent hover:shadow-[0_12px_32px_rgba(44,52,54,0.06)] reveal reveal-delay-${Math.min(i + 1, 4)}`}>
             <div className="flex items-center gap-6">
               <div className={`w-14 h-14 rounded-xl ${r.iconBg} flex items-center justify-center ${r.iconColor}`}>
                 <span className="material-symbols-outlined text-3xl">{r.icon}</span>

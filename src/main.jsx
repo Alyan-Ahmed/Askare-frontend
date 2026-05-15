@@ -6,6 +6,11 @@ import { AuthProvider } from './context/AuthContext'
 import ScrollToTop from './components/ScrollToTop'
 import './index.css'
 
+// Initialize dark mode from saved preference
+if (localStorage.getItem('askare_dark_mode') === 'true') {
+  document.documentElement.classList.add('dark')
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>

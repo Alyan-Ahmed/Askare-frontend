@@ -17,7 +17,7 @@ export default function PaymentConfirmationPage() {
     <main className="flex-grow pt-16 pb-20 px-6">
       <div className="max-w-4xl mx-auto">
         {/* Success Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 reveal">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/5 rounded-full mb-6">
             <span className="material-symbols-outlined text-primary text-5xl" style={{ fontVariationSettings: '"FILL" 1' }}>check_circle</span>
           </div>
@@ -26,7 +26,7 @@ export default function PaymentConfirmationPage() {
         </div>
 
         {/* Confirmation Card */}
-        <div className="bg-surface-container-lowest rounded-xl p-8 md:p-12 border border-outline-variant/10 shadow-[0_12px_32px_rgba(44,52,54,0.04)] relative overflow-hidden">
+        <div className="bg-surface-container-lowest rounded-xl p-8 md:p-12 border border-outline-variant/10 shadow-[0_12px_32px_rgba(44,52,54,0.04)] relative overflow-hidden reveal reveal-delay-1">
           <div className="absolute top-0 right-0 p-6 opacity-5">
             <span className="material-symbols-outlined text-[120px]">verified</span>
           </div>
@@ -81,7 +81,7 @@ export default function PaymentConfirmationPage() {
         </div>
 
         {/* Actions */}
-        <div className="mt-12 flex flex-col md:flex-row items-center justify-center gap-6">
+        <div className="mt-12 flex flex-col md:flex-row items-center justify-center gap-6 reveal reveal-delay-2">
           <Link to="/patient-dashboard" className="bg-primary text-on-primary px-10 py-4 rounded-xl text-lg font-semibold shadow-[0_8px_20px_rgba(0,105,119,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 w-full md:w-auto text-center">Go to Dashboard</Link>
           <button className="flex items-center justify-center gap-2 bg-surface-container-high text-primary px-10 py-4 rounded-xl text-lg font-semibold hover:bg-surface-container-highest transition-all duration-300 w-full md:w-auto">
             <span className="material-symbols-outlined">download</span>Download Receipt

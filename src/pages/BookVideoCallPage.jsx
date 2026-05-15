@@ -99,13 +99,13 @@ export default function BookVideoCallPage() {
 
   return (
     <main className="flex-1 pt-32 pb-32 max-w-[88rem] mx-auto px-6 w-full">
-      <header className="mb-12">
+      <header className="mb-12 reveal">
         <h1 className="text-[3.5rem] leading-tight font-medium text-on-surface mb-2 font-headline">Find your specialist.</h1>
         <p className="text-lg text-on-surface-variant max-w-2xl font-body leading-relaxed">Verified medical professionals in Karachi, available for instant high-definition video consultations.</p>
       </header>
 
       {/* Filters */}
-      <section className="mb-10 flex flex-col md:flex-row gap-4 items-end">
+      <section className="mb-10 flex flex-col md:flex-row gap-4 items-end reveal reveal-delay-1">
         <div className="w-full md:w-1/3">
           <label className="block text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2 ml-1">Specialty</label>
           <select value={filters.specialty} onChange={(e) => setFilters(prev => ({ ...prev, specialty: e.target.value }))} className="w-full bg-surface-container-low border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all">
@@ -122,7 +122,7 @@ export default function BookVideoCallPage() {
       {/* Doctor Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filtered.map((doc, i) => (
-          <div key={i} className="group bg-surface-container-lowest rounded-[1.5rem] overflow-hidden hover:shadow-[0_12px_32px_rgba(44,52,54,0.06)] transition-all duration-300 border border-transparent hover:border-outline-variant/10">
+          <div key={i} className={`group bg-surface-container-lowest rounded-[1.5rem] overflow-hidden hover:shadow-[0_12px_32px_rgba(44,52,54,0.06)] transition-all duration-300 border border-transparent hover:border-outline-variant/10 reveal reveal-delay-${Math.min(i + 1, 4)}`}>
             <div className="relative h-64 overflow-hidden">
               <img alt={doc.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" src={doc.img} />
               {doc.available && <div className="absolute top-4 left-4 bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[0.65rem] font-bold uppercase tracking-widest flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Available Now</div>}

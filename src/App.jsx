@@ -35,6 +35,7 @@ import PaymentDetailsPage from './pages/PaymentDetailsPage'
 import PaymentConfirmationPage from './pages/PaymentConfirmationPage'
 import VideoCallPage from './pages/VideoCallPage'
 import { useAuth } from './context/AuthContext'
+import ScrollReveal from './components/ScrollReveal'
 
 function RequireAuth({ role }) {
   const { isLoggedIn, userRole } = useAuth()
@@ -52,6 +53,8 @@ function RequireAuth({ role }) {
 
 export default function App() {
   return (
+    <>
+    <ScrollReveal />
     <Routes>
       {/* Public Routes */}
       <Route element={<PublicLayout />}>
@@ -123,5 +126,6 @@ export default function App() {
       {/* Catch all */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   )
 }

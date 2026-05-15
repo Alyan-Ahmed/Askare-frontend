@@ -33,7 +33,7 @@ export default function PatientSettingsPage() {
 
   return (
     <main className="flex-grow pt-32 pb-20 px-6 max-w-3xl mx-auto w-full">
-      <div className="mb-10 flex justify-between items-end">
+      <div className="mb-10 flex justify-between items-end reveal">
         <div>
           <h1 className="text-3xl font-semibold text-primary tracking-tight">Settings</h1>
           <p className="text-secondary mt-1">Manage your account and preferences.</p>
@@ -44,7 +44,7 @@ export default function PatientSettingsPage() {
         </div>
       </div>
 
-      <div className="space-y-12">
+      <div className="space-y-12 reveal reveal-delay-1">
         {/* Account */}
         <section className="space-y-6">
           <h2 className="text-sm font-bold uppercase tracking-widest text-outline">Account Details</h2>
@@ -166,6 +166,7 @@ export default function PatientSettingsPage() {
               <div className="flex items-center space-x-4 min-w-0 flex-1"><span className="material-symbols-outlined text-secondary shrink-0">visibility</span><div className="min-w-0"><p className="font-bold">Data Privacy</p><p className="text-xs text-secondary">Clinical research sharing visibility.</p></div></div>
               <select value={privacy} onChange={(e) => setPrivacy(e.target.value)} className="bg-surface-container-low border-none rounded-lg px-3 py-1.5 text-xs font-medium focus:ring-2 focus:ring-primary/20 text-on-surface shrink-0 min-w-[100px]"><option>Private</option><option>Limited</option><option>Open</option></select>
             </div>
+
           </div>
         </section>
 
