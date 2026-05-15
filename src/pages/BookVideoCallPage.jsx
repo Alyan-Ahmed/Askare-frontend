@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const doctors = [
   { name: 'Dr. Arsalan Khan', spec: 'General Physician', rating: '4.9', location: 'Clifton, Karachi', price: 'PKR 2,500', gender: 'male', availability: ['today', 'tomorrow'], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJ4LyJ5urRhYWaNc0fAHi1aTPLnVNXCr9Jt3_5dGQkr4oLP2ZKJVy6rIpZrwq0M2pRVXyd9husXHlkwbu953qA9NJcmVQTAwcoY5vO9R0WOEZVtm2ycNh4gYQqj8ef4G7tyZBVvySBVcnN79uOgWnsxrVhjq2L1tbDDu3svWyhtYP5QWFMxpJExQVH5qNCL1n71mb-T_7bbgRMoxc4ZKChtFLv2MhapV1uxN-3cexn7PW6JJV9r95g4ia08RxSTMZipeYxtApQyHQ', about: 'Dr. Arsalan is a highly experienced General Physician with over 12 years in family medicine. He specializes in chronic disease management and preventive care, serving the Clifton community with dedication.', available: true },
@@ -30,6 +30,7 @@ function matchesPrice(price, selectedRange) {
 }
 
 export default function BookVideoCallPage() {
+  const navigate = useNavigate()
   const [filters, setFilters] = useState(defaultFilters)
   const [draftFilters, setDraftFilters] = useState(defaultFilters)
   const [filterOpen, setFilterOpen] = useState(false)
@@ -123,7 +124,7 @@ export default function BookVideoCallPage() {
         {filtered.map((doc, i) => (
           <div key={i} className="group bg-surface-container-lowest rounded-[1.5rem] overflow-hidden hover:shadow-[0_12px_32px_rgba(44,52,54,0.06)] transition-all duration-300 border border-transparent hover:border-outline-variant/10">
             <div className="relative h-64 overflow-hidden">
-              <img alt={doc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src={doc.img} />
+              <img alt={doc.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" src={doc.img} />
               {doc.available && <div className="absolute top-4 left-4 bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[0.65rem] font-bold uppercase tracking-widest flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Available Now</div>}
             </div>
             <div className="p-6">
@@ -210,7 +211,7 @@ export default function BookVideoCallPage() {
               </div>
               <div className="flex items-center justify-between pt-8 border-t border-outline-variant/10">
                 <div className="flex flex-col"><span className="text-[10px] uppercase tracking-wider text-outline font-bold">Total Fee</span><span className="text-xl font-bold text-on-surface">{modal.price}</span></div>
-                <Link to="/payment-details" className="px-8 py-4 bg-primary text-on-primary rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 no-underline">Confirm Appointment <span className="material-symbols-outlined text-sm">arrow_forward</span></Link>
+                <button onClick={() => navigate('/payment-details', { state: { doctor: modal, date: selectedDay && `${monthNames[currentMonth]} ${selectedDay}, ${currentYear}`, time: selectedTime } })} className="px-8 py-4 bg-primary text-on-primary rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 no-underline">Confirm Appointment <span className="material-symbols-outlined text-sm">arrow_forward</span></button>
               </div>
             </div>
           </div>

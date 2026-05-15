@@ -40,7 +40,7 @@ export default function LoginPage() {
     const pw = password
     if (em === fakeAccounts.patient.email && pw === fakeAccounts.patient.password) {
       login('patient', fakeAccounts.patient)
-      navigate('/patient-dashboard')
+      navigate('/')
       return
     }
     if (em === fakeAccounts.doctor.email && pw === fakeAccounts.doctor.password) {

@@ -1,7 +1,18 @@
 import { useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+
+const FALLBACK = {
+  name: 'Dr. Sarah Ahmed', spec: 'Senior Cardiologist', price: 'PKR 5,000',
+  img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuByqOGyPGftclHQtyAp1Q-17KPD3p7Qyb1D5iaLF4OZCb7C9O5BPhY0mG5iBmAaXyDCao96gEM9RTebdDlfJOkW31hPzqzufgyoozbGBixe6NXmQ6i2VN3RdaDp03ucRrJaP-7x9JsYF10agqIaQgvH11mW7JCYxL-AbfpyBybPSsK91HSGWFcktOIVDcC3w2Sb8pQqO9V-Egb66Gk4DH2QCDmHchOhEWAz2qnlGVQdTR6gUQAhM02f8s-vu9_8ZfESJ_0dgYJ4rIY',
+}
 
 export default function PaymentDetailsPage() {
+  const location = useLocation()
+  const booking = location.state || {}
+  const doc = booking.doctor || FALLBACK
+  const bookDate = booking.date || 'Oct 24, 2026'
+  const bookTime = booking.time || '10:00 AM'
+
   const [method, setMethod] = useState(null)
   const cardRef = useRef(null)
   const expiryRef = useRef(null)
@@ -37,20 +48,20 @@ export default function PaymentDetailsPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="flex items-center gap-6">
                 <div className="w-20 h-20 rounded-lg overflow-hidden bg-white">
-                  <img alt="Dr. Sarah Ahmed" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByqOGyPGftclHQtyAp1Q-17KPD3p7Qyb1D5iaLF4OZCb7C9O5BPhY0mG5iBmAaXyDCao96gEM9RTebdDlfJOkW31hPzqzufgyoozbGBixe6NXmQ6i2VN3RdaDp03ucRrJaP-7x9JsYF10agqIaQgvH11mW7JCYxL-AbfpyBybPSsK91HSGWFcktOIVDcC3w2Sb8pQqO9V-Egb66Gk4DH2QCDmHchOhEWAz2qnlGVQdTR6gUQAhM02f8s-vu9_8ZfESJ_0dgYJ4rIY" />
+                  <img alt={doc.name} className="w-full h-full object-cover object-top" src={doc.img} />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-on-surface">Video Consultation</h3>
-                  <p className="text-secondary">Dr. Sarah Ahmed • Senior Cardiologist</p>
+                  <p className="text-secondary">{doc.name} • {doc.spec}</p>
                   <div className="flex gap-2 mt-2">
                     <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                    <span className="text-label-md font-bold text-primary tracking-wider uppercase">OCT 24, 2026 AT 10:00 AM<br /><span className="block mt-1">LIVE SESSION SCHEDULED</span></span>
+                    <span className="text-label-md font-bold text-primary tracking-wider uppercase">{bookDate.toUpperCase()} AT {bookTime}<br /><span className="block mt-1">LIVE SESSION SCHEDULED</span></span>
                   </div>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-label-md text-on-surface-variant uppercase tracking-widest mb-1">Total Fee</p>
-                <p className="text-3xl font-bold text-primary">PKR 5,000</p>
+                <p className="text-3xl font-bold text-primary">{doc.price}</p>
               </div>
             </div>
           </section>
@@ -122,14 +133,14 @@ export default function PaymentDetailsPage() {
           <div className="bg-surface-container-low rounded-xl p-8 sticky top-28">
             <h4 className="text-label-md font-bold text-on-surface-variant uppercase tracking-[0.2em] mb-6">Payment Summary</h4>
             <ul className="space-y-4 mb-8">
-              <li className="flex justify-between text-on-surface"><span className="opacity-70">Consultation Fee</span><span>PKR 5,000</span></li>
+              <li className="flex justify-between text-on-surface"><span className="opacity-70">Consultation Fee</span><span>{doc.price}</span></li>
               <li className="flex justify-between text-on-surface"><span className="opacity-70">Service Charge</span><span>PKR 0.00</span></li>
               <li className="flex justify-between text-on-surface"><span className="opacity-70">VAT (Clinical)</span><span>Included</span></li>
             </ul>
             <div className="pt-6 border-t border-outline-variant/20 mb-8">
-              <div className="flex justify-between items-baseline"><span className="font-bold text-lg">Amount Payable</span><span className="text-3xl font-bold text-primary">PKR 5,000</span></div>
+              <div className="flex justify-between items-baseline"><span className="font-bold text-lg">Amount Payable</span><span className="text-3xl font-bold text-primary">{doc.price}</span></div>
             </div>
-            <Link to="/payment-confirmation" className="w-full bg-primary hover:bg-primary-dim text-on-primary py-4 rounded-xl font-bold tracking-wide transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-primary/10">
+            <Link to="/payment-confirmation" state={{ doctor: doc, date: bookDate, time: bookTime }} className="w-full bg-primary hover:bg-primary-dim text-on-primary py-4 rounded-xl font-bold tracking-wide transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-primary/10">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>lock</span> Confirm &amp; Pay Securely
             </Link>
             <p className="mt-6 text-center text-xs text-on-surface-variant leading-relaxed">By completing this payment, you agree to Askare's medical service agreement and privacy protocols.</p>

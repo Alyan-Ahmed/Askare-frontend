@@ -1,6 +1,18 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+
+const FALLBACK = {
+  name: 'Dr. Sarah Ahmed', spec: 'Senior Cardiologist', price: 'PKR 5,000',
+  img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDnBbWu-4lovd0oPNpSSQQwkrEWAO4--f0lbKzKREZia_hBOWp0ndQe4lBj7xIM7Fcy43L36epitW-znbDbr5bnzaO-lp340Lub_gBEJ2aicEXd0OthglEMyWC0xoJp_1UTXE7VwEsk_V7A5T-JmhYg8y-AwTsAegMNP__j6ic7vxOW3zNAqSilv54s7reEfDitomNkel5LuleMWe59rjV1rrZ3OuZD9hzr2FvYMDFzHU_QOvZdz0PqviMK_B8baFxYRELYPs_SccY',
+}
 
 export default function PaymentConfirmationPage() {
+  const location = useLocation()
+  const booking = location.state || {}
+  const doc = booking.doctor || FALLBACK
+  const bookDate = booking.date || 'Oct 24, 2026'
+  const bookTime = booking.time || '10:00 AM'
+  const txId = `#ASK-${Math.floor(100000 + Math.random() * 900000)}`
+
   return (
     <main className="flex-grow pt-16 pb-20 px-6">
       <div className="max-w-4xl mx-auto">
@@ -25,15 +37,15 @@ export default function PaymentConfirmationPage() {
                 <p className="text-[10px] font-bold text-primary tracking-[0.15em] uppercase mb-2">Doctor Details</p>
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-lg overflow-hidden">
-                    <img alt="Dr. Sarah Ahmed" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnBbWu-4lovd0oPNpSSQQwkrEWAO4--f0lbKzKREZia_hBOWp0ndQe4lBj7xIM7Fcy43L36epitW-znbDbr5bnzaO-lp340Lub_gBEJ2aicEXd0OthglEMyWC0xoJp_1UTXE7VwEsk_V7A5T-JmhYg8y-AwTsAegMNP__j6ic7vxOW3zNAqSilv54s7reEfDitomNkel5LuleMWe59rjV1rrZ3OuZD9hzr2FvYMDFzHU_QOvZdz0PqviMK_B8baFxYRELYPs_SccY" />
+                    <img alt={doc.name} className="w-full h-full object-cover object-top" src={doc.img} />
                   </div>
-                  <div><h3 className="text-xl font-semibold text-on-surface">Dr. Sarah Ahmed</h3><p className="text-secondary font-medium">Senior Cardiologist</p></div>
+                  <div><h3 className="text-xl font-semibold text-on-surface">{doc.name}</h3><p className="text-secondary font-medium">{doc.spec}</p></div>
                 </div>
               </div>
               <div>
                 <p className="text-[10px] font-bold text-primary tracking-[0.15em] uppercase mb-2">Schedule</p>
                 <div className="flex items-center gap-3 text-on-surface">
-                  <span className="material-symbols-outlined text-secondary">calendar_today</span><span className="text-lg">Oct 24, 2026</span><span className="text-outline-variant mx-1">•</span><span className="text-lg">10:00 AM</span>
+                  <span className="material-symbols-outlined text-secondary">calendar_today</span><span className="text-lg">{bookDate}</span><span className="text-outline-variant mx-1">•</span><span className="text-lg">{bookTime}</span>
                 </div>
               </div>
               <div>
@@ -55,8 +67,8 @@ export default function PaymentConfirmationPage() {
               <div>
                 <p className="text-[10px] font-bold text-primary tracking-[0.15em] uppercase mb-2">Transaction Details</p>
                 <div className="space-y-2">
-                  <div className="flex justify-between"><span className="text-secondary">Transaction ID</span><span className="font-mono text-on-surface">#ASK-772910</span></div>
-                  <div className="flex justify-between"><span className="text-secondary">Amount Paid</span><span className="font-bold text-primary text-xl">PKR 5000.00</span></div>
+                  <div className="flex justify-between"><span className="text-secondary">Transaction ID</span><span className="font-mono text-on-surface">{txId}</span></div>
+                  <div className="flex justify-between"><span className="text-secondary">Amount Paid</span><span className="font-bold text-primary text-xl">{doc.price}</span></div>
                 </div>
               </div>
               <div className="pt-4">

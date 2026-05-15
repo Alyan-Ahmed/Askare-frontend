@@ -327,7 +327,7 @@ export function PortalHeader({ role = 'patient', variant = 'portal', showAISetti
       </div>
       <nav className="hidden md:flex items-center gap-8">
         {links.map((link) => (
-          <Link key={link.to} className="font-medium text-on-surface hover:text-primary transition-colors" to={link.to}>
+          <Link key={link.to} className="font-medium text-base text-on-surface hover:text-primary transition-colors" to={link.to}>
             {link.label}
           </Link>
         ))}
