@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function PatientSettingsPage() {
+  const { user, updateUser, deleteAccount, deactivateAccount } = useAuth()
+  const navigate = useNavigate()
   const [twoFA, setTwoFA] = useState(true)
   const [authApp, setAuthApp] = useState(true)
   const [smsEnabled, setSmsEnabled] = useState(false)
@@ -10,12 +13,18 @@ export default function PatientSettingsPage() {
   const [privacy, setPrivacy] = useState('Limited')
   const [showPwCurrent, setShowPwCurrent] = useState(false)
   const [showPwNew, setShowPwNew] = useState(false)
-  const [confirmModal, setConfirmModal] = useState(null) // 'deactivate' | 'delete' | null
+  const [confirmModal, setConfirmModal] = useState(null)
   const [toast, setToast] = useState(null)
-  const { user } = useAuth()
-  const profileName = user?.name || 'Alyan Ahmed'
-  const profileEmail = user?.email || 'alyan.patient@askare.com'
-  const profileAvatar = user?.avatar || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAox2cELp727nc8F0QqlouZa__6ZAv4-XcyEzgKe10NFebkQZ6zwt1AVi5A40vtPQlgILrsZO4LEBhgNSHYHes6nqyU_4kjT4LRk4umkaWEpp9o_VpetLVnbbB9Zd2jNVNrpUvg_5U6PulVe0fwMTqmJQ8iB76aIZ86NAX_D7f-WEhXXum1-y8GdUP44sNRoZKGW9TEuwIYHcU_HCp90mV_Ha_VHzhFzOMyeHQw2z7EjJ1H95UUmUeqoJLIy7TscjeCBzVcGXi2ZYY'
+
+  // Editable fields — initialized from user context
+  const [editName, setEditName] = useState(user?.name || '')
+  const [editEmail, setEditEmail] = useState(user?.email || '')
+  const [editPhone, setEditPhone] = useState('')
+  const [currentPw, setCurrentPw] = useState('')
+  const [newPw, setNewPw] = useState('')
+  const [saveError, setSaveError] = useState('')
+
+  const profileAvatar = user?.avatar || ''
 
   useEffect(() => {
     if (confirmModal) document.body.style.overflow = 'hidden'
@@ -26,9 +35,58 @@ export default function PatientSettingsPage() {
   }, [confirmModal])
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
+
+  // Password strength checks for new password
+  const pwChecks = {
+    len: newPw.length >= 8,
+    upper: /[A-Z]/.test(newPw),
+    num: /[0-9]/.test(newPw),
+    symbol: /[!@#$%^&*(),.?":{}|<>]/.test(newPw),
+  }
+  const pwScore = Object.values(pwChecks).filter(Boolean).length
+
+  const handleSave = () => {
+    setSaveError('')
+    if (!editName.trim()) { setSaveError('Name cannot be empty.'); return }
+    if (!/^[a-zA-Z\s.]+$/.test(editName.trim())) { setSaveError('Name can only contain letters, spaces, and periods.'); return }
+    if (!editEmail.trim()) { setSaveError('Email cannot be empty.'); return }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editEmail.trim())) { setSaveError('Please enter a valid email address.'); return }
+
+    // If password fields filled, validate current password
+    if (newPw) {
+      if (!currentPw) { setSaveError('Please enter your current password.'); return }
+      // Verify current password against stored password
+      const tempUsers = JSON.parse(sessionStorage.getItem('askare_temp_users') || '[]')
+      const storedUser = tempUsers.find(u => u.email === user?.email)
+      if (storedUser && storedUser.password !== currentPw) { setSaveError('Current password is incorrect.'); return }
+      if (!pwChecks.len || !pwChecks.upper || !pwChecks.num || !pwChecks.symbol) { setSaveError('New password does not meet all strength requirements.'); return }
+    }
+
+    // Update email in sessionStorage too
+    const tempUsers = JSON.parse(sessionStorage.getItem('askare_temp_users') || '[]')
+    const idx = tempUsers.findIndex(u => u.email === user?.email)
+    if (idx >= 0) {
+      tempUsers[idx].name = editName.trim()
+      tempUsers[idx].email = editEmail.trim()
+      if (newPw && currentPw) { tempUsers[idx].password = newPw }
+      sessionStorage.setItem('askare_temp_users', JSON.stringify(tempUsers))
+    }
+
+    updateUser({ name: editName.trim(), email: editEmail.trim() })
+    setCurrentPw(''); setNewPw('')
+    showToast('Settings saved successfully!')
+  }
+
   const handleConfirm = () => {
+    const action = confirmModal
     setConfirmModal(null)
-    showToast(confirmModal === 'deactivate' ? 'Account deactivated. You can reactivate by logging in.' : 'Account deletion request submitted.')
+    if (action === 'deactivate') {
+      showToast('Account deactivated. You can log in again anytime.')
+      setTimeout(() => { deactivateAccount(); navigate('/login') }, 1500)
+    } else if (action === 'delete') {
+      showToast('Account deleted permanently.')
+      setTimeout(() => { deleteAccount(); navigate('/login') }, 1500)
+    }
   }
 
   return (
@@ -40,9 +98,15 @@ export default function PatientSettingsPage() {
         </div>
         <div className="flex gap-3">
           <button className="bg-surface-container-low text-on-surface-variant px-6 py-2.5 rounded-xl font-semibold shadow-sm hover:bg-surface-container-high transition-all active:scale-95 border border-outline-variant/20" onClick={() => window.location.reload()}>Discard</button>
-          <button className="bg-primary text-on-primary px-8 py-2.5 rounded-xl font-semibold shadow-sm hover:opacity-90 transition-all active:scale-95" onClick={() => showToast('Settings saved successfully!')}>Save</button>
+          <button className="bg-primary text-on-primary px-8 py-2.5 rounded-xl font-semibold shadow-sm hover:opacity-90 transition-all active:scale-95" onClick={handleSave}>Save</button>
         </div>
       </div>
+
+      {saveError && (
+        <div className="bg-error-container/10 text-error border border-error/20 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 mb-6">
+          <span className="material-symbols-outlined text-lg">error</span>{saveError}
+        </div>
+      )}
 
       <div className="space-y-12 reveal reveal-delay-1">
         {/* Account */}
@@ -51,17 +115,17 @@ export default function PatientSettingsPage() {
           <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-8 space-y-6">
             <div className="flex items-center space-x-6 pb-6 border-b border-surface-container">
               <div className="relative">
-                <div className="w-20 h-20 rounded-full overflow-hidden">
-                  <img alt={`${profileName} profile`} className="w-full h-full object-cover" src={profileAvatar} />
+                <div className="w-20 h-20 rounded-full overflow-hidden bg-primary-container flex items-center justify-center">
+                  {profileAvatar ? <img alt="Profile" className="w-full h-full object-cover" src={profileAvatar} /> : <span className="material-symbols-outlined text-primary text-3xl">person</span>}
                 </div>
-                <button className="absolute -bottom-1 -right-1 bg-primary text-white p-1.5 rounded-full shadow-lg border-2 border-surface-container-lowest"><span className="material-symbols-outlined text-xs">edit</span></button>
               </div>
-              <div><p className="text-lg font-bold">{profileName}</p><p className="text-sm text-secondary">Verified Healthcare Practitioner</p></div>
+              <div><p className="text-lg font-bold">{editName || 'Your Name'}</p><p className="text-sm text-secondary">{editEmail || 'your@email.com'}</p></div>
             </div>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Full Name</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="text" defaultValue={profileName} /></div>
-              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Email Address</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="email" defaultValue={profileEmail} /></div>
-              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Phone Number</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="tel" defaultValue="+92 300 1234567" /></div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Full Name</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="text" value={editName} onChange={e => setEditName(e.target.value)} /></div>
+              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Email Address</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} /></div>
+              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Phone Number</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="tel" value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="Enter phone number" /></div>
+              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Unique ID</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface-variant cursor-not-allowed font-mono tracking-wider" type="text" value={user?.uid || 'Not assigned'} readOnly disabled /></div>
             </div>
           </div>
         </section>
@@ -75,14 +139,35 @@ export default function PatientSettingsPage() {
               <div className="flex items-center justify-between mb-4"><h3 className="font-bold flex items-center gap-2"><span className="material-symbols-outlined text-primary text-xl">lock_reset</span>Change Password</h3></div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
-                  <input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Current Password" type={showPwCurrent ? 'text' : 'password'} />
+                  <input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Current Password" value={currentPw} onChange={e => setCurrentPw(e.target.value)} type={showPwCurrent ? 'text' : 'password'} />
                   <button className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors" type="button" onClick={() => setShowPwCurrent(!showPwCurrent)}><span className="material-symbols-outlined text-xl">{showPwCurrent ? 'visibility_off' : 'visibility'}</span></button>
                 </div>
                 <div className="relative">
-                  <input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-primary/20" placeholder="New Password" type={showPwNew ? 'text' : 'password'} />
+                  <input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-primary/20" placeholder="New Password" value={newPw} onChange={e => setNewPw(e.target.value)} type={showPwNew ? 'text' : 'password'} />
                   <button className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors" type="button" onClick={() => setShowPwNew(!showPwNew)}><span className="material-symbols-outlined text-xl">{showPwNew ? 'visibility_off' : 'visibility'}</span></button>
                 </div>
               </div>
+              {newPw.length > 0 && (
+                <div className="p-4 bg-surface-container-low rounded-xl space-y-3 border border-outline-variant/10">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-on-surface">Password Strength</span>
+                    <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full transition-all duration-500 ${pwScore === 0 ? 'bg-gray-200 text-gray-500' : pwScore === 1 ? 'bg-red-100 text-red-600' : pwScore === 2 ? 'bg-orange-100 text-orange-600' : pwScore === 3 ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'}`}>
+                      {pwScore === 0 ? 'Too Weak' : ['Weak','Fair','Moderate','Strong'][pwScore - 1]}
+                    </span>
+                  </div>
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full transition-all duration-700 ${pwScore === 1 ? 'bg-red-500' : pwScore === 2 ? 'bg-orange-500' : pwScore === 3 ? 'bg-yellow-500' : pwScore === 4 ? 'bg-green-500' : 'bg-gray-300'}`} style={{ width: `${pwScore * 25}%` }}></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[{ key: 'len', label: '8+ Chars' }, { key: 'upper', label: 'Uppercase' }, { key: 'num', label: 'Number' }, { key: 'symbol', label: 'Symbol' }].map(c => (
+                      <div key={c.key} className={`flex items-center gap-1.5 transition-all ${pwChecks[c.key] ? 'opacity-100' : 'opacity-50'}`}>
+                        <span className={`material-symbols-outlined text-sm ${pwChecks[c.key] ? 'text-green-500' : 'text-gray-400'}`} style={pwChecks[c.key] ? { fontVariationSettings: "'FILL' 1" } : {}}>{pwChecks[c.key] ? 'check_circle' : 'radio_button_unchecked'}</span>
+                        <span className="text-[10px]">{c.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 2FA Toggle */}
@@ -98,54 +183,58 @@ export default function PatientSettingsPage() {
             </div>
 
             {/* 2FA Options */}
-            <div className={`px-8 pb-6 space-y-4 border-t border-surface-container pt-4 ${!twoFA ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
-              {/* Auth App */}
-              <div className="flex items-center justify-between pl-8">
-                <div className="flex items-center space-x-4">
-                  <span className="material-symbols-outlined text-secondary text-xl">phone_iphone</span>
-                  <div><p className="text-sm font-bold">Authenticator App</p><p className="text-[11px] text-secondary">Use Google Authenticator or Authy.</p></div>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input checked={authApp} onChange={(e) => setAuthApp(e.target.checked)} className="sr-only peer" type="checkbox" />
-                  <div className="w-9 h-5 bg-outline-variant/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary/80"></div>
-                </label>
-              </div>
-              {authApp && (
-                <div className="pl-12 pb-4 space-y-4">
-                  <div className="bg-surface-container-low p-6 rounded-xl max-w-md">
-                    <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Scan QR Code</p>
-                    <div className="w-40 h-40 mx-auto bg-white p-2 rounded-xl border border-outline-variant/20 mb-4">
-                      <svg viewBox="0 0 100 100" className="w-full h-full"><rect fill="#000" x="10" y="10" width="25" height="25" rx="2"/><rect fill="#fff" x="14" y="14" width="17" height="17" rx="1"/><rect fill="#000" x="17" y="17" width="11" height="11" rx="1"/><rect fill="#000" x="65" y="10" width="25" height="25" rx="2"/><rect fill="#fff" x="69" y="14" width="17" height="17" rx="1"/><rect fill="#000" x="72" y="17" width="11" height="11" rx="1"/><rect fill="#000" x="10" y="65" width="25" height="25" rx="2"/><rect fill="#fff" x="14" y="69" width="17" height="17" rx="1"/><rect fill="#000" x="17" y="72" width="11" height="11" rx="1"/><rect fill="#000" x="40" y="10" width="5" height="5"/><rect fill="#000" x="50" y="10" width="5" height="5"/><rect fill="#000" x="40" y="40" width="5" height="5"/><rect fill="#000" x="50" y="45" width="5" height="5"/><rect fill="#000" x="70" y="55" width="5" height="5"/><rect fill="#000" x="80" y="50" width="5" height="5"/><rect fill="#000" x="75" y="65" width="5" height="5"/><rect fill="#000" x="65" y="75" width="5" height="5"/><rect fill="#000" x="85" y="70" width="5" height="5"/><rect fill="#000" x="80" y="85" width="5" height="5"/></svg>
-                    </div>
-                    <p className="text-xs text-center text-secondary mb-3">Scan this QR code with your authentication app</p>
-                    <div className="space-y-2"><label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Or enter key manually</label><div className="flex gap-2"><input className="flex-1 bg-surface-container border-none rounded-lg px-3 py-2 text-xs text-on-surface font-mono" defaultValue="ASKR-P8SC-K2MX-7N4Q" readOnly /><button className="text-xs font-bold text-primary px-3 py-2 bg-primary-container/20 rounded-lg hover:bg-primary-container/40">Copy</button></div></div>
-                    <div className="mt-4 space-y-2"><label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Verification Code</label><div className="flex gap-2"><input className="flex-1 bg-surface-container border-none rounded-lg px-3 py-2 text-sm text-on-surface text-center tracking-[0.5em] font-mono" placeholder="000000" maxLength="6" /><button className="text-xs font-bold text-on-primary bg-primary px-4 py-2 rounded-lg hover:bg-primary-dim">Verify</button></div></div>
+            <div className={`px-8 pb-6 space-y-3 border-t border-surface-container pt-4 ${!twoFA ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
+              {/* Authenticator App */}
+              <div className="rounded-xl border border-outline-variant/15 overflow-hidden">
+                <div className="flex items-center justify-between p-4 pl-8 cursor-pointer hover:bg-surface-container-low/50 transition-colors" onClick={()=>setAuthApp(!authApp)}>
+                  <div className="flex items-center space-x-4">
+                    <span className="material-symbols-outlined text-secondary text-xl">phone_iphone</span>
+                    <div><p className="text-sm font-bold">Authenticator App</p><p className="text-[11px] text-secondary">Use Google Authenticator or Authy.</p></div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="relative inline-flex items-center cursor-pointer" onClick={e=>e.stopPropagation()}>
+                      <input checked={authApp} onChange={(e) => setAuthApp(e.target.checked)} className="sr-only peer" type="checkbox" />
+                      <div className="w-9 h-5 bg-outline-variant/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary/80"></div>
+                    </label>
+                    <span className={`material-symbols-outlined text-sm text-secondary transition-transform ${authApp?'rotate-180':''}`}>expand_more</span>
                   </div>
                 </div>
-              )}
+                {authApp&&(
+                  <div className="px-8 pb-4 pt-2 bg-surface-container-low/30 border-t border-outline-variant/10 space-y-3">
+                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-primary text-base">verified</span><span className="text-on-surface font-medium">Status: <span className="text-green-600 font-bold">Active</span></span></div>
+                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">smartphone</span><span className="text-on-surface-variant">Linked Device: Personal Phone</span></div>
+                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">schedule</span><span className="text-on-surface-variant">Last verified: 2 hours ago</span></div>
+                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">key</span><span className="text-on-surface-variant">Backup codes: 8 remaining</span></div>
+                    <button className="text-xs font-bold text-primary hover:underline mt-1">Regenerate Backup Codes →</button>
+                  </div>
+                )}
+              </div>
 
-              {/* SMS */}
-              <div className="flex items-center justify-between pl-8">
-                <div className="flex items-center space-x-4">
-                  <span className="material-symbols-outlined text-secondary text-xl">sms</span>
-                  <div><p className="text-sm font-bold">SMS Verification</p><p className="text-[11px] text-secondary">Receive a code via text message.</p></div>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input checked={smsEnabled} onChange={(e) => setSmsEnabled(e.target.checked)} className="sr-only peer" type="checkbox" />
-                  <div className="w-9 h-5 bg-outline-variant/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary/80"></div>
-                </label>
-              </div>
-              {smsEnabled && (
-                <div className="pl-12 pb-4 space-y-4">
-                  <div className="bg-surface-container-low p-6 rounded-xl max-w-md">
-                    <div className="space-y-4">
-                      <div className="space-y-2"><label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Phone Number</label><div className="flex gap-3"><select className="w-[75px] shrink-0 bg-surface-container border-none rounded-lg px-2 py-2 text-xs text-on-surface"><option>+92</option><option>+1</option><option>+44</option></select><input className="flex-1 bg-surface-container border-none rounded-lg px-3 py-2 text-sm text-on-surface" placeholder="300 1234567" defaultValue="300 1234567" /></div></div>
-                      <button className="w-full text-xs font-bold text-on-primary bg-primary px-4 py-2.5 rounded-lg hover:bg-primary-dim">Send Verification Code</button>
-                      <div className="space-y-2"><label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Enter Code</label><div className="flex gap-2 justify-center">{[0,1,2].map(i => <input key={i} className="w-10 h-10 bg-surface-container border-none rounded-lg text-center text-lg font-mono" maxLength="1" />)}<span className="flex items-center text-outline">-</span>{[3,4,5].map(i => <input key={i} className="w-10 h-10 bg-surface-container border-none rounded-lg text-center text-lg font-mono" maxLength="1" />)}</div><p className="text-[10px] text-secondary text-center mt-2">Didn't receive? <button className="text-primary font-bold">Resend Code</button></p></div>
-                    </div>
+              {/* SMS Verification */}
+              <div className="rounded-xl border border-outline-variant/15 overflow-hidden">
+                <div className="flex items-center justify-between p-4 pl-8 cursor-pointer hover:bg-surface-container-low/50 transition-colors" onClick={()=>setSmsEnabled(!smsEnabled)}>
+                  <div className="flex items-center space-x-4">
+                    <span className="material-symbols-outlined text-secondary text-xl">sms</span>
+                    <div><p className="text-sm font-bold">SMS Verification</p><p className="text-[11px] text-secondary">Receive a code via text message.</p></div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="relative inline-flex items-center cursor-pointer" onClick={e=>e.stopPropagation()}>
+                      <input checked={smsEnabled} onChange={(e) => setSmsEnabled(e.target.checked)} className="sr-only peer" type="checkbox" />
+                      <div className="w-9 h-5 bg-outline-variant/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary/80"></div>
+                    </label>
+                    <span className={`material-symbols-outlined text-sm text-secondary transition-transform ${smsEnabled?'rotate-180':''}`}>expand_more</span>
                   </div>
                 </div>
-              )}
+                {smsEnabled&&(
+                  <div className="px-8 pb-4 pt-2 bg-surface-container-low/30 border-t border-outline-variant/10 space-y-3">
+                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-primary text-base">verified</span><span className="text-on-surface font-medium">Status: <span className="text-green-600 font-bold">Active</span></span></div>
+                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">call</span><span className="text-on-surface-variant">Phone: +92 3XX XXXXXXX</span></div>
+                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">schedule</span><span className="text-on-surface-variant">Last SMS sent: Today at 09:15 AM</span></div>
+                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">info</span><span className="text-on-surface-variant">Standard messaging rates may apply</span></div>
+                    <button className="text-xs font-bold text-primary hover:underline mt-1">Update Phone Number →</button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </section>
@@ -166,7 +255,6 @@ export default function PatientSettingsPage() {
               <div className="flex items-center space-x-4 min-w-0 flex-1"><span className="material-symbols-outlined text-secondary shrink-0">visibility</span><div className="min-w-0"><p className="font-bold">Data Privacy</p><p className="text-xs text-secondary">Clinical research sharing visibility.</p></div></div>
               <select value={privacy} onChange={(e) => setPrivacy(e.target.value)} className="bg-surface-container-low border-none rounded-lg px-3 py-1.5 text-xs font-medium focus:ring-2 focus:ring-primary/20 text-on-surface shrink-0 min-w-[100px]"><option>Private</option><option>Limited</option><option>Open</option></select>
             </div>
-
           </div>
         </section>
 
@@ -199,7 +287,7 @@ export default function PatientSettingsPage() {
                 <p className="text-sm text-secondary">{confirmModal === 'deactivate' ? 'Your account will be temporarily disabled.' : 'This action is irreversible.'}</p>
               </div>
             </div>
-            <p className="text-sm text-on-surface-variant mb-6">{confirmModal === 'deactivate' ? 'You can reactivate your account at any time by logging in again. Your data will be preserved during deactivation.' : 'All your medical records, consultation history, prescriptions, and personal data will be permanently erased. This cannot be undone.'}</p>
+            <p className="text-sm text-on-surface-variant mb-6">{confirmModal === 'deactivate' ? 'You can reactivate your account at any time by logging in again.' : 'All your data will be permanently erased. This cannot be undone.'}</p>
             <div className="flex gap-3 justify-end">
               <button className="px-6 py-2.5 rounded-xl font-semibold text-sm text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/20 transition-all" onClick={() => setConfirmModal(null)}>Cancel</button>
               <button className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition-all ${confirmModal === 'deactivate' ? 'bg-tertiary text-on-tertiary hover:opacity-90' : 'bg-error text-on-error hover:opacity-90'}`} onClick={handleConfirm}>{confirmModal === 'deactivate' ? 'Deactivate' : 'Delete Forever'}</button>

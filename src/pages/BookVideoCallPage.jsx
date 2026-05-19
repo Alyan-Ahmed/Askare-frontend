@@ -211,7 +211,7 @@ export default function BookVideoCallPage() {
               </div>
               <div className="flex items-center justify-between pt-8 border-t border-outline-variant/10">
                 <div className="flex flex-col"><span className="text-[10px] uppercase tracking-wider text-outline font-bold">Total Fee</span><span className="text-xl font-bold text-on-surface">{modal.price}</span></div>
-                <button onClick={() => navigate('/payment-details', { state: { doctor: modal, date: selectedDay && `${monthNames[currentMonth]} ${selectedDay}, ${currentYear}`, time: selectedTime } })} className="px-8 py-4 bg-primary text-on-primary rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 no-underline">Confirm Appointment <span className="material-symbols-outlined text-sm">arrow_forward</span></button>
+                <button disabled={!selectedDay} onClick={() => navigate('/payment-details', { state: { doctor: modal, date: selectedDay && `${monthNames[currentMonth]} ${selectedDay}, ${currentYear}`, time: selectedTime } })} className="px-8 py-4 bg-primary text-on-primary rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 no-underline disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">Confirm Appointment <span className="material-symbols-outlined text-sm">arrow_forward</span></button>
               </div>
             </div>
           </div>

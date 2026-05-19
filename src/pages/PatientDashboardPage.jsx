@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 const summaryData = {
@@ -25,8 +25,14 @@ const listRows = [
 export default function PatientDashboardPage() {
   const [archiveView, setArchiveView] = useState('timeline')
   const [modal, setModal] = useState(null)
+  const [rescheduleModal, setRescheduleModal] = useState(false)
+  const [rescheduleDate, setRescheduleDate] = useState('')
+  const [rescheduleTime, setRescheduleTime] = useState('')
+  const [rescheduleError, setRescheduleError] = useState('')
+  const [toast, setToast] = useState('')
   const { user } = useAuth()
-  const displayName = user?.name?.split(' ')[0] || 'Alyan'
+  const navigate = useNavigate()
+  const displayName = user?.name || 'Alyan Ahmed'
 
   useEffect(() => {
     if (modal) document.body.style.overflow = 'hidden'
@@ -61,9 +67,14 @@ export default function PatientDashboardPage() {
               <div className="flex items-center gap-2"><span className="material-symbols-outlined text-primary-container">calendar_today</span><span className="font-medium">Today, Oct 14</span></div>
               <div className="flex items-center gap-2"><span className="material-symbols-outlined text-primary-container">schedule</span><span className="font-medium">14:30 - 15:00</span></div>
             </div>
-            <Link to="/video-call?role=patient&doctor=Dr.%20Aris%20Thorne" className="bg-surface-container-lowest text-primary px-8 py-4 rounded-xl font-bold inline-flex items-center gap-2 hover:scale-105 transition-transform active:scale-95 no-underline">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>videocam</span> Join Video Call
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link to="/video-call?role=patient&doctor=Dr.%20Aris%20Thorne" className="bg-surface-container-lowest text-primary px-8 py-4 rounded-xl font-bold inline-flex items-center gap-2 hover:scale-105 transition-transform active:scale-95 no-underline">
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>videocam</span> Join Video Call
+              </Link>
+              <button onClick={()=>{setRescheduleModal(true);setRescheduleDate('');setRescheduleTime('');setRescheduleError('')}} className="bg-on-primary/20 text-on-primary px-6 py-4 rounded-xl font-bold inline-flex items-center gap-2 hover:bg-on-primary/30 transition-all active:scale-95">
+                <span className="material-symbols-outlined">event</span> Reschedule
+              </button>
+            </div>
           </div>
           <div className="hidden md:flex absolute right-[-2rem] bottom-[-2.5rem] w-[22rem] h-[22rem] items-center justify-center opacity-20 group-hover:scale-105 transition-transform duration-700 pointer-events-none">
             <span className="material-symbols-outlined" style={{ fontSize: '20rem', lineHeight: 1 }}>stethoscope</span>
@@ -170,6 +181,39 @@ export default function PatientDashboardPage() {
         )}
       </section>
 
+      {/* Reschedule Modal */}
+      {rescheduleModal&&(
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={()=>setRescheduleModal(false)}></div>
+          <div className="relative bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl z-10 p-8">
+            <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-bold text-on-surface flex items-center gap-2"><span className="material-symbols-outlined text-primary">event</span> Reschedule Appointment</h2><button className="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high" onClick={()=>setRescheduleModal(false)}>close</button></div>
+            <p className="text-sm text-secondary mb-5">Reschedule your appointment with <span className="font-bold text-on-surface">Dr. Aris Thorne</span>.</p>
+            <div className="space-y-5">
+              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">New Date</label><input type="date" value={rescheduleDate} onChange={e=>{setRescheduleDate(e.target.value);setRescheduleError('')}} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface" /></div>
+              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Preferred Time Slot</label>
+                <select value={rescheduleTime} onChange={e=>{setRescheduleTime(e.target.value);setRescheduleError('')}} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface">
+                  <option value="">Select a time slot...</option>
+                  <option>09:00 AM</option><option>10:00 AM</option><option>11:00 AM</option>
+                  <option>01:00 PM</option><option>02:00 PM</option><option>03:00 PM</option>
+                  <option>04:00 PM</option><option>05:00 PM</option>
+                </select>
+              </div>
+              {rescheduleError&&<p className="text-xs text-error font-medium flex items-center gap-1"><span className="material-symbols-outlined text-sm">error</span>{rescheduleError}</p>}
+              <div className="flex gap-3 pt-2">
+                <button className="flex-1 py-3 rounded-xl font-semibold text-sm text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/20" onClick={()=>setRescheduleModal(false)}>Cancel</button>
+                <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={()=>{
+                  if(!rescheduleDate){setRescheduleError('Please select a new date.');return}
+                  if(!rescheduleTime){setRescheduleError('Please select a time slot.');return}
+                  setRescheduleModal(false)
+                  setToast(`Appointment rescheduled to ${rescheduleDate} at ${rescheduleTime}`)
+                  setTimeout(()=>setToast(''),4000)
+                }}>Confirm Reschedule</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Summary Modal */}
       {data && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
@@ -188,6 +232,16 @@ export default function PatientDashboardPage() {
                 <div className="flex items-center justify-between pt-2 border-t border-outline-variant/10"><div className="flex items-center gap-2 text-sm text-secondary"><span className="material-symbols-outlined text-lg">{data.typeIcon}</span><span>{data.type}</span></div><span className="px-3 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded-full uppercase tracking-wider">Completed</span></div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast&&(
+        <div className="fixed bottom-8 right-8 z-[90]">
+          <div className="bg-primary text-on-primary px-6 py-3 rounded-xl shadow-xl flex items-center gap-3 font-semibold text-sm">
+            <span className="material-symbols-outlined" style={{fontVariationSettings:'"FILL" 1'}}>check_circle</span>
+            <span>{toast}</span>
           </div>
         </div>
       )}

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 const FALLBACK = {
   name: 'Dr. Sarah Ahmed', spec: 'Senior Cardiologist', price: 'PKR 5,000',
@@ -8,12 +8,14 @@ const FALLBACK = {
 
 export default function PaymentDetailsPage() {
   const location = useLocation()
+  const navigate = useNavigate()
   const booking = location.state || {}
   const doc = booking.doctor || FALLBACK
   const bookDate = booking.date || 'Oct 24, 2026'
   const bookTime = booking.time || '10:00 AM'
 
   const [method, setMethod] = useState(null)
+  const [payError, setPayError] = useState('')
   const cardRef = useRef(null)
   const expiryRef = useRef(null)
   const cvvRef = useRef(null)
@@ -86,7 +88,7 @@ export default function PaymentDetailsPage() {
               </div>
               <div className={`space-y-4 pt-4 border-t border-outline-variant/10 overflow-hidden transition-all duration-400 ${method === 'debit' ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0 pt-0 border-t-0'}`}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2"><label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Cardholder Name</label><input className="w-full bg-white border border-outline-variant/20 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Enter name as on card" type="text" /></div>
+                  <div className="md:col-span-2"><label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Cardholder Name</label><input data-pay="name" className="w-full bg-white border border-outline-variant/20 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Enter name as on card" type="text" /></div>
                   <div className="md:col-span-2"><label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Card Number</label><div className="relative"><input ref={cardRef} onInput={formatCard} className="w-full bg-white border border-outline-variant/20 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all pl-12" placeholder="0000 0000 0000 0000" type="text" maxLength="19" inputMode="numeric" /><span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">credit_card</span></div></div>
                   <div><label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Expiry Date (MM/YY)</label><input ref={expiryRef} onInput={formatExpiry} className="w-full bg-white border border-outline-variant/20 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="MM/YY" type="text" maxLength="5" inputMode="numeric" /></div>
                   <div><label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">CVV</label><input ref={cvvRef} onInput={formatCvv} className="w-full bg-white border border-outline-variant/20 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="123" type="password" maxLength="3" inputMode="numeric" /></div>
@@ -140,9 +142,24 @@ export default function PaymentDetailsPage() {
             <div className="pt-6 border-t border-outline-variant/20 mb-8">
               <div className="flex justify-between items-baseline"><span className="font-bold text-lg">Amount Payable</span><span className="text-3xl font-bold text-primary">{doc.price}</span></div>
             </div>
-            <Link to="/payment-confirmation" state={{ doctor: doc, date: bookDate, time: bookTime }} className="w-full bg-primary hover:bg-primary-dim text-on-primary py-4 rounded-xl font-bold tracking-wide transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-primary/10">
+            {payError && <div className="bg-error-container/10 text-error border border-error/20 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 mb-4"><span className="material-symbols-outlined text-lg">error</span>{payError}</div>}
+            <button onClick={() => {
+              setPayError('')
+              if (!method) { setPayError('Please select a payment method.'); return }
+              if (method === 'debit') {
+                const name = document.querySelector('[data-pay="name"]')?.value?.trim()
+                const card = cardRef.current?.value?.replace(/\s/g,'')
+                const expiry = expiryRef.current?.value?.trim()
+                const cvv = cvvRef.current?.value?.trim()
+                if (!name) { setPayError('Please enter cardholder name.'); return }
+                if (!card || card.length < 16) { setPayError('Please enter a valid 16-digit card number.'); return }
+                if (!expiry || expiry.length < 5) { setPayError('Please enter expiry date (MM/YY).'); return }
+                if (!cvv || cvv.length < 3) { setPayError('Please enter a 3-digit CVV.'); return }
+              }
+              navigate('/payment-confirmation', { state: { doctor: doc, date: bookDate, time: bookTime } })
+            }} className="w-full bg-primary hover:bg-primary-dim text-on-primary py-4 rounded-xl font-bold tracking-wide transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-primary/10">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>lock</span> Confirm &amp; Pay Securely
-            </Link>
+            </button>
             <p className="mt-6 text-center text-xs text-on-surface-variant leading-relaxed">By completing this payment, you agree to Askare's medical service agreement and privacy protocols.</p>
             <div className="mt-10 p-4 bg-surface-container-high rounded-lg flex gap-4">
               <span className="material-symbols-outlined text-primary">verified_user</span>

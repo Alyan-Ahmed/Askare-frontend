@@ -1,17 +1,54 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
 import { Footer } from '../components/Footer'
 
+const VALID_OTP = '123456'
+const knownEmails = ['alyan.patient@gmail.com', 'dr.arsalan@gmail.com']
+
 export default function ForgotPasswordPage() {
   const otpRefs = useRef([])
   const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [codeSent, setCodeSent] = useState(false)
 
   const handleOtpInput = (e, i) => {
     if (e.target.value.length === 1 && i < 5) otpRefs.current[i + 1]?.focus()
   }
   const handleOtpKey = (e, i) => {
     if (e.key === 'Backspace' && !e.target.value && i > 0) otpRefs.current[i - 1]?.focus()
+  }
+
+  const allEmails = () => {
+    const tempUsers = JSON.parse(sessionStorage.getItem('askare_temp_users') || '[]')
+    return [...knownEmails, ...tempUsers.map(u => u.email)]
+  }
+
+  const requestCode = () => {
+    setError(''); setSuccess('')
+    const em = email.trim().toLowerCase()
+    if (!em) { setError('Please enter your email address.'); return }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { setError('Please enter a valid email address (e.g. name@example.com).'); return }
+    if (!allEmails().includes(em)) { setError('No account found with this email address.'); return }
+    setCodeSent(true)
+    setSuccess('Verification code sent! Use code: 123456 for demo.')
+    setTimeout(() => setSuccess(''), 5000)
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setError(''); setSuccess('')
+    const em = email.trim().toLowerCase()
+    if (!em) { setError('Please enter your email address.'); return }
+    if (!allEmails().includes(em)) { setError('No account found with this email address.'); return }
+    if (!codeSent) { setError('Please request a verification code first.'); return }
+    const otp = otpRefs.current.map(r => r?.value || '').join('')
+    if (otp.length < 6) { setError('Please enter the full 6-digit verification code.'); return }
+    if (otp !== VALID_OTP) { setError('Invalid verification code. Please try again.'); return }
+    setSuccess('Identity verified! Redirecting to reset password...')
+    setTimeout(() => navigate('/reset-password', { state: { email: em } }), 1500)
   }
 
   return (
@@ -37,11 +74,21 @@ export default function ForgotPasswordPage() {
           </div>
 
           <div className="bg-surface-container-lowest rounded-xl p-8 md:p-12 shadow-[0_4px_24px_rgba(44,52,54,0.06)] border border-surface-container-high/40">
-            <form className="space-y-10" onSubmit={(e) => { e.preventDefault(); navigate('/reset-password') }}>
+            <form className="space-y-10" onSubmit={handleSubmit}>
+              {error && (
+                <div className="bg-error-container/10 text-error border border-error/20 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">error</span>{error}
+                </div>
+              )}
+              {success && (
+                <div className="bg-primary-container/20 text-primary border border-primary/20 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">check_circle</span>{success}
+                </div>
+              )}
               <div className="space-y-4">
                 <label className="block text-[0.75rem] font-semibold uppercase tracking-widest text-on-surface-variant px-1" htmlFor="email">1. Professional Email</label>
                 <div className="relative">
-                  <input className="w-full bg-surface-container-low border-none rounded-lg px-5 py-4 text-on-surface placeholder:text-outline-variant/60 focus:ring-2 focus:ring-primary/20 transition-all text-base" id="email" placeholder="name@medical-center.com" required type="email" />
+                  <input value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-surface-container-low border-none rounded-lg px-5 py-4 text-on-surface placeholder:text-outline-variant/60 focus:ring-2 focus:ring-primary/20 transition-all text-base" id="email" placeholder="name@medical-center.com" required type="email" />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 text-primary/30">
                     <span className="material-symbols-outlined">mail</span>
                   </div>
@@ -53,7 +100,7 @@ export default function ForgotPasswordPage() {
               <div className="space-y-4">
                 <div className="flex justify-between items-end px-1">
                   <label className="block text-[0.75rem] font-semibold uppercase tracking-widest text-on-surface-variant">2. Verification Code</label>
-                  <button className="text-[0.75rem] font-bold text-primary hover:underline uppercase tracking-wider" type="button">Request Code</button>
+                  <button className="text-[0.75rem] font-bold text-primary hover:underline uppercase tracking-wider" type="button" onClick={requestCode}>Request Code</button>
                 </div>
                 <div className="flex justify-between gap-2">
                   {[...Array(6)].map((_, i) => (

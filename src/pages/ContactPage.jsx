@@ -127,15 +127,34 @@ export default function ContactPage() {
         <div className="lg:col-span-7 space-y-8 reveal">
           <section className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
             <h2 className="text-2xl font-semibold mb-6">Send a Message</h2>
-            <form className="space-y-6" onSubmit={e => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={e => {
+              e.preventDefault()
+              const form = e.target
+              const name = form.querySelector('[data-field="name"]').value.trim()
+              const email = form.querySelector('[data-field="email"]').value.trim()
+              const message = form.querySelector('[data-field="message"]').value.trim()
+              const errEl = form.querySelector('[data-error]')
+              if (!name) { errEl.textContent = 'Please enter your full name.'; errEl.style.display = 'block'; return }
+              if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent = 'Please enter a valid email address.'; errEl.style.display = 'block'; return }
+              if (!message) { errEl.textContent = 'Please enter a message.'; errEl.style.display = 'block'; return }
+              errEl.style.display = 'none'
+              form.reset()
+              const toast = document.createElement('div')
+              toast.className = 'fixed bottom-8 right-8 z-[90] bg-primary text-on-primary px-6 py-3 rounded-xl shadow-xl flex items-center gap-3 font-semibold text-sm'
+              toast.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings:\'FILL\' 1">check_circle</span>Message sent successfully!'
+              document.body.appendChild(toast)
+              setTimeout(() => toast.remove(), 3000)
+            }}>
+              <div data-error style={{ display: 'none' }} className="bg-error-container/10 text-error border border-error/20 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-label uppercase tracking-widest text-on-surface-variant">Full Name</label>
-                  <input className="bg-surface-container-low border-none rounded-lg p-3 text-on-surface focus:ring-2 focus:ring-primary/20" placeholder="Dr. Sarah Khan" type="text" />
+                  <input data-field="name" className="bg-surface-container-low border-none rounded-lg p-3 text-on-surface focus:ring-2 focus:ring-primary/20" placeholder="Dr. Sarah Khan" type="text" />
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-label uppercase tracking-widest text-on-surface-variant">Email Address</label>
-                  <input className="bg-surface-container-low border-none rounded-lg p-3 text-on-surface focus:ring-2 focus:ring-primary/20" placeholder="sarah@example.com" type="email" />
+                  <input data-field="email" className="bg-surface-container-low border-none rounded-lg p-3 text-on-surface focus:ring-2 focus:ring-primary/20" placeholder="sarah@example.com" type="email" />
                 </div>
               </div>
               <div className="flex flex-col gap-2">
@@ -149,7 +168,7 @@ export default function ContactPage() {
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-label uppercase tracking-widest text-on-surface-variant">Message</label>
-                <textarea className="bg-surface-container-low border-none rounded-lg p-3 text-on-surface focus:ring-2 focus:ring-primary/20" placeholder="How can we assist your cognitive health journey today?" rows="5"></textarea>
+                <textarea data-field="message" className="bg-surface-container-low border-none rounded-lg p-3 text-on-surface focus:ring-2 focus:ring-primary/20" placeholder="How can we assist your cognitive health journey today?" rows="5"></textarea>
               </div>
               <button className="w-full bg-[#006977] text-white py-4 rounded-xl font-bold tracking-tight hover:opacity-90 transition-all" type="submit">Submit Message</button>
             </form>

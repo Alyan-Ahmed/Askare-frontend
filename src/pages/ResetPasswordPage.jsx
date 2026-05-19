@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Logo from '../components/Logo'
 import { Footer } from '../components/Footer'
 
@@ -8,7 +8,11 @@ export default function ResetPasswordPage() {
   const [confirmPass, setConfirmPass] = useState('')
   const [showNew, setShowNew] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const navigate = useNavigate()
+  const location = useLocation()
+  const resetEmail = location.state?.email || ''
 
   const checks = {
     len: newPass.length >= 8,
@@ -22,8 +26,24 @@ export default function ResetPasswordPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    alert('Password updated successfully!')
-    navigate('/login')
+    setError(''); setSuccess('')
+    if (!resetEmail) { setError('No email provided. Please go through the forgot password flow first.'); return }
+    if (!newPass) { setError('Please enter a new password.'); return }
+    if (!checks.len) { setError('Password must be at least 8 characters long.'); return }
+    if (!checks.upper) { setError('Password must contain at least one uppercase letter.'); return }
+    if (!checks.num) { setError('Password must contain at least one number.'); return }
+    if (!checks.symbol) { setError('Password must contain at least one symbol (@#$).'); return }
+    if (!confirmPass) { setError('Please confirm your new password.'); return }
+    if (newPass !== confirmPass) { setError('Passwords do not match.'); return }
+    // Actually update the password in sessionStorage
+    const tempUsers = JSON.parse(sessionStorage.getItem('askare_temp_users') || '[]')
+    const idx = tempUsers.findIndex(u => u.email === resetEmail)
+    if (idx >= 0) {
+      tempUsers[idx].password = newPass
+      sessionStorage.setItem('askare_temp_users', JSON.stringify(tempUsers))
+    }
+    setSuccess('Password updated successfully! Redirecting to login...')
+    setTimeout(() => navigate('/login'), 2000)
   }
 
   return (
@@ -76,6 +96,16 @@ export default function ResetPasswordPage() {
           <div className="lg:col-span-7 flex items-center">
             <div className="w-full bg-surface-container-lowest rounded-[2rem] p-8 md:p-12 border border-surface-container-high shadow-sm">
               <form className="space-y-8" onSubmit={handleSubmit}>
+                {error && (
+                  <div className="bg-error-container/10 text-error border border-error/20 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
+                    <span className="material-symbols-outlined text-lg">error</span>{error}
+                  </div>
+                )}
+                {success && (
+                  <div className="bg-primary-container/20 text-primary border border-primary/20 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
+                    <span className="material-symbols-outlined text-lg">check_circle</span>{success}
+                  </div>
+                )}
                 <div className="space-y-2">
                   <label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant px-1">New Password</label>
                   <div className="relative">
@@ -87,32 +117,34 @@ export default function ResetPasswordPage() {
                 </div>
 
                 {/* Strength Indicator */}
-                <div className="p-5 bg-surface-container-low rounded-xl space-y-4">
+                {newPass.length > 0 && (
+                <div className="p-5 bg-surface-container-low rounded-xl space-y-4 border border-outline-variant/10" style={{ animation: 'fadeIn 0.3s ease-out' }}>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-semibold text-on-surface">Password Strength</span>
-                    <div className="flex items-center gap-1.5">
-                      {[0, 1, 2, 3].map(i => (
-                        <span key={i} className={`h-2 w-8 rounded-full ${i < score ? 'bg-primary' : 'bg-primary/20'}`}></span>
-                      ))}
-                      <span className="text-[10px] font-bold text-outline ml-2 uppercase tracking-tighter">{labels[Math.max(0, score - 1)] || 'Weak'}</span>
-                    </div>
+                    <span className="text-sm font-bold text-on-surface">Password Strength</span>
+                    <span className={`text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full transition-all duration-500 ${score === 0 ? 'bg-gray-200 text-gray-500' : score === 1 ? 'bg-red-100 text-red-600' : score === 2 ? 'bg-orange-100 text-orange-600' : score === 3 ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'}`}>
+                      {score === 0 ? 'Too Weak' : labels[score - 1]}
+                    </span>
+                  </div>
+                  <div className="h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full transition-all duration-700 ease-out ${score === 1 ? 'bg-red-500' : score === 2 ? 'bg-orange-500' : score === 3 ? 'bg-yellow-500' : score === 4 ? 'bg-green-500' : 'bg-gray-300'}`} style={{ width: `${score * 25}%` }}></div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     {[
                       { key: 'len', label: '8+ Characters' },
-                      { key: 'symbol', label: 'One symbol (@#$)' },
-                      { key: 'upper', label: 'One uppercase' },
-                      { key: 'num', label: 'One number' },
+                      { key: 'upper', label: 'Uppercase letter' },
+                      { key: 'num', label: 'Number (0-9)' },
+                      { key: 'symbol', label: 'Symbol (!@#$)' },
                     ].map(c => (
-                      <div key={c.key} className="flex items-center gap-2">
-                        <span className={`material-symbols-outlined text-[16px] ${checks[c.key] ? 'text-primary' : 'text-outline-variant'}`} style={checks[c.key] ? { fontVariationSettings: "'FILL' 1" } : {}}>
-                          {checks[c.key] ? 'check_circle' : 'circle'}
+                      <div key={c.key} className={`flex items-center gap-2 transition-all duration-300 ${checks[c.key] ? 'opacity-100' : 'opacity-50'}`}>
+                        <span className={`material-symbols-outlined text-base transition-all duration-300 ${checks[c.key] ? 'text-green-500 scale-110' : 'text-gray-400 scale-100'}`} style={checks[c.key] ? { fontVariationSettings: "'FILL' 1" } : {}}>
+                          {checks[c.key] ? 'check_circle' : 'radio_button_unchecked'}
                         </span>
-                        <span className="text-[11px] text-on-surface-variant">{c.label}</span>
+                        <span className={`text-xs font-medium transition-colors duration-300 ${checks[c.key] ? 'text-on-surface' : 'text-on-surface-variant'}`}>{c.label}</span>
                       </div>
                     ))}
                   </div>
                 </div>
+                )}
 
                 <div className="space-y-2">
                   <label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant px-1">Confirm New Password</label>

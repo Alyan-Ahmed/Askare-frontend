@@ -3,53 +3,84 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 
-const fakeAccounts = {
-  patient: {
-    name: 'Alyan Ahmed',
-    email: 'alyan.patient@askare.com',
-    password: 'patient123',
-    gender: 'male',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAox2cELp727nc8F0QqlouZa__6ZAv4-XcyEzgKe10NFebkQZ6zwt1AVi5A40vtPQlgILrsZO4LEBhgNSHYHes6nqyU_4kjT4LRk4umkaWEpp9o_VpetLVnbbB9Zd2jNVNrpUvg_5U6PulVe0fwMTqmJQ8iB76aIZ86NAX_D7f-WEhXXum1-y8GdUP44sNRoZKGW9TEuwIYHcU_HCp90mV_Ha_VHzhFzOMyeHQw2z7EjJ1H95UUmUeqoJLIy7TscjeCBzVcGXi2ZYY',
-  },
-  doctor: {
-    name: 'Dr. Arsalan Khan',
-    email: 'dr.arsalan@askare.com',
-    password: 'doctor123',
-    gender: 'male',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuATjjHmze-FPbpcsPti5gE9P6DmTWdj7N_V9NOsOwt2sGMXJiFOE0OuiMVrdsq_lsC5GrV3RjgcT80enDRKSfiQ_9oDOx4Jd0RELfP9PwU5r9t0WNsS4sCCiPtdEn7jcbfow-3oUoUt3LJNpvWa5wc6zABuVTDxD5_9K7jtcoP6Ulf2rH7VfKy0vrJZT8bMrtJDI6-dWqhsFZGtmZ4iiUxjGNOxOpy9DSk2Kq1WWaWu7BvsxElA4Vp_enUn2ZHwfVID-y-ToYzyE7w',
-  },
-}
-
 export default function LoginPage() {
   const [authMode, setAuthMode] = useState('login')
   const [role, setRole] = useState('patient')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
+  const [signupEmail, setSignupEmail] = useState('')
+  const [signupPassword, setSignupPassword] = useState('')
+  const [signupConfirm, setSignupConfirm] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [showPw2, setShowPw2] = useState(false)
   const [showPw3, setShowPw3] = useState(false)
   const [remember, setRemember] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const { login } = useAuth()
   const navigate = useNavigate()
 
   const tryLogin = (e) => {
     e.preventDefault()
+    setError(''); setSuccess('')
     const em = email.trim().toLowerCase()
     const pw = password
-    if (em === fakeAccounts.patient.email && pw === fakeAccounts.patient.password) {
-      login('patient', fakeAccounts.patient)
-      navigate('/')
-      return
-    }
-    if (em === fakeAccounts.doctor.email && pw === fakeAccounts.doctor.password) {
-      login('doctor', fakeAccounts.doctor)
-      navigate('/doctor-dashboard')
+    if (!em) { setError('Please enter your email address.'); return }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { setError('Please enter a valid email address (e.g. name@example.com).'); return }
+    if (!pw) { setError('Please enter your password.'); return }
+    // Check sessionStorage temp users (from signup)
+    const tempUsers = JSON.parse(sessionStorage.getItem('askare_temp_users') || '[]')
+    const found = tempUsers.find(u => u.email === em && u.password === pw)
+    if (found) {
+      login(found.role, found)
+      navigate(found.role === 'doctor' ? '/doctor-dashboard' : '/')
       return
     }
     setError('Invalid email or password. Please try again.')
     setTimeout(() => setError(''), 4000)
+  }
+
+  const signupChecks = {
+    len: signupPassword.length >= 8,
+    symbol: /[!@#$%^&*(),.?":{}|<>]/.test(signupPassword),
+    upper: /[A-Z]/.test(signupPassword),
+    num: /[0-9]/.test(signupPassword),
+  }
+  const signupScore = Object.values(signupChecks).filter(Boolean).length
+  const signupLabels = ['Weak', 'Fair', 'Moderate', 'Strong']
+
+  const trySignup = (e) => {
+    e.preventDefault()
+    setError(''); setSuccess('')
+    const name = fullName.trim()
+    const em = signupEmail.trim().toLowerCase()
+    const pw = signupPassword
+    const cpw = signupConfirm
+    if (!name) { setError('Please enter your full name.'); return }
+    if (!/^[a-zA-Z\s.]+$/.test(name)) { setError('Name can only contain letters, spaces, and periods.'); return }
+    if (!em) { setError('Please enter your email address.'); return }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { setError('Please enter a valid email address (e.g. name@example.com).'); return }
+    if (!pw) { setError('Please create a password.'); return }
+    if (!signupChecks.len) { setError('Password must be at least 8 characters long.'); return }
+    if (!signupChecks.upper) { setError('Password must contain at least one uppercase letter.'); return }
+    if (!signupChecks.num) { setError('Password must contain at least one number.'); return }
+    if (!signupChecks.symbol) { setError('Password must contain at least one symbol (@#$).'); return }
+    if (!cpw) { setError('Please confirm your password.'); return }
+    if (pw !== cpw) { setError('Passwords do not match. Please re-enter.'); return }
+    // Check sessionStorage duplicates
+    const existing = JSON.parse(sessionStorage.getItem('askare_temp_users') || '[]')
+    if (existing.find(u => u.email === em)) {
+      setError('An account with this email already exists. Please log in instead.'); return
+    }
+    // Generate unique ID (ASK-XXXXX)
+    const genId = () => { const all = JSON.parse(sessionStorage.getItem('askare_temp_users') || '[]'); const ids = all.map(u => u.uid).filter(Boolean); let id; do { id = 'ASK-' + String(Math.floor(10000 + Math.random() * 90000)) } while (ids.includes(id)); return id }
+    // Save to sessionStorage (gone on page refresh)
+    existing.push({ name, email: em, password: pw, role, gender: '', avatar: '', uid: genId() })
+    sessionStorage.setItem('askare_temp_users', JSON.stringify(existing))
+    setSuccess('Account created successfully! Redirecting to login...')
+    setFullName(''); setSignupEmail(''); setSignupPassword(''); setSignupConfirm('')
+    setTimeout(() => { setAuthMode('login'); setSuccess('') }, 2000)
   }
 
   return (
@@ -118,8 +149,8 @@ export default function LoginPage() {
                   {authMode === 'login' ? 'Welcome' : (role === 'doctor' ? 'Provider Registration' : 'Join Askare')}
                 </h2>
                 <div className="flex p-1 bg-surface-container-low rounded-full shrink-0">
-                  <button className={`px-5 py-2 text-sm font-semibold rounded-full transition-all duration-300 whitespace-nowrap ${authMode === 'login' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`} onClick={() => setAuthMode('login')}>Login</button>
-                  <button className={`px-5 py-2 text-sm font-medium rounded-full transition-all duration-300 whitespace-nowrap ${authMode === 'signup' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`} onClick={() => setAuthMode('signup')}>Sign Up</button>
+                  <button className={`px-5 py-2 text-sm font-semibold rounded-full transition-all duration-300 whitespace-nowrap ${authMode === 'login' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`} onClick={() => { setAuthMode('login'); setError(''); setSuccess(''); setSignupEmail(''); setSignupPassword(''); setSignupConfirm(''); setFullName('') }}>Login</button>
+                  <button className={`px-5 py-2 text-sm font-medium rounded-full transition-all duration-300 whitespace-nowrap ${authMode === 'signup' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`} onClick={() => { setAuthMode('signup'); setError(''); setSuccess(''); setEmail(''); setPassword('') }}>Sign Up</button>
                 </div>
               </div>
 
@@ -160,20 +191,33 @@ export default function LoginPage() {
 
                 {/* Sign Up View */}
                 {authMode === 'signup' && (
-                  <form className="space-y-6" onSubmit={e => e.preventDefault()}>
+                  <form className="space-y-6" onSubmit={trySignup}>
+                    {error && (
+                      <div className="bg-error-container/10 text-error border border-error/20 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
+                        <span className="material-symbols-outlined text-lg">error</span>{error}
+                      </div>
+                    )}
+                    {success && (
+                      <div className="bg-primary-container/20 text-primary border border-primary/20 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
+                        <span className="material-symbols-outlined text-lg">check_circle</span>{success}
+                      </div>
+                    )}
                     <div className="space-y-2">
-                      <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant/70 ml-1">{role === 'doctor' ? 'Full Name & Degree' : 'Full Name'}</label>
-                      <input value={fullName} onChange={e => setFullName(e.target.value)} className="w-full px-5 py-4 bg-surface-container-low border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline" placeholder={role === 'doctor' ? 'Dr. John Doe, MD' : 'John Doe'} type="text" />
+                      <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant/70 ml-1">Full Name</label>
+                      <input value={fullName} onChange={e => { const v = e.target.value; const cap = v.replace(/(^|[\s.])([a-z])/g, (m, p, c) => p + c.toUpperCase()); setFullName(cap) }} className="w-full px-5 py-4 bg-surface-container-low border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline" placeholder={role === 'doctor' ? 'Dr. John Doe' : 'John Doe'} type="text" />
+                      {fullName.length > 0 && !/^[a-zA-Z\s.]+$/.test(fullName) && (
+                        <p className="text-xs text-error px-1 mt-1">Name can only contain letters, spaces, and periods.</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant/70 ml-1">{role === 'doctor' ? 'Professional Email' : 'Email Address'}</label>
-                      <input className="w-full px-5 py-4 bg-surface-container-low border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline" placeholder="name@example.com" type="email" />
+                      <input value={signupEmail} onChange={e => setSignupEmail(e.target.value)} className="w-full px-5 py-4 bg-surface-container-low border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline" placeholder="name@example.com" type="email" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant/70 ml-1">Password</label>
                         <div className="relative">
-                          <input className="w-full px-5 py-4 bg-surface-container-low border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline" placeholder="••••••••" type={showPw2 ? 'text' : 'password'} />
+                          <input value={signupPassword} onChange={e => setSignupPassword(e.target.value)} className="w-full px-5 py-4 bg-surface-container-low border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline" placeholder="••••••••" type={showPw2 ? 'text' : 'password'} />
                           <button className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors" type="button" onClick={() => setShowPw2(!showPw2)}>
                             <span className="material-symbols-outlined text-xl">{showPw2 ? 'visibility_off' : 'visibility'}</span>
                           </button>
@@ -182,13 +226,47 @@ export default function LoginPage() {
                       <div className="space-y-2">
                         <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant/70 ml-1">Confirm Password</label>
                         <div className="relative">
-                          <input className="w-full px-5 py-4 bg-surface-container-low border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline" placeholder="••••••••" type={showPw3 ? 'text' : 'password'} />
+                          <input value={signupConfirm} onChange={e => setSignupConfirm(e.target.value)} className="w-full px-5 py-4 bg-surface-container-low border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline" placeholder="••••••••" type={showPw3 ? 'text' : 'password'} />
                           <button className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors" type="button" onClick={() => setShowPw3(!showPw3)}>
                             <span className="material-symbols-outlined text-xl">{showPw3 ? 'visibility_off' : 'visibility'}</span>
                           </button>
                         </div>
                       </div>
                     </div>
+                    {signupPassword.length > 0 && (
+                      <div className="p-5 bg-surface-container-low rounded-xl space-y-4 border border-outline-variant/10" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-bold text-on-surface">Password Strength</span>
+                          <span className={`text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full transition-all duration-500 ${signupScore === 0 ? 'bg-gray-200 text-gray-500' : signupScore === 1 ? 'bg-red-100 text-red-600' : signupScore === 2 ? 'bg-orange-100 text-orange-600' : signupScore === 3 ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'}`}>
+                            {signupScore === 0 ? 'Too Weak' : signupLabels[signupScore - 1]}
+                          </span>
+                        </div>
+                        <div className="h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full transition-all duration-700 ease-out ${signupScore === 1 ? 'bg-red-500' : signupScore === 2 ? 'bg-orange-500' : signupScore === 3 ? 'bg-yellow-500' : signupScore === 4 ? 'bg-green-500' : 'bg-gray-300'}`} style={{ width: `${signupScore * 25}%` }}></div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          {[
+                            { key: 'len', label: '8+ Characters' },
+                            { key: 'upper', label: 'Uppercase letter' },
+                            { key: 'num', label: 'Number (0-9)' },
+                            { key: 'symbol', label: 'Symbol (!@#$)' },
+                          ].map(c => (
+                            <div key={c.key} className={`flex items-center gap-2 transition-all duration-300 ${signupChecks[c.key] ? 'opacity-100' : 'opacity-50'}`}>
+                              <span className={`material-symbols-outlined text-base transition-all duration-300 ${signupChecks[c.key] ? 'text-green-500 scale-110' : 'text-gray-400 scale-100'}`} style={signupChecks[c.key] ? { fontVariationSettings: "'FILL' 1" } : {}}>
+                                {signupChecks[c.key] ? 'check_circle' : 'radio_button_unchecked'}
+                              </span>
+                              <span className={`text-xs font-medium transition-colors duration-300 ${signupChecks[c.key] ? 'text-on-surface' : 'text-on-surface-variant'}`}>{c.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {signupConfirm.length > 0 && signupPassword !== signupConfirm && (
+                      <p className="text-xs text-error px-1 -mt-4">Passwords do not match.</p>
+                    )}
+                    {signupEmail.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signupEmail.trim()) && (
+                      <p className="text-xs text-error px-1 -mt-4">Please enter a valid email address (e.g. name@example.com).</p>
+                    )}
                     <div className="pt-4">
                       <button className="w-full py-4 bg-gradient-to-r from-primary to-primary-dim text-on-primary font-bold text-lg rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:scale-[1.01] transition-all duration-300 whitespace-nowrap" type="submit">Create Account</button>
                     </div>
@@ -216,7 +294,7 @@ export default function LoginPage() {
               {/* Footer Link */}
               <p className="mt-10 text-center text-sm text-on-surface-variant">
                 {authMode === 'login' ? 'New to Askare?' : 'Already have an account?'}
-                <a onClick={(e) => { e.preventDefault(); setAuthMode(authMode === 'login' ? 'signup' : 'login') }} className="text-primary font-bold hover:underline ml-1 cursor-pointer" href="#">
+                <a onClick={(e) => { e.preventDefault(); setError(''); setSuccess(''); if (authMode === 'login') { setEmail(''); setPassword(''); setAuthMode('signup') } else { setSignupEmail(''); setSignupPassword(''); setSignupConfirm(''); setFullName(''); setAuthMode('login') } }} className="text-primary font-bold hover:underline ml-1 cursor-pointer" href="#">
                   {authMode === 'login' ? 'Create an account' : 'Sign in instead'}
                 </a>
               </p>
