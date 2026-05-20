@@ -112,6 +112,37 @@ export default function PatientDashboardPage() {
         </div>
       </div>
 
+      {/* Recent Appointments */}
+      <section className="mt-10 mb-6 reveal">
+        <h3 className="text-2xl font-bold text-on-surface mb-6">Recent Appointments</h3>
+        <div className="space-y-4">
+          {[
+            { doctor: 'Dr. Julian Vance', date: 'Sep 12, 2025', time: '10:00 AM', type: 'General Wellness Audit', status: 'Completed', statusCls: 'bg-green-100 text-green-700', icon: 'check_circle', missed: false },
+            { doctor: 'Dr. Sarah Patel', date: 'Jul 04, 2025', time: '02:00 PM', type: 'Ophthalmology Check', status: 'Missed', statusCls: 'bg-red-100 text-red-600', icon: 'cancel', missed: true },
+          ].map((appt, i) => (
+            <div key={i} className="bg-surface-container-lowest p-6 rounded-xl flex items-center justify-between border border-outline-variant/10 shadow-sm hover:bg-surface-container-low/50 transition-colors">
+              <div className="flex items-center gap-5">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${appt.missed ? 'bg-red-100' : 'bg-green-100'}`}>
+                  <span className={`material-symbols-outlined ${appt.missed ? 'text-red-600' : 'text-green-700'}`} style={{fontVariationSettings:'"FILL" 1'}}>{appt.icon}</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-on-surface">{appt.doctor}</h4>
+                  <p className="text-sm text-secondary">{appt.type} • {appt.date} at {appt.time}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${appt.statusCls} flex items-center gap-1`}>
+                  <span className="material-symbols-outlined text-xs" style={{fontVariationSettings:'"FILL" 1'}}>{appt.icon}</span>{appt.status}
+                </span>
+                <button onClick={()=>{setRescheduleModal(appt.missed ? 'missed' : true);setRescheduleDate('');setRescheduleTime('');setRescheduleError('')}} className="px-4 py-2 rounded-xl text-sm font-semibold bg-surface-container hover:bg-surface-container-high text-on-surface transition-all flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-base">event</span>Reschedule
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Clinical Archive */}
       <section className="mt-16 reveal">
         <div className="flex items-center justify-between mb-8">
@@ -187,7 +218,13 @@ export default function PatientDashboardPage() {
           <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={()=>setRescheduleModal(false)}></div>
           <div className="relative bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl z-10 p-8">
             <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-bold text-on-surface flex items-center gap-2"><span className="material-symbols-outlined text-primary">event</span> Reschedule Appointment</h2><button className="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high" onClick={()=>setRescheduleModal(false)}>close</button></div>
-            <p className="text-sm text-secondary mb-5">Reschedule your appointment with <span className="font-bold text-on-surface">Dr. Aris Thorne</span>.</p>
+            {rescheduleModal==='missed'&&(
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-5 flex items-start gap-3">
+                <span className="material-symbols-outlined text-red-600 mt-0.5" style={{fontVariationSettings:'"FILL" 1'}}>warning</span>
+                <div><p className="text-sm font-bold text-red-700">Missed Appointment — Repayment Required</p><p className="text-xs text-red-600 mt-1">Since you did not attend this meeting, you will need to make a new payment to reschedule.</p></div>
+              </div>
+            )}
+            <p className="text-sm text-secondary mb-5">Select a new date and time for your appointment.</p>
             <div className="space-y-5">
               <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">New Date</label><input type="date" value={rescheduleDate} onChange={e=>{setRescheduleDate(e.target.value);setRescheduleError('')}} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface" /></div>
               <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Preferred Time Slot</label>
@@ -201,13 +238,25 @@ export default function PatientDashboardPage() {
               {rescheduleError&&<p className="text-xs text-error font-medium flex items-center gap-1"><span className="material-symbols-outlined text-sm">error</span>{rescheduleError}</p>}
               <div className="flex gap-3 pt-2">
                 <button className="flex-1 py-3 rounded-xl font-semibold text-sm text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/20" onClick={()=>setRescheduleModal(false)}>Cancel</button>
-                <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={()=>{
+                <button className={`flex-1 py-3 rounded-xl font-bold text-sm hover:opacity-90 ${rescheduleModal==='missed'?'bg-error text-on-error':'bg-primary text-on-primary'}`} onClick={()=>{
                   if(!rescheduleDate){setRescheduleError('Please select a new date.');return}
                   if(!rescheduleTime){setRescheduleError('Please select a time slot.');return}
+                  if(rescheduleModal==='missed'){
+                    setRescheduleModal(false)
+                    navigate('/payment-details', {
+                      state: {
+                        doctor: { name: 'Dr. Sarah Patel', spec: 'Ophthalmology Check', price: 'PKR 5,000' },
+                        date: rescheduleDate,
+                        time: rescheduleTime,
+                        missedReschedule: true,
+                      },
+                    })
+                    return
+                  }
                   setRescheduleModal(false)
                   setToast(`Appointment rescheduled to ${rescheduleDate} at ${rescheduleTime}`)
                   setTimeout(()=>setToast(''),4000)
-                }}>Confirm Reschedule</button>
+                }}>{rescheduleModal==='missed'?'Proceed to Payment':'Confirm Reschedule'}</button>
               </div>
             </div>
           </div>

@@ -10,7 +10,7 @@ export default function PaymentDetailsPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const booking = location.state || {}
-  const doc = booking.doctor || FALLBACK
+  const doc = { ...FALLBACK, ...(booking.doctor || {}) }
   const bookDate = booking.date || 'Oct 24, 2026'
   const bookTime = booking.time || '10:00 AM'
 
@@ -47,6 +47,12 @@ export default function PaymentDetailsPage() {
         <div className="lg:col-span-8 space-y-8 reveal reveal-delay-1">
           {/* Booking Summary */}
           <section className="bg-surface-container-low rounded-xl p-8">
+            {booking.missedReschedule && (
+              <div className="mb-6 rounded-xl border border-error/20 bg-error-container/10 px-4 py-3 text-sm text-error flex items-start gap-3">
+                <span className="material-symbols-outlined text-lg mt-0.5">warning</span>
+                <span>This reschedule requires a new payment because the previous appointment was missed.</span>
+              </div>
+            )}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="flex items-center gap-6">
                 <div className="w-20 h-20 rounded-lg overflow-hidden bg-white">

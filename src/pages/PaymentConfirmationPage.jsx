@@ -8,10 +8,11 @@ const FALLBACK = {
 export default function PaymentConfirmationPage() {
   const location = useLocation()
   const booking = location.state || {}
-  const doc = booking.doctor || FALLBACK
+  const doc = { ...FALLBACK, ...(booking.doctor || {}) }
   const bookDate = booking.date || 'Oct 24, 2026'
   const bookTime = booking.time || '10:00 AM'
-  const txId = `#ASK-${Math.floor(100000 + Math.random() * 900000)}`
+  const txSeed = `${doc.name}-${bookDate}-${bookTime}`.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0)
+  const txId = `#ASK-${String(100000 + (txSeed % 900000)).padStart(6, '0')}`
 
   return (
     <main className="flex-grow pt-16 pb-20 px-6">

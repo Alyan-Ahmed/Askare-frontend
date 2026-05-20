@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { AuthenticatorSetup, PhoneNumberField, SecurityMethodCard, SmsVerificationSetup } from '../components/SettingsControls'
 
 export default function PatientSettingsPage() {
   const { user, updateUser, deleteAccount, deactivateAccount } = useAuth()
@@ -19,7 +20,10 @@ export default function PatientSettingsPage() {
   // Editable fields — initialized from user context
   const [editName, setEditName] = useState(user?.name || '')
   const [editEmail, setEditEmail] = useState(user?.email || '')
-  const [editPhone, setEditPhone] = useState('')
+  const [phoneCode, setPhoneCode] = useState(user?.phoneCode || '+92')
+  const [editPhone, setEditPhone] = useState(user?.phoneNumber || '')
+  const [smsPhoneCode, setSmsPhoneCode] = useState(user?.smsPhoneCode || user?.phoneCode || '+92')
+  const [smsPhone, setSmsPhone] = useState(user?.smsPhoneNumber || user?.phoneNumber || '')
   const [currentPw, setCurrentPw] = useState('')
   const [newPw, setNewPw] = useState('')
   const [saveError, setSaveError] = useState('')
@@ -51,6 +55,7 @@ export default function PatientSettingsPage() {
     if (!/^[a-zA-Z\s.]+$/.test(editName.trim())) { setSaveError('Name can only contain letters, spaces, and periods.'); return }
     if (!editEmail.trim()) { setSaveError('Email cannot be empty.'); return }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editEmail.trim())) { setSaveError('Please enter a valid email address.'); return }
+    if (editPhone.trim() && editPhone.replace(/\D/g, '').length < 7) { setSaveError('Please enter a valid phone number.'); return }
 
     // If password fields filled, validate current password
     if (newPw) {
@@ -68,11 +73,20 @@ export default function PatientSettingsPage() {
     if (idx >= 0) {
       tempUsers[idx].name = editName.trim()
       tempUsers[idx].email = editEmail.trim()
+      tempUsers[idx].phoneCode = phoneCode
+      tempUsers[idx].phoneNumber = editPhone.trim()
+      tempUsers[idx].phone = editPhone.trim() ? `${phoneCode} ${editPhone.trim()}` : ''
       if (newPw && currentPw) { tempUsers[idx].password = newPw }
       sessionStorage.setItem('askare_temp_users', JSON.stringify(tempUsers))
     }
 
-    updateUser({ name: editName.trim(), email: editEmail.trim() })
+    updateUser({
+      name: editName.trim(),
+      email: editEmail.trim(),
+      phoneCode,
+      phoneNumber: editPhone.trim(),
+      phone: editPhone.trim() ? `${phoneCode} ${editPhone.trim()}` : '',
+    })
     setCurrentPw(''); setNewPw('')
     showToast('Settings saved successfully!')
   }
@@ -124,7 +138,7 @@ export default function PatientSettingsPage() {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Full Name</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="text" value={editName} onChange={e => setEditName(e.target.value)} /></div>
               <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Email Address</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} /></div>
-              <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Phone Number</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" type="tel" value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="Enter phone number" /></div>
+              <PhoneNumberField id="patient-phone" code={phoneCode} onCodeChange={setPhoneCode} value={editPhone} onChange={setEditPhone} />
               <div className="space-y-1.5"><label className="text-[11px] font-bold text-outline uppercase tracking-wider">Unique ID</label><input className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface-variant cursor-not-allowed font-mono tracking-wider" type="text" value={user?.uid || 'Not assigned'} readOnly disabled /></div>
             </div>
           </div>
@@ -184,57 +198,12 @@ export default function PatientSettingsPage() {
 
             {/* 2FA Options */}
             <div className={`px-8 pb-6 space-y-3 border-t border-surface-container pt-4 ${!twoFA ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
-              {/* Authenticator App */}
-              <div className="rounded-xl border border-outline-variant/15 overflow-hidden">
-                <div className="flex items-center justify-between p-4 pl-8 cursor-pointer hover:bg-surface-container-low/50 transition-colors" onClick={()=>setAuthApp(!authApp)}>
-                  <div className="flex items-center space-x-4">
-                    <span className="material-symbols-outlined text-secondary text-xl">phone_iphone</span>
-                    <div><p className="text-sm font-bold">Authenticator App</p><p className="text-[11px] text-secondary">Use Google Authenticator or Authy.</p></div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <label className="relative inline-flex items-center cursor-pointer" onClick={e=>e.stopPropagation()}>
-                      <input checked={authApp} onChange={(e) => setAuthApp(e.target.checked)} className="sr-only peer" type="checkbox" />
-                      <div className="w-9 h-5 bg-outline-variant/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary/80"></div>
-                    </label>
-                    <span className={`material-symbols-outlined text-sm text-secondary transition-transform ${authApp?'rotate-180':''}`}>expand_more</span>
-                  </div>
-                </div>
-                {authApp&&(
-                  <div className="px-8 pb-4 pt-2 bg-surface-container-low/30 border-t border-outline-variant/10 space-y-3">
-                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-primary text-base">verified</span><span className="text-on-surface font-medium">Status: <span className="text-green-600 font-bold">Active</span></span></div>
-                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">smartphone</span><span className="text-on-surface-variant">Linked Device: Personal Phone</span></div>
-                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">schedule</span><span className="text-on-surface-variant">Last verified: 2 hours ago</span></div>
-                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">key</span><span className="text-on-surface-variant">Backup codes: 8 remaining</span></div>
-                    <button className="text-xs font-bold text-primary hover:underline mt-1">Regenerate Backup Codes →</button>
-                  </div>
-                )}
-              </div>
-
-              {/* SMS Verification */}
-              <div className="rounded-xl border border-outline-variant/15 overflow-hidden">
-                <div className="flex items-center justify-between p-4 pl-8 cursor-pointer hover:bg-surface-container-low/50 transition-colors" onClick={()=>setSmsEnabled(!smsEnabled)}>
-                  <div className="flex items-center space-x-4">
-                    <span className="material-symbols-outlined text-secondary text-xl">sms</span>
-                    <div><p className="text-sm font-bold">SMS Verification</p><p className="text-[11px] text-secondary">Receive a code via text message.</p></div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <label className="relative inline-flex items-center cursor-pointer" onClick={e=>e.stopPropagation()}>
-                      <input checked={smsEnabled} onChange={(e) => setSmsEnabled(e.target.checked)} className="sr-only peer" type="checkbox" />
-                      <div className="w-9 h-5 bg-outline-variant/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary/80"></div>
-                    </label>
-                    <span className={`material-symbols-outlined text-sm text-secondary transition-transform ${smsEnabled?'rotate-180':''}`}>expand_more</span>
-                  </div>
-                </div>
-                {smsEnabled&&(
-                  <div className="px-8 pb-4 pt-2 bg-surface-container-low/30 border-t border-outline-variant/10 space-y-3">
-                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-primary text-base">verified</span><span className="text-on-surface font-medium">Status: <span className="text-green-600 font-bold">Active</span></span></div>
-                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">call</span><span className="text-on-surface-variant">Phone: +92 3XX XXXXXXX</span></div>
-                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">schedule</span><span className="text-on-surface-variant">Last SMS sent: Today at 09:15 AM</span></div>
-                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-secondary text-base">info</span><span className="text-on-surface-variant">Standard messaging rates may apply</span></div>
-                    <button className="text-xs font-bold text-primary hover:underline mt-1">Update Phone Number →</button>
-                  </div>
-                )}
-              </div>
+              <SecurityMethodCard enabled={authApp} onEnabledChange={setAuthApp} icon="phone_iphone" title="Authenticator App" description="Use Google Authenticator or Authy for login codes.">
+                <AuthenticatorSetup />
+              </SecurityMethodCard>
+              <SecurityMethodCard enabled={smsEnabled} onEnabledChange={setSmsEnabled} icon="sms" title="SMS Verification" description="Receive a secure code on your mobile number.">
+                <SmsVerificationSetup code={smsPhoneCode} onCodeChange={setSmsPhoneCode} phone={smsPhone} onPhoneChange={setSmsPhone} />
+              </SecurityMethodCard>
             </div>
           </div>
         </section>

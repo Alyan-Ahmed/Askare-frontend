@@ -28,6 +28,26 @@ const CONTACT_TEMPLATES = [
   { label: 'Confirmed', icon: 'check_circle', message: 'Your appointment has been confirmed. See you soon!' },
 ]
 
+const PATIENT_RECORDS_KEY = 'askare_patient_records'
+const RECORD_STATUS_OPTIONS = ['Active', 'Stable', 'Observation', 'Critical']
+const DEFAULT_PATIENT_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAox2cELp727nc8F0QqlouZa__6ZAv4-XcyEzgKe10NFebkQZ6zwt1AVi5A40vtPQlgILrsZO4LEBhgNSHYHes6nqyU_4kjT4LRk4umkaWEpp9o_VpetLVnbbB9Zd2jNVNrpUvg_5U6PulVe0fwMTqmJQ8iB76aIZ86NAX_D7f-WEhXXum1-y8GdUP44sNRoZKGW9TEuwIYHcU_HCp90mV_Ha_VHzhFzOMyeHQw2z7EjJ1H95UUmUeqoJLIy7TscjeCBzVcGXi2ZYY'
+
+const readStoredPatientRecords = () => {
+  try {
+    return JSON.parse(sessionStorage.getItem(PATIENT_RECORDS_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
+
+const formatRecordDate = (dateValue) => {
+  const date = new Date(`${dateValue}T00:00:00`)
+  if (Number.isNaN(date.getTime())) return dateValue
+  return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+}
+
+const cleanPatientName = (name) => name.replace(/^(Mr\.|Mrs\.|Ms\.|Miss|Dr\.)\s+/i, '').trim()
+
 export default function MySchedulePage() {
   const [appointments, setAppointments] = useState(() => {
     const base = APPTS.map((appt, id) => ({ ...appt, id }))
@@ -51,9 +71,12 @@ export default function MySchedulePage() {
   const [rescheduleTime, setRescheduleTime] = useState('')
   const [modalError, setModalError] = useState('')
   const [cancelReason, setCancelReason] = useState('')
-  const [addedRecords, setAddedRecords] = useState([])
+  const [addedRecords, setAddedRecords] = useState(() => readStoredPatientRecords().map(record => record.sourceAppointmentId).filter(Boolean))
   const [recordModal, setRecordModal] = useState(null)
   const [recordNotes, setRecordNotes] = useState('')
+  const [recordDiagnosis, setRecordDiagnosis] = useState('')
+  const [recordMedicines, setRecordMedicines] = useState('')
+  const [recordStatus, setRecordStatus] = useState('Active')
 
   const days = Array.from({length:7},(_,i)=>{const d=new Date(anchor);d.setDate(d.getDate()+i);return d})
   const sel = days[selIdx]
@@ -71,6 +94,32 @@ export default function MySchedulePage() {
   const openAction=(action,appt)=>{setMenuOpen(null);setDetailPatient(appt);setContactMessage('');setModal(action)}
   const closeModal=()=>{setModal(null);setDetailPatient(null);setContactMessage('')}
   const cancelAppointment=()=>{const patientName=detailPatient.name;setAppointments(prev=>prev.filter(appt=>appt.id!==detailPatient.id));closeModal();showToast(`Appointment for ${patientName} cancelled`)}
+  const jumpToDate=(dateValue)=>{const d=new Date(`${dateValue}T00:00:00`);if(Number.isNaN(d.getTime()))return;const weekStart=new Date(d);weekStart.setDate(d.getDate()-d.getDay());setAnchor(weekStart);setSelIdx(d.getDay())}
+  const resetRecordForm=(appt)=>{setRecordDiagnosis(appt?.purpose || '');setRecordMedicines('');setRecordStatus('Active');setRecordNotes(appt?.notes || '')}
+  const addPatientRecord=()=>{
+    const diagnosis = recordDiagnosis.trim()
+    if(!diagnosis){showToast('Please add an illness diagnosis before saving the record','error');return}
+    const existing = readStoredPatientRecords()
+    if(existing.some(record=>record.sourceAppointmentId===recordModal.id)){setAddedRecords(prev=>prev.includes(recordModal.id)?prev:[...prev,recordModal.id]);setRecordModal(null);showToast(`Record for ${recordModal.name} already exists`);return}
+    const medicines = recordMedicines.split(',').map(item=>item.trim()).filter(Boolean)
+    const newRecord = {
+      name: cleanPatientName(recordModal.name),
+      id: `#RE-${String(Date.now()).slice(-4)}`,
+      status: recordStatus,
+      lastVisit: formatRecordDate(recordModal.date),
+      condition: diagnosis,
+      illness: diagnosis,
+      medications: medicines,
+      notes: recordNotes.trim() || recordModal.notes || '',
+      img: DEFAULT_PATIENT_IMG,
+      source: 'my-schedule',
+      sourceAppointmentId: recordModal.id,
+    }
+    sessionStorage.setItem(PATIENT_RECORDS_KEY, JSON.stringify([newRecord, ...existing]))
+    setAddedRecords(prev=>prev.includes(recordModal.id)?prev:[...prev,recordModal.id])
+    setRecordModal(null)
+    showToast(`${recordModal.name} added to Patient Records`)
+  }
 
   return (
     <div className="flex-1 px-12 py-10 max-w-7xl mx-auto w-full">
@@ -153,7 +202,7 @@ export default function MySchedulePage() {
                             setMenuOpen(null)
                             if(a.status==='No-Show'){showToast(`Cannot add record — ${a.name} did not attend the meeting`,'error');return}
                             if(addedRecords.includes(a.id)){showToast(`Record for ${a.name} already added`);return}
-                            setRecordModal(a);setRecordNotes('')
+                            resetRecordForm(a);setRecordModal(a)
                           }}><span className={`material-symbols-outlined text-base ${addedRecords.includes(a.id)?'text-green-600':'text-primary'}`}>{addedRecords.includes(a.id)?'check_circle':'post_add'}</span> {addedRecords.includes(a.id)?'Record Added':'Add to Patient Records'}</button>
                         )}
                         {!(a.status==='Completed'||a.status==='No-Show')&&(<>
@@ -206,6 +255,9 @@ export default function MySchedulePage() {
               <span className="material-symbols-outlined text-outline group-hover:text-primary">arrow_forward</span>
             </button>
             <button className="w-full text-left p-4 rounded-lg bg-surface-container-lowest flex items-center justify-between hover:translate-x-1 transition-transform group shadow-sm" onClick={()=>{
+              setRescheduleDate(selDateStr)
+              setRescheduleTime('')
+              setModalError(isPastDay ? 'You cannot reschedule a whole previous day. Please reschedule past meetings one by one.' : '')
               setRescheduleModal(true)
             }}>
               <span className="flex items-center gap-3 font-semibold"><span className="material-symbols-outlined text-primary">sync_alt</span> Reschedule Day</span>
@@ -266,12 +318,13 @@ export default function MySchedulePage() {
                   const isPast = detailPatient.status==='Completed'||detailPatient.status==='No-Show'
                   if(isPast){
                     // Keep original as-is, create a NEW appointment on the target date
-                    setAppointments(prev=>[...prev, { ...detailPatient, id: Date.now(), date: rescheduleDate, time: formattedTime, status: 'Confirmed', color: 'bg-primary-fixed-dim', faded: false }])
+                    setAppointments(prev=>[...prev, { ...detailPatient, id: Date.now(), date: rescheduleDate, time: formattedTime, status: 'Pending', color: 'bg-surface-container-highest', faded: true, needsPatientAcceptance: true }])
                   } else {
                     setAppointments(prev=>prev.map(a=>a.id===detailPatient.id?{...a,date:rescheduleDate,time:formattedTime,status:'Confirmed'}:a))
                   }
+                  jumpToDate(rescheduleDate)
                   closeModal();setRescheduleDate('');setRescheduleTime('');setModalError('')
-                  showToast(isPast ? `New appointment created for ${detailPatient.name} on ${rescheduleDate}` : `${detailPatient.name} rescheduled to ${rescheduleDate}`)
+                  showToast(isPast ? `Pending reschedule sent to ${detailPatient.name} for acceptance` : `${detailPatient.name} rescheduled to ${rescheduleDate}`)
                 }}>Confirm</button>
               </div>
             </div>
@@ -393,7 +446,7 @@ export default function MySchedulePage() {
                 <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={()=>{
                   if(!rescheduleDate||!rescheduleTime){setModalError('Please select both dates.');return}
                   if(rescheduleDate===rescheduleTime){setModalError('Original and target dates cannot be the same.');return}
-                  if(rescheduleDate < todayStr()){setModalError('Cannot reschedule a past day. Only today or future dates allowed.');return}
+                  if(rescheduleDate < todayStr()){setModalError('You cannot reschedule a whole previous day. Please reschedule past meetings one by one.');return}
                   const count = appointments.filter(a=>a.date===rescheduleDate).length
                   if(count===0){setModalError('No appointments found on the original date.');return}
                   setAppointments(prev=>prev.map(a=>a.date===rescheduleDate?{...a,date:rescheduleTime}:a))
@@ -422,12 +475,13 @@ export default function MySchedulePage() {
                 <div className="p-3 bg-surface-container-low rounded-xl"><p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Type</p><p className="font-semibold text-on-surface text-sm">{recordModal.type}</p></div>
                 <div className="p-3 bg-surface-container-low rounded-xl"><p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Location</p><p className="font-semibold text-on-surface text-sm">{recordModal.location}</p></div>
               </div>
-              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Diagnosis / Illness</label><input type="text" className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm" placeholder="e.g. Mild Hypertension" /></div>
+              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Record Status</label><select value={recordStatus} onChange={e=>setRecordStatus(e.target.value)} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm">{RECORD_STATUS_OPTIONS.map(status=><option key={status}>{status}</option>)}</select></div>
+              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Illness Diagnosis</label><input type="text" value={recordDiagnosis} onChange={e=>setRecordDiagnosis(e.target.value)} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm" placeholder="e.g. Mild Hypertension" /></div>
               <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Doctor's Notes</label><textarea value={recordNotes} onChange={e=>setRecordNotes(e.target.value)} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface resize-none text-sm" rows="3" placeholder="Write clinical notes, recommendations, prescriptions..."></textarea></div>
-              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Prescribed Medicines (Optional)</label><input type="text" className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm" placeholder="e.g. Lisinopril 10mg, Atorvastatin 20mg" /></div>
+              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Prescribed Medications</label><input type="text" value={recordMedicines} onChange={e=>setRecordMedicines(e.target.value)} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm" placeholder="e.g. Lisinopril 10mg, Atorvastatin 20mg" /></div>
               <div className="flex gap-3 pt-2">
                 <button className="flex-1 py-3 rounded-xl font-semibold text-sm text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/20" onClick={()=>setRecordModal(null)}>Cancel</button>
-                <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={()=>{setAddedRecords(prev=>[...prev,recordModal.id]);setRecordModal(null);showToast(`${recordModal.name} added to Patient Records`)}}>Add Record</button>
+                <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={addPatientRecord}>Add Record</button>
               </div>
             </div>
           </div>
