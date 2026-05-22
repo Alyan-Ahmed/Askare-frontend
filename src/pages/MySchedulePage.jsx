@@ -97,20 +97,18 @@ export default function MySchedulePage() {
   const jumpToDate=(dateValue)=>{const d=new Date(`${dateValue}T00:00:00`);if(Number.isNaN(d.getTime()))return;const weekStart=new Date(d);weekStart.setDate(d.getDate()-d.getDay());setAnchor(weekStart);setSelIdx(d.getDay())}
   const resetRecordForm=(appt)=>{setRecordDiagnosis(appt?.purpose || '');setRecordMedicines('');setRecordStatus('Active');setRecordNotes(appt?.notes || '')}
   const addPatientRecord=()=>{
-    const diagnosis = recordDiagnosis.trim()
-    if(!diagnosis){showToast('Please add an illness diagnosis before saving the record','error');return}
     const existing = readStoredPatientRecords()
-    if(existing.some(record=>record.sourceAppointmentId===recordModal.id)){setAddedRecords(prev=>prev.includes(recordModal.id)?prev:[...prev,recordModal.id]);setRecordModal(null);showToast(`Record for ${recordModal.name} already exists`);return}
+    if(existing.some(record=>record.sourceAppointmentId===recordModal.id)){setAddedRecords(prev=>prev.includes(recordModal.id)?prev:[...prev,recordModal.id]);setRecordModal(null);showToast(`Record for ${recordModal.name} already exists`,'error');return}
     const medicines = recordMedicines.split(',').map(item=>item.trim()).filter(Boolean)
     const newRecord = {
       name: cleanPatientName(recordModal.name),
       id: `#RE-${String(Date.now()).slice(-4)}`,
       status: recordStatus,
       lastVisit: formatRecordDate(recordModal.date),
-      condition: diagnosis,
-      illness: diagnosis,
+      condition: recordDiagnosis.trim(),
+      illness: recordDiagnosis.trim(),
       medications: medicines,
-      notes: recordNotes.trim() || recordModal.notes || '',
+      notes: recordNotes.trim(),
       img: DEFAULT_PATIENT_IMG,
       source: 'my-schedule',
       sourceAppointmentId: recordModal.id,
@@ -131,9 +129,7 @@ export default function MySchedulePage() {
       </header>
 
       <div className="grid grid-cols-12 gap-6">
-        {/* Timeline */}
         <div className="col-span-12 lg:col-span-8 space-y-6 reveal reveal-delay-1">
-          {/* Day Nav */}
           <div className="bg-surface-container-lowest p-6 rounded-xl shadow-sm">
             <div className="flex justify-between items-center mb-4">
               <button className="text-primary font-semibold flex items-center gap-1 hover:underline text-sm" onClick={prevWeek}>
@@ -153,7 +149,6 @@ export default function MySchedulePage() {
             </div>
           </div>
 
-          {/* Appointment Cards */}
           <div className="space-y-4">
             {filteredAppts.length === 0 ? (
               <div className="bg-surface-container-lowest p-10 rounded-xl border border-outline-variant/10 text-center shadow-sm">
@@ -194,7 +189,6 @@ export default function MySchedulePage() {
                     <button className="material-symbols-outlined p-1 rounded-full hover:bg-surface-container-high transition-opacity" onClick={()=>setMenuOpen(menuOpen===i?null:i)}>more_vert</button>
                     {menuOpen===i&&(
                       <div className="absolute right-0 top-full mt-1 w-48 bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant/10 z-50 py-2">
-                        <button className="w-full text-left px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low flex items-center gap-3" onClick={()=>openAction('view',a)}><span className="material-symbols-outlined text-base text-primary">visibility</span> View Details</button>
                         <button className="w-full text-left px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low flex items-center gap-3" onClick={()=>openAction('rescheduleAppt',a)}><span className="material-symbols-outlined text-base text-secondary">event</span> Reschedule</button>
                         <button className="w-full text-left px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low flex items-center gap-3" onClick={()=>openAction('contact',a)}><span className="material-symbols-outlined text-base text-tertiary">chat</span> Contact Patient</button>
                         {(a.status==='Completed'||a.status==='No-Show')&&(
@@ -218,9 +212,7 @@ export default function MySchedulePage() {
           </div>
         </div>
 
-        {/* Side Stats */}
         <div className="col-span-12 lg:col-span-4 space-y-6 reveal reveal-delay-2">
-          {/* Summary Card */}
           <div className="bg-primary text-on-primary p-8 rounded-xl relative overflow-hidden shadow-lg">
             <div className="relative z-10">
               <h4 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-6">Today's Summary</h4>
@@ -233,7 +225,6 @@ export default function MySchedulePage() {
             <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-primary-container/10 rounded-full"></div>
           </div>
 
-          {/* Mini Calendar */}
           <div className="bg-surface-container-lowest p-6 rounded-xl shadow-sm">
             {(() => { const now = new Date(); const y = now.getFullYear(); const m = now.getMonth(); const today = now.getDate(); const firstDay = new Date(y, m, 1).getDay(); const daysInMonth = new Date(y, m + 1, 0).getDate(); return (<>
               <span className="font-bold text-on-surface block mb-6">{MONTHS[m]} {y}</span>
@@ -247,7 +238,6 @@ export default function MySchedulePage() {
             </>)})()}
           </div>
 
-          {/* Quick Actions */}
           <div className="bg-surface-container-low p-6 rounded-xl space-y-3">
             <h4 className="text-xs font-bold text-secondary uppercase tracking-widest mb-4">Availability Management</h4>
             <button className="w-full text-left p-4 rounded-lg bg-surface-container-lowest flex items-center justify-between hover:translate-x-1 transition-transform group shadow-sm" onClick={()=>setBlockModal(true)}>
@@ -267,34 +257,6 @@ export default function MySchedulePage() {
         </div>
       </div>
 
-      {/* View Details Modal */}
-      {modal==='view'&&detailPatient&&(
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={closeModal}></div>
-          <div className="relative bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl z-10 p-8">
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-xl font-bold text-on-surface flex items-center gap-2"><span className="material-symbols-outlined text-primary">person</span> Patient Details</h2>
-              <button className="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high" onClick={closeModal}>close</button>
-            </div>
-            <p className="text-xs text-secondary mb-6">Appointment information and patient overview.</p>
-            <div className="space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl">
-                <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center"><span className="material-symbols-outlined text-primary text-2xl">person</span></div>
-                <div><h3 className="font-bold text-on-surface text-lg">{detailPatient.name}</h3><p className="text-xs font-semibold text-primary">{detailPatient.status}</p></div>
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="p-3 bg-surface-container-low rounded-xl"><p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Time</p><p className="font-semibold text-on-surface">{detailPatient.time}</p></div>
-                <div className="p-3 bg-surface-container-low rounded-xl"><p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Type</p><p className="font-semibold text-on-surface">{detailPatient.type}</p></div>
-                <div className="p-3 bg-surface-container-low rounded-xl"><p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Location</p><p className="font-semibold text-on-surface">{detailPatient.location}</p></div>
-              </div>
-              <div className="p-4 bg-surface-container-low rounded-xl"><p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Purpose</p><p className="text-sm text-on-surface">{detailPatient.purpose}</p></div>
-              <div className="p-4 bg-surface-container-low rounded-xl"><p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Notes</p><p className="text-sm text-on-surface">{detailPatient.notes}</p></div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Reschedule Appt Modal */}
       {modal==='rescheduleAppt'&&detailPatient&&(
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={closeModal}></div>
@@ -309,7 +271,6 @@ export default function MySchedulePage() {
                 <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={()=>{
                   if(!rescheduleDate){setModalError('Please select a new date.');return}
                   if(!rescheduleTime){setModalError('Please select a new time.');return}
-                  // Convert 24h time to 12h format
                   const [hh,mm] = rescheduleTime.split(':')
                   let h = parseInt(hh,10)
                   const ampm = h >= 12 ? 'PM' : 'AM'
@@ -317,7 +278,6 @@ export default function MySchedulePage() {
                   const formattedTime = `${String(h).padStart(2,'0')}:${mm} ${ampm}`
                   const isPast = detailPatient.status==='Completed'||detailPatient.status==='No-Show'
                   if(isPast){
-                    // Keep original as-is, create a NEW appointment on the target date
                     setAppointments(prev=>[...prev, { ...detailPatient, id: Date.now(), date: rescheduleDate, time: formattedTime, status: 'Pending', color: 'bg-surface-container-highest', faded: true, needsPatientAcceptance: true }])
                   } else {
                     setAppointments(prev=>prev.map(a=>a.id===detailPatient.id?{...a,date:rescheduleDate,time:formattedTime,status:'Confirmed'}:a))
@@ -332,7 +292,6 @@ export default function MySchedulePage() {
         </div>
       )}
 
-      {/* Contact Modal */}
       {modal==='contact'&&detailPatient&&(
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={closeModal}></div>
@@ -380,7 +339,6 @@ export default function MySchedulePage() {
         </div>
       )}
 
-      {/* Cancel Modal */}
       {modal==='cancel'&&detailPatient&&(
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={closeModal}></div>
@@ -400,7 +358,6 @@ export default function MySchedulePage() {
         </div>
       )}
 
-      {/* Block Out Modal */}
       {blockModal&&(
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={()=>setBlockModal(false)}></div>
@@ -429,7 +386,6 @@ export default function MySchedulePage() {
         </div>
       )}
 
-      {/* Reschedule Day Modal */}
       {rescheduleModal&&(
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={()=>setRescheduleModal(false)}></div>
@@ -459,36 +415,48 @@ export default function MySchedulePage() {
         </div>
       )}
 
-      {/* Add to Patient Records Modal */}
       {recordModal&&(
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={()=>setRecordModal(null)}></div>
-          <div className="relative bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl z-10 p-8">
-            <div className="flex justify-between items-center mb-2"><h2 className="text-xl font-bold text-on-surface flex items-center gap-2"><span className="material-symbols-outlined text-primary">post_add</span> Add to Patient Records</h2><button className="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high" onClick={()=>setRecordModal(null)}>close</button></div>
-            <p className="text-xs text-secondary mb-6">Add consultation record for <span className="font-bold text-on-surface">{recordModal.name}</span>.</p>
-            <div className="space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl">
-                <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center"><span className="material-symbols-outlined text-primary text-2xl">person</span></div>
-                <div><h3 className="font-bold text-on-surface text-lg">{recordModal.name}</h3><p className="text-xs font-semibold text-primary">{recordModal.status} • {recordModal.time}</p></div>
+          <div className="relative bg-surface-container-lowest w-full max-w-lg rounded-3xl shadow-2xl z-10 p-10 max-h-[90vh] overflow-y-auto">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-on-surface">Add Clinical Record</h2>
+              <p className="text-sm text-secondary">Documenting visit for <span className="font-semibold text-primary">{recordModal.name}</span></p>
+            </div>
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Record Status</label><select value={recordStatus} onChange={e=>setRecordStatus(e.target.value)} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm">{RECORD_STATUS_OPTIONS.map(status=><option key={status}>{status}</option>)}</select></div>
+                <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Consult Date</label><div className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm font-semibold">{formatRecordDate(recordModal.date)}</div></div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-surface-container-low rounded-xl"><p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Type</p><p className="font-semibold text-on-surface text-sm">{recordModal.type}</p></div>
-                <div className="p-3 bg-surface-container-low rounded-xl"><p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Location</p><p className="font-semibold text-on-surface text-sm">{recordModal.location}</p></div>
+              {/* Illness Block */}
+              <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/10">
+                <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-tertiary text-lg">coronavirus</span><label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Illness / Diagnosis <span className="text-error">*</span></label></div>
+                <input type="text" value={recordDiagnosis} onChange={e=>setRecordDiagnosis(e.target.value)} className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm" placeholder="e.g. Mild Hypertension" />
               </div>
-              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Record Status</label><select value={recordStatus} onChange={e=>setRecordStatus(e.target.value)} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm">{RECORD_STATUS_OPTIONS.map(status=><option key={status}>{status}</option>)}</select></div>
-              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Illness Diagnosis</label><input type="text" value={recordDiagnosis} onChange={e=>setRecordDiagnosis(e.target.value)} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm" placeholder="e.g. Mild Hypertension" /></div>
-              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Doctor's Notes</label><textarea value={recordNotes} onChange={e=>setRecordNotes(e.target.value)} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface resize-none text-sm" rows="3" placeholder="Write clinical notes, recommendations, prescriptions..."></textarea></div>
-              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Prescribed Medications</label><input type="text" value={recordMedicines} onChange={e=>setRecordMedicines(e.target.value)} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm" placeholder="e.g. Lisinopril 10mg, Atorvastatin 20mg" /></div>
-              <div className="flex gap-3 pt-2">
-                <button className="flex-1 py-3 rounded-xl font-semibold text-sm text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/20" onClick={()=>setRecordModal(null)}>Cancel</button>
-                <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={addPatientRecord}>Add Record</button>
+              {/* Medications Block (Optional) */}
+              <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/10">
+                <div className="flex items-center justify-between mb-3"><div className="flex items-center gap-2"><span className="material-symbols-outlined text-primary text-lg" style={{fontVariationSettings:'"FILL" 1'}}>medication</span><label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Prescribed Medications</label></div><span className="text-[10px] text-secondary font-medium italic">Optional</span></div>
+                <input type="text" value={recordMedicines} onChange={e=>setRecordMedicines(e.target.value)} className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm" placeholder="e.g. Lisinopril 10mg, Atorvastatin 20mg" />
+              </div>
+              {/* Doctor's Notes Block */}
+              <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/10">
+                <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-primary text-lg">clinical_notes</span><label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Doctor's Notes <span className="text-error">*</span></label></div>
+                <textarea value={recordNotes} onChange={e=>setRecordNotes(e.target.value)} className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface resize-none text-sm" rows="3" placeholder="Write clinical notes, recommendations, prescriptions..."></textarea>
+              </div>
+              {modalError && <p className="text-xs text-error font-medium bg-error-container/20 p-3 rounded-lg">{modalError}</p>}
+              <div className="flex gap-3 pt-4">
+                <button className="flex-1 py-3 rounded-xl font-semibold text-sm text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high" onClick={()=>setRecordModal(null)}>Discard</button>
+                <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={()=>{
+                  if(!recordDiagnosis.trim()){setModalError('Diagnosis is required.');return}
+                  if(!recordNotes.trim()){setModalError("Notes are required.");return}
+                  addPatientRecord()
+                }}>Save Record</button>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Toast */}
       {toast&&(
         <div className="fixed bottom-8 right-8 z-[90]">
           <div className={`${toastType==='error'?'bg-error':'bg-primary'} text-on-primary px-6 py-3 rounded-xl shadow-xl flex items-center gap-3 font-semibold text-sm animate-slide-up`}>

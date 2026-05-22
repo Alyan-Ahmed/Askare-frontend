@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const apptSummaryData = {
   farooq: { doctor: 'Dr. Mariam Farooq', date: 'September 12, 2026', type: 'Pediatrics Consultation', typeIcon: 'child_care', notes: 'Routine pediatric check-up completed. Growth parameters within normal range. Vaccination schedule updated. Mild seasonal allergies noted — antihistamine prescribed for symptomatic relief.', medicines: [{ name: 'Cetirizine 5mg', dosage: 'Once daily (Evening)' }, { name: 'Saline Nasal Drops', dosage: 'As needed' }], followup: 'Next routine check-up in 6 months. Return immediately if fever persists more than 3 days.' },
@@ -32,6 +32,8 @@ export default function AppointmentsPage() {
   const [cancelModal, setCancelModal] = useState(null)
   const [selectedSlot, setSelectedSlot] = useState(null)
   const [toast, setToast] = useState(null)
+  const [isMissedReschedule, setIsMissedReschedule] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (modal || rescheduleModal || cancelModal) document.body.style.overflow = 'hidden'
@@ -58,6 +60,13 @@ export default function AppointmentsPage() {
 
   const confirmReschedule = () => {
     if (!rescheduleModal || !selectedSlot) return
+    if (isMissedReschedule) {
+      const docName = rescheduleModal.doc
+      setRescheduleModal(null)
+      setIsMissedReschedule(false)
+      navigate('/payment-details', { state: { doctor: { name: docName, spec: rescheduleModal.spec || 'Specialist', price: 'PKR 5,000' }, date: selectedSlot.date, time: selectedSlot.time, missedReschedule: true } })
+      return
+    }
     setAppointments(prev => {
       const updated = prev.map(appt => (
         appt.id === rescheduleModal.id ? { ...appt, date: selectedSlot.date, time: selectedSlot.time } : appt
@@ -113,7 +122,7 @@ export default function AppointmentsPage() {
                 <div className="flex items-center gap-2"><span className="material-symbols-outlined text-lg">schedule</span><span className="text-sm font-medium">{a.time}</span></div>
               </div>
               <div className="flex gap-3">
-                <button type="button" onClick={() => openReschedule(a)} className="flex-1 py-2.5 bg-surface-container-high text-primary rounded-xl text-sm font-semibold hover:bg-primary hover:text-on-primary transition-all">Reschedule</button>
+                <button type="button" onClick={() => {setIsMissedReschedule(false);openReschedule(a)}} className="flex-1 py-2.5 bg-surface-container-high text-primary rounded-xl text-sm font-semibold hover:bg-primary hover:text-on-primary transition-all">Reschedule</button>
                 <button type="button" onClick={() => setCancelModal(a)} className="px-4 py-2.5 text-tertiary text-sm font-semibold border-b border-transparent hover:border-tertiary transition-all">Cancel</button>
               </div>
             </div>
@@ -142,7 +151,7 @@ export default function AppointmentsPage() {
                     <td className="px-6 py-6 text-secondary font-medium">{r.spec}</td>
                     <td className="px-6 py-6 text-on-surface-variant">{r.date}</td>
                     <td className="px-6 py-6"><span className={`inline-flex items-center gap-1.5 text-xs font-bold ${r.statusColor}`}><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: '"FILL" 1' }}>{r.statusIcon}</span>{r.status}</span></td>
-                    <td className="px-6 py-6 text-right"><button onClick={() => r.action === 'Reschedule' ? openReschedule({ id: `missed-${r.key}`, doc: r.doc, spec: r.spec, date: r.date, time: '10:30 AM' }) : setModal(r.key)} className="text-primary font-bold text-xs hover:underline uppercase tracking-wider">{r.action}</button></td>
+                    <td className="px-6 py-6 text-right"><button onClick={() => { if (r.action === 'Reschedule') { setIsMissedReschedule(true); openReschedule({ id: `missed-${r.key}`, doc: r.doc, spec: r.spec, date: r.date, time: '10:30 AM' }) } else { setModal(r.key) }}} className="text-primary font-bold text-xs hover:underline uppercase tracking-wider">{r.action}</button></td>
                   </tr>
                 ))}
               </tbody>
@@ -189,6 +198,12 @@ export default function AppointmentsPage() {
               <button type="button" onClick={() => setRescheduleModal(null)} className="p-2 rounded-full hover:bg-surface-container-high text-secondary"><span className="material-symbols-outlined">close</span></button>
             </div>
             <div className="p-6 space-y-4">
+              {isMissedReschedule&&(
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+                  <span className="material-symbols-outlined text-red-600 mt-0.5" style={{fontVariationSettings:'"FILL" 1'}}>warning</span>
+                  <div><p className="text-sm font-bold text-red-700">Missed Appointment — Repayment Required</p><p className="text-xs text-red-600 mt-1">Since you did not attend this meeting, you will need to make a new payment to reschedule.</p></div>
+                </div>
+              )}
               <p className="text-sm text-on-surface-variant">Choose from the doctor's available slots.</p>
               <div className="space-y-2">
                 {(doctorAvailability[rescheduleModal.doc] || []).map((slot) => (
@@ -203,7 +218,7 @@ export default function AppointmentsPage() {
                   </button>
                 ))}
               </div>
-              <button type="button" onClick={confirmReschedule} className="w-full py-3 bg-primary text-on-primary rounded-xl text-sm font-bold hover:bg-primary-dim transition-all">Confirm Reschedule</button>
+              <button type="button" onClick={confirmReschedule} className={`w-full py-3 rounded-xl text-sm font-bold transition-all ${isMissedReschedule?'bg-error text-on-error hover:opacity-90':'bg-primary text-on-primary hover:bg-primary-dim'}`}>{isMissedReschedule?'Proceed to Payment':'Confirm Reschedule'}</button>
             </div>
           </div>
         </div>

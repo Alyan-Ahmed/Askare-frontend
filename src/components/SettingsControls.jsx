@@ -61,24 +61,29 @@ export function PhoneNumberField({
 
 export function SecurityMethodCard({ enabled, onEnabledChange, icon, title, description, children }) {
   return (
-    <div className={`rounded-xl border overflow-hidden transition-all ${enabled ? 'border-primary/25 bg-primary/5' : 'border-outline-variant/15 bg-surface-container-lowest'}`}>
-      <div className="flex items-center justify-between gap-4 p-4">
+    <div className={`rounded-2xl border overflow-hidden transition-all duration-300 ${enabled ? 'border-primary/30 shadow-md shadow-primary/5' : 'border-outline-variant/15'}`}>
+      <div
+        className={`flex items-center justify-between gap-4 p-5 cursor-pointer transition-all duration-300 ${enabled ? 'bg-gradient-to-r from-primary/8 to-primary/3' : 'bg-surface-container-lowest hover:bg-surface-container-low/50'}`}
+        onClick={() => onEnabledChange(!enabled)}
+      >
         <div className="flex items-center gap-4 min-w-0">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${enabled ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-secondary'}`}>
-            <span className="material-symbols-outlined text-xl">{icon}</span>
+          <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 ${enabled ? 'bg-primary text-on-primary shadow-sm shadow-primary/30' : 'bg-surface-container-high text-secondary'}`}>
+            <span className="material-symbols-outlined text-xl" style={enabled ? {fontVariationSettings: '"FILL" 1'} : {}}>{icon}</span>
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-sm font-bold text-on-surface">{title}</p>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${enabled ? 'bg-primary-container/70 text-on-primary-container' : 'bg-surface-container-high text-on-surface-variant'}`}>{enabled ? 'On' : 'Off'}</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all ${enabled ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'}`}>{enabled ? 'Active' : 'Off'}</span>
             </div>
-            <p className="text-[11px] text-secondary leading-relaxed">{description}</p>
+            <p className="text-[11px] text-secondary leading-relaxed mt-0.5">{description}</p>
           </div>
         </div>
-        <Toggle checked={enabled} onChange={onEnabledChange} size="sm" />
+        <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+          <Toggle checked={enabled} onChange={onEnabledChange} size="sm" />
+        </div>
       </div>
       {enabled && (
-        <div className="border-t border-outline-variant/10 bg-surface-container-lowest/80 px-5 pb-5 pt-4 animate-fade-in">
+        <div className="border-t border-outline-variant/10 bg-surface-container-lowest px-6 pb-6 pt-5" style={{animation: 'fadeIn 0.3s ease'}}>
           {children}
         </div>
       )}
@@ -88,29 +93,40 @@ export function SecurityMethodCard({ enabled, onEnabledChange, icon, title, desc
 
 export function AuthenticatorSetup() {
   return (
-    <div className="space-y-4">
-      <p className="text-xs text-secondary">Scan the QR code with Google Authenticator or Authy, then enter the 6-digit code.</p>
-      <div className="flex flex-col sm:flex-row items-stretch gap-5">
-        <div className="w-32 h-32 bg-white rounded-xl border border-outline-variant/20 p-3 flex items-center justify-center shrink-0">
-          <span className="material-symbols-outlined text-primary" style={{ fontSize: '5rem', lineHeight: 1 }}>qr_code_2</span>
+    <div className="space-y-5">
+      <div className="flex items-center gap-2 mb-1">
+        <span className="material-symbols-outlined text-primary text-lg" style={{fontVariationSettings:'"FILL" 1'}}>shield</span>
+        <p className="text-xs font-bold text-on-surface uppercase tracking-wider">Setup Authenticator</p>
+      </div>
+      <p className="text-xs text-secondary leading-relaxed">Scan the QR code below with <span className="font-semibold text-on-surface">Google Authenticator</span> or <span className="font-semibold text-on-surface">Authy</span>, then enter the 6-digit verification code.</p>
+      <div className="flex flex-col sm:flex-row items-stretch gap-6">
+        <div className="w-36 h-36 bg-white rounded-2xl border-2 border-dashed border-primary/20 p-3 flex flex-col items-center justify-center shrink-0 relative group mx-auto sm:mx-0">
+          <svg viewBox="0 0 100 100" className="w-24 h-24"><rect width="100" height="100" fill="white"/><g fill="#006977"><rect x="10" y="10" width="8" height="8"/><rect x="18" y="10" width="8" height="8"/><rect x="26" y="10" width="8" height="8"/><rect x="10" y="18" width="8" height="8"/><rect x="26" y="18" width="8" height="8"/><rect x="10" y="26" width="8" height="8"/><rect x="18" y="26" width="8" height="8"/><rect x="26" y="26" width="8" height="8"/><rect x="42" y="10" width="8" height="8"/><rect x="50" y="18" width="8" height="8"/><rect x="42" y="26" width="8" height="8"/><rect x="66" y="10" width="8" height="8"/><rect x="74" y="10" width="8" height="8"/><rect x="82" y="10" width="8" height="8"/><rect x="66" y="18" width="8" height="8"/><rect x="82" y="18" width="8" height="8"/><rect x="66" y="26" width="8" height="8"/><rect x="74" y="26" width="8" height="8"/><rect x="82" y="26" width="8" height="8"/><rect x="10" y="42" width="8" height="8"/><rect x="26" y="42" width="8" height="8"/><rect x="42" y="42" width="8" height="8"/><rect x="58" y="42" width="8" height="8"/><rect x="74" y="42" width="8" height="8"/><rect x="18" y="50" width="8" height="8"/><rect x="34" y="50" width="8" height="8"/><rect x="50" y="50" width="8" height="8"/><rect x="66" y="50" width="8" height="8"/><rect x="82" y="50" width="8" height="8"/><rect x="10" y="66" width="8" height="8"/><rect x="18" y="66" width="8" height="8"/><rect x="26" y="66" width="8" height="8"/><rect x="42" y="66" width="8" height="8"/><rect x="58" y="66" width="8" height="8"/><rect x="74" y="66" width="8" height="8"/><rect x="10" y="74" width="8" height="8"/><rect x="26" y="74" width="8" height="8"/><rect x="50" y="74" width="8" height="8"/><rect x="66" y="74" width="8" height="8"/><rect x="82" y="74" width="8" height="8"/><rect x="10" y="82" width="8" height="8"/><rect x="18" y="82" width="8" height="8"/><rect x="26" y="82" width="8" height="8"/><rect x="42" y="82" width="8" height="8"/><rect x="58" y="82" width="8" height="8"/><rect x="74" y="82" width="8" height="8"/></g></svg>
+          <p className="text-[9px] text-secondary mt-1 font-semibold">Scan with app</p>
         </div>
-        <div className="flex-1 space-y-3">
+        <div className="flex-1 space-y-4">
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5">Verification Code</label>
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Enter 6-digit Code</label>
             <input
               type="text"
               inputMode="numeric"
               pattern="[0-9]*"
               maxLength={6}
-              className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-center text-lg font-bold tracking-[0.5em] focus:ring-2 focus:ring-primary/20"
-              placeholder="000000"
+              className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3.5 text-on-surface text-center text-xl font-bold tracking-[0.6em] focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
+              placeholder="• • • • • •"
               onKeyDown={(event) => { if (!/[0-9]|Backspace|Tab|ArrowLeft|ArrowRight|Delete/.test(event.key)) event.preventDefault() }}
             />
           </div>
-          <div className="rounded-lg bg-surface-container-low px-3 py-2 text-[11px] text-secondary">
-            Setup key: <span className="font-mono font-bold text-on-surface">ASKR-42HD-9Q2P</span>
+          <div className="rounded-xl bg-surface-container-low/70 px-4 py-3 flex items-center gap-3 border border-outline-variant/10">
+            <span className="material-symbols-outlined text-primary text-lg">key</span>
+            <div>
+              <p className="text-[9px] text-secondary font-semibold uppercase tracking-wider">Manual Setup Key</p>
+              <p className="font-mono font-bold text-on-surface text-sm tracking-wider">ASKR-42HD-9Q2P</p>
+            </div>
           </div>
-          <button className="w-full py-2.5 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90 transition-all" type="button">Verify Code</button>
+          <button className="w-full py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90 transition-all flex items-center justify-center gap-2" type="button">
+            <span className="material-symbols-outlined text-base">verified</span>Verify Code
+          </button>
         </div>
       </div>
     </div>
@@ -119,8 +135,12 @@ export function AuthenticatorSetup() {
 
 export function SmsVerificationSetup({ code, onCodeChange, phone, onPhoneChange }) {
   return (
-    <div className="space-y-3">
-      <p className="text-xs text-secondary">Choose a country code and enter the rest of the mobile number to receive SMS verification codes.</p>
+    <div className="space-y-5">
+      <div className="flex items-center gap-2 mb-1">
+        <span className="material-symbols-outlined text-primary text-lg" style={{fontVariationSettings:'"FILL" 1'}}>sms</span>
+        <p className="text-xs font-bold text-on-surface uppercase tracking-wider">SMS Verification</p>
+      </div>
+      <p className="text-xs text-secondary leading-relaxed">Enter your mobile number below. We'll send a verification code via SMS to confirm your identity.</p>
       <PhoneNumberField
         id="sms-verification-phone"
         label="Mobile Number"
@@ -130,7 +150,9 @@ export function SmsVerificationSetup({ code, onCodeChange, phone, onPhoneChange 
         onChange={onPhoneChange}
         placeholder="300 1234567"
       />
-      <button className="w-full py-2.5 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90 transition-all" type="button">Send Verification Code</button>
+      <button className="w-full py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90 transition-all flex items-center justify-center gap-2" type="button">
+        <span className="material-symbols-outlined text-base">send</span>Send Verification Code
+      </button>
     </div>
   )
 }
