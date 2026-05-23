@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const doctors = [
-  { name: 'Dr. Arsalan Khan', spec: 'General Physician', rating: '4.9', location: 'Clifton, Karachi', price: 'PKR 2,500', gender: 'male', availability: ['today', 'tomorrow'], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJ4LyJ5urRhYWaNc0fAHi1aTPLnVNXCr9Jt3_5dGQkr4oLP2ZKJVy6rIpZrwq0M2pRVXyd9husXHlkwbu953qA9NJcmVQTAwcoY5vO9R0WOEZVtm2ycNh4gYQqj8ef4G7tyZBVvySBVcnN79uOgWnsxrVhjq2L1tbDDu3svWyhtYP5QWFMxpJExQVH5qNCL1n71mb-T_7bbgRMoxc4ZKChtFLv2MhapV1uxN-3cexn7PW6JJV9r95g4ia08RxSTMZipeYxtApQyHQ', about: 'Dr. Arsalan is a highly experienced General Physician with over 12 years in family medicine. He specializes in chronic disease management and preventive care, serving the Clifton community with dedication.', available: true },
+  { name: 'Dr. Arsalan Khan', spec: 'General Physician', rating: '4.9', location: 'Clifton, Karachi', price: 'PKR 2,500', gender: 'male', availability: ['today', 'tomorrow'], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJ4LyJ5urRhYWaNc0fAHi1aTPLnVNXCr9Jt3_5dGQkr4oLP2ZKJVy6rIpZrwq0M2pRVXyd9husXHlkwbu953qA9NJcmVQTAwcoY5vO9R0WOEZVtm2ycNh4gYQqj8ef4G7tyZBVvySBVcnN79uOgWnsxrVhjq2L1tbDDu3svWyhtYP5QWFMxpJExQVH5qNCL1n71mb-T_7bbgRMoxc4ZKChtFLv2MhapV1uxN-3cexn7PW6JJV9r95g4ia08RxSTMZipeYxtApQyHQ', about: 'Dr. Arsalan is a highly experienced General Physician with over 12 years in family medicine. He specializes in chronic disease management and preventive care, serving the Clifton community with dedication.' },
   { name: 'Dr. Sarah Ahmed', spec: 'Pediatrician', rating: '5.0', location: 'DHA Phase VI, Karachi', price: 'PKR 3,000', gender: 'female', availability: ['tomorrow', 'weekend'], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-KawnVanuKt14ZQFtYKaRGkXXXSy_dSCBaDU6_oWWDI5SkQxorawLqkFKaF28GKp9625EUcBiNzTKK07YeNngi0A4y91Wo6DBSKJSuFG4_A9Lqkh4KAeEXbCq0r8CxB8Q7egHxfNXcwNwJwjuFZtM2QXRDaEk3eaFm4b0dNFhihp70seNnWVEl5xw7SdlbO2ARt_0cMPWiTz7Z_ZGDtSwtYoXJQVrNdrAAXSne880taIH5w9NCdSq17vWdMaMszuEhamhlP5Ea58', about: 'Dr. Sarah Ahmed is a board-certified pediatrician known for her gentle approach with children. She has extensive training in neonatal care and childhood vaccinations at Aga Khan University Hospital.' },
   { name: 'Dr. Mansoor Ali', spec: 'Psychiatrist', rating: '4.8', location: 'Gulshan-e-Iqbal, Karachi', price: 'PKR 5,000', gender: 'male', availability: ['weekend'], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0R2oB8OJVQzikzuZsZ6-yi1yy7TSmFjQDJBvIqUptz-S9nkEMSg7m_2T8bN8g_MJqvKANbPxrqi0lLknSMt_nyI9WJBrd-_N38Hw2SvMNxS3IAr74fExUA_bY83zpTQVvIgt4QdZRoEmxfDVX84ATLqB64VZJCC1orZaIXsv38DyxOX1VgVLzUrqJ4_LSzdGgCGca54Kr2iMwFYlHICqj9RGSPgEb1rOvglrTyexlyQPcdJ-6hOenL48N__8-akZdUgGcu8bQ38A', about: 'Dr. Mansoor Ali is a senior consultant psychiatrist specializing in cognitive behavioral therapy and mood disorders. He offers compassionate, evidence-based care for adults and seniors.' },
 ]
@@ -30,6 +30,10 @@ function matchesPrice(price, selectedRange) {
   return true
 }
 
+function isAllSpecialtyFilter(specialty) {
+  return String(specialty).trim().toLowerCase().startsWith('all special')
+}
+
 export default function BookVideoCallPage() {
   const navigate = useNavigate()
   const [filters, setFilters] = useState(getDefaultFilters())
@@ -41,23 +45,25 @@ export default function BookVideoCallPage() {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [selectedDay, setSelectedDay] = useState(new Date().getDate())
   const [specSearch, setSpecSearch] = useState('')
-  const [specOpen, setSpecOpen] = useState(false)
 
   useEffect(() => {
     if (modal || filterOpen) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
-    const clickOut = (e) => { if (!e.target.closest('[data-spec-search]')) setSpecOpen(false) }
-    document.addEventListener('click', clickOut)
-    return () => { document.body.style.overflow = ''; document.removeEventListener('click', clickOut) }
+    return () => { document.body.style.overflow = '' }
   }, [modal, filterOpen])
 
-  const filtered = doctors.filter(d => {
-    const matchSpec = filters.specialty === 'All Specialties' || d.spec.toLowerCase().includes(filters.specialty.toLowerCase())
-    const matchGender = filters.gender.length === 0 || filters.gender.includes(d.gender)
-    const matchAvailability = filters.availability.length === 0 || filters.availability.some(option => d.availability.includes(option))
-    const matchPrice = matchesPrice(d.price, filters.price)
-    return matchSpec && matchGender && matchAvailability && matchPrice
-  })
+  const filtered = useMemo(() => {
+    const searchTerm = specSearch.trim().toLowerCase()
+
+    return doctors.filter(d => {
+      if (searchTerm && !`${d.name} ${d.spec}`.toLowerCase().includes(searchTerm)) return false
+      if (!isAllSpecialtyFilter(filters.specialty) && !d.spec.toLowerCase().includes(filters.specialty.toLowerCase())) return false
+      if (filters.gender.length > 0 && !filters.gender.includes(d.gender)) return false
+      if (filters.availability.length > 0 && !filters.availability.some(opt => d.availability.includes(opt))) return false
+      if (filters.price !== 'Any Price' && !matchesPrice(d.price, filters.price)) return false
+      return true
+    })
+  }, [filters, specSearch])
 
   const calendarDays = useMemo(() => {
     const firstDay = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7
@@ -82,8 +88,8 @@ export default function BookVideoCallPage() {
   const openFilters = () => {
     setDraftFilters({
       specialty: filters.specialty,
-      gender: [...filters.gender],
-      availability: [...filters.availability],
+      gender: filters.gender.slice(),
+      availability: filters.availability.slice(),
       price: filters.price,
     })
     setFilterOpen(true)
@@ -97,8 +103,7 @@ export default function BookVideoCallPage() {
   }
 
   const resetFilters = () => {
-    const fresh = getDefaultFilters()
-    setFilters(fresh)
+    setFilters(getDefaultFilters())
     setDraftFilters(getDefaultFilters())
     setSpecSearch('')
     setFilterOpen(false)
@@ -112,26 +117,16 @@ export default function BookVideoCallPage() {
       </header>
 
       {/* Filters */}
-      <section className="mb-10 flex flex-col md:flex-row gap-4 items-end reveal reveal-delay-1">
-        <div className="w-full md:w-1/3 relative" data-spec-search>
-          <label className="block text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2 ml-1">Specialty</label>
+      <section className="mb-10 flex flex-col md:flex-row gap-4 items-end reveal reveal-delay-1 relative z-10">
+        <div className="w-full md:w-1/3 relative">
+          <label className="block text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2 ml-1">Doctor or Specialty</label>
           <div className="relative">
-            <input type="text" value={specSearch} onChange={(e) => { setSpecSearch(e.target.value); setSpecOpen(true) }} onFocus={() => setSpecOpen(true)} placeholder={filters.specialty === 'All Specialties' ? 'Search specialty...' : filters.specialty} className="w-full bg-surface-container-low border-none rounded-xl px-4 py-4 pr-10 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant" />
+            <input type="text" value={specSearch} onChange={(e) => setSpecSearch(e.target.value)} placeholder="Search doctor or specialty..." className="w-full bg-surface-container-low border-none rounded-xl px-4 py-4 pr-10 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant" />
             <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline text-lg pointer-events-none">search</span>
           </div>
-          {specOpen && (
-            <div className="absolute left-0 right-0 top-full mt-1 bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant/10 z-50 max-h-56 overflow-y-auto py-1">
-              {allSpecialties.filter(s => s.toLowerCase().includes(specSearch.toLowerCase())).map(s => (
-                <button key={s} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-surface-container-low transition-colors ${filters.specialty === s ? 'text-primary font-bold bg-primary/5' : 'text-on-surface'}`} onClick={() => { setFilters(prev => ({ ...prev, specialty: s })); setSpecSearch(''); setSpecOpen(false) }}>{s}</button>
-              ))}
-              {allSpecialties.filter(s => s.toLowerCase().includes(specSearch.toLowerCase())).length === 0 && (
-                <p className="px-4 py-3 text-sm text-on-surface-variant italic">No specialties found</p>
-              )}
-            </div>
-          )}
         </div>
         <div className="pb-1">
-          <button className="flex items-center gap-2 px-6 py-4 bg-surface-container-low text-on-surface rounded-xl font-bold text-sm hover:bg-surface-container-high transition-colors border-none" onClick={openFilters}>
+          <button className="flex items-center gap-2 px-6 py-4 bg-surface-container-low text-on-surface rounded-xl font-bold text-sm hover:bg-surface-container-high transition-colors border-none relative" onClick={openFilters}>
             <span className="material-symbols-outlined text-xl">tune</span>Filters
           </button>
         </div>
@@ -139,11 +134,10 @@ export default function BookVideoCallPage() {
 
       {/* Doctor Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filtered.map((doc, i) => (
-          <div key={i} className={`group bg-surface-container-lowest rounded-[1.5rem] overflow-hidden hover:shadow-[0_12px_32px_rgba(44,52,54,0.06)] transition-all duration-300 border border-transparent hover:border-outline-variant/10 reveal reveal-delay-${Math.min(i + 1, 4)}`}>
+        {filtered.map((doc) => (
+          <div key={doc.name} className="group bg-surface-container-lowest rounded-[1.5rem] overflow-hidden hover:shadow-[0_12px_32px_rgba(44,52,54,0.06)] transition-all duration-300 border border-transparent hover:border-outline-variant/10">
             <div className="relative h-64 overflow-hidden">
               <img alt={doc.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" src={doc.img} />
-              {doc.available && <div className="absolute top-4 left-4 bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[0.65rem] font-bold uppercase tracking-widest flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Available Now</div>}
             </div>
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
@@ -170,13 +164,13 @@ export default function BookVideoCallPage() {
               <button className="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant" onClick={() => setFilterOpen(false)}>close</button>
             </div>
             <div className="flex-1 overflow-y-auto p-8 space-y-10">
-              <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Specialty</h4><div className="flex flex-wrap gap-2">{['All Specialties','General Physician','Pediatrician','Psychiatrist','Cardiologist','Neurologist'].map(s => <button key={s} onClick={() => setDraftFilters(prev => ({ ...prev, specialty: s }))} className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${draftFilters.specialty === s ? 'border-2 border-primary bg-primary/5 text-primary font-bold' : 'border border-outline-variant/20 hover:bg-primary/5 hover:border-primary'}`}>{s}</button>)}</div></div>
+              <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Specialty</h4><div className="flex flex-wrap gap-2">{allSpecialties.map(s => <button key={s} onClick={() => setDraftFilters(prev => ({ ...prev, specialty: s }))} className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${draftFilters.specialty === s ? 'border-2 border-primary bg-primary/5 text-primary font-bold' : 'border border-outline-variant/20 hover:bg-primary/5 hover:border-primary'}`}>{s}</button>)}</div></div>
               <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Availability</h4><div className="space-y-4">{availabilityOptions.map(a => <label key={a.value} className="flex items-center gap-3 cursor-pointer group"><input className="w-5 h-5 rounded border-outline-variant/30 text-primary focus:ring-primary/20" type="checkbox" checked={draftFilters.availability.includes(a.value)} onChange={(e) => setDraftArrayFilter('availability', a.value, e.target.checked)} /><span className="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">{a.label}</span></label>)}</div></div>
               <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Price Range (PKR)</h4><div className="space-y-4">{priceOptions.map(p => <label key={p} className="flex items-center gap-3 cursor-pointer group"><input className="w-5 h-5 border-outline-variant/30 text-primary focus:ring-primary/20 cursor-pointer" name="price" type="radio" checked={draftFilters.price === p} onChange={() => setDraftFilters(prev => ({ ...prev, price: p }))} /><span className="text-sm font-medium text-on-surface">{p}</span></label>)}</div></div>
               <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Gender</h4><div className="flex gap-6">{['Male','Female'].map(g => <label key={g} className="flex items-center gap-2 cursor-pointer group"><input className="w-5 h-5 rounded border-outline-variant/30 text-primary cursor-pointer" type="checkbox" checked={draftFilters.gender.includes(g.toLowerCase())} onChange={(e) => setDraftArrayFilter('gender', g.toLowerCase(), e.target.checked)} /><span className="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">{g}</span></label>)}</div></div>
             </div>
             <div className="p-6 border-t border-outline-variant/10 bg-surface-container-low flex gap-4">
-              <button className="flex-1 py-4 px-4 rounded-xl bg-primary text-on-primary font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition-all" onClick={() => { setFilters({ ...draftFilters, gender: [...draftFilters.gender], availability: [...draftFilters.availability] }); setSpecSearch(''); setFilterOpen(false) }}>Apply Filters</button>
+              <button className="flex-1 py-4 px-4 rounded-xl bg-primary text-on-primary font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition-all" onClick={() => { setFilters({ ...draftFilters, gender: [...draftFilters.gender], availability: [...draftFilters.availability] }); setFilterOpen(false) }}>Apply Filters</button>
               <button className="px-6 py-4 rounded-xl bg-surface-container-lowest text-on-surface border border-outline-variant/10 font-bold hover:bg-surface-container-high transition-all" onClick={resetFilters}>Reset</button>
             </div>
           </div>
