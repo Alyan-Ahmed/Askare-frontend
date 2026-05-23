@@ -198,7 +198,7 @@ export default function BookVideoCallPage() {
                 <div className="grid grid-cols-7 gap-2 text-center">
                   {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => <div key={d} className="text-[10px] font-bold text-outline uppercase py-2">{d}</div>)}
                   {calendarDays.map((cell, i) => cell === null ? <div key={i}></div> : (
-                    <button key={i} disabled={cell.isPast} onClick={() => !cell.isPast && setSelectedDay(cell.day)} className={`aspect-square flex flex-col items-center justify-center text-sm rounded-2xl transition-colors ${selectedDay === cell.day ? 'bg-primary text-on-primary font-bold shadow-md shadow-primary/20' : cell.isPast ? 'text-outline-variant/40 cursor-not-allowed' : 'border border-outline-variant/20 hover:border-primary/50 hover:bg-primary/5 cursor-pointer'}`}>{cell.day}</button>
+                    <button key={i} disabled={cell.isPast} onClick={() => !cell.isPast && setSelectedDay(cell.day)} className={`aspect-square flex flex-col items-center justify-center text-sm rounded-2xl transition-all relative ${selectedDay === cell.day ? 'bg-primary text-on-primary font-bold shadow-md shadow-primary/20' : cell.isPast ? 'text-outline-variant/40 cursor-not-allowed' : 'border border-outline-variant/20 hover:border-primary/50 hover:bg-primary/5 cursor-pointer'}`} style={cell.isPast ? {opacity: 0.85, cursor: 'not-allowed'} : {}}>{cell.day}</button>
                   ))}
                 </div>
               </div>

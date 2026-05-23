@@ -98,9 +98,16 @@ export default function DoctorDashboardPage() {
     showToast(`${rescheduleItem.patient} rescheduled to ${rescheduleDate} at ${selectedTime} — Pending patient confirmation`)
   }
 
-  // Filter agenda to show only today's items
+  // Filter agenda to show only today's items, sorted by time (AM first)
   const today = todayStr()
-  const todayAgenda = agenda.filter(item => item.date === today)
+  const parseTimeToMinutes = (timeStr) => {
+    const [clock, meridiem] = timeStr.split(' ')
+    let [h, m] = clock.split(':').map(Number)
+    if (meridiem === 'PM' && h !== 12) h += 12
+    if (meridiem === 'AM' && h === 12) h = 0
+    return h * 60 + m
+  }
+  const todayAgenda = agenda.filter(item => item.date === today).sort((a, b) => parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time))
 
   return (
     <div className="flex-1 p-8 max-w-7xl mx-auto w-full">

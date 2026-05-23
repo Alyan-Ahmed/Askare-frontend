@@ -30,6 +30,9 @@ export default function PatientDashboardPage() {
   const [rescheduleTime, setRescheduleTime] = useState('')
   const [rescheduleError, setRescheduleError] = useState('')
   const [toast, setToast] = useState('')
+  const [appointmentDate, setAppointmentDate] = useState('Today, Oct 14')
+  const [appointmentTime, setAppointmentTime] = useState('02:30 PM')
+  const [viewKey, setViewKey] = useState(0)
   const { user } = useAuth()
   const navigate = useNavigate()
   const displayName = user?.name || 'Alyan Ahmed'
@@ -43,6 +46,13 @@ export default function PatientDashboardPage() {
   }, [modal])
 
   const data = modal ? summaryData[modal] : null
+
+  const handleViewChange = (view) => {
+    if (view !== archiveView) {
+      setArchiveView(view)
+      setViewKey(k => k + 1)
+    }
+  }
 
   return (
     <div className="flex-1 px-12 py-10 max-w-7xl mx-auto w-full">
@@ -64,12 +74,12 @@ export default function PatientDashboardPage() {
             <h3 className="text-3xl font-bold mb-1">Dr. Aris Thorne</h3>
             <p className="text-primary-container text-lg mb-8">Senior Cardiologist • Clinical Lead</p>
             <div className="flex items-center gap-6 mb-10">
-              <div className="flex items-center gap-2"><span className="material-symbols-outlined text-primary-container">calendar_today</span><span className="font-medium">Today, Oct 14</span></div>
-              <div className="flex items-center gap-2"><span className="material-symbols-outlined text-primary-container">schedule</span><span className="font-medium">14:30 - 15:00</span></div>
+              <div className="flex items-center gap-2"><span className="material-symbols-outlined text-primary-container">calendar_today</span><span className="font-medium">{appointmentDate}</span></div>
+              <div className="flex items-center gap-2"><span className="material-symbols-outlined text-primary-container">schedule</span><span className="font-medium">{appointmentTime}</span></div>
             </div>
             <div className="flex items-center gap-3">
-              <Link to="/video-call?role=patient&doctor=Dr.%20Aris%20Thorne" className="bg-surface-container-lowest text-primary px-8 py-4 rounded-xl font-bold inline-flex items-center gap-2 hover:scale-105 transition-transform active:scale-95 no-underline">
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>videocam</span> Join Video Call
+              <Link to="/video-call?role=patient&doctor=Dr.%20Aris%20Thorne" className="relative z-20 bg-surface-container-lowest text-primary px-8 py-4 rounded-xl font-bold inline-flex items-center gap-2 hover:scale-105 transition-transform active:scale-95 no-underline" style={{filter:'none', opacity:1, backdropFilter:'none', WebkitBackdropFilter:'none', transform:'translateZ(0)', willChange:'auto'}}>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1', filter:'none', opacity:1 }}>videocam</span> Join Video Call
               </Link>
               <button onClick={()=>{setRescheduleModal(true);setRescheduleDate('');setRescheduleTime('');setRescheduleError('')}} className="bg-white/20 text-white border border-white/30 px-6 py-4 rounded-xl font-semibold inline-flex items-center gap-2 hover:bg-white/30 transition-all active:scale-95 backdrop-blur-sm">
                 Reschedule
@@ -117,14 +127,14 @@ export default function PatientDashboardPage() {
         <div className="flex items-center justify-between mb-8">
           <h3 className="text-2xl font-bold text-on-surface">Clinical Archive</h3>
           <div className="flex gap-2">
-            <button onClick={() => setArchiveView('timeline')} className={`px-4 py-2 rounded-full text-sm transition-all ${archiveView === 'timeline' ? 'bg-surface-container-high text-primary font-bold' : 'text-secondary font-medium hover:bg-surface-container'}`}>Timeline View</button>
-            <button onClick={() => setArchiveView('list')} className={`px-4 py-2 rounded-full text-sm transition-all ${archiveView === 'list' ? 'bg-surface-container-high text-primary font-bold' : 'text-secondary font-medium hover:bg-surface-container'}`}>List View</button>
+            <button onClick={() => handleViewChange('timeline')} className={`px-4 py-2 rounded-full text-sm transition-all ${archiveView === 'timeline' ? 'bg-surface-container-high text-primary font-bold' : 'text-secondary font-medium hover:bg-surface-container'}`}>Timeline View</button>
+            <button onClick={() => handleViewChange('list')} className={`px-4 py-2 rounded-full text-sm transition-all ${archiveView === 'list' ? 'bg-surface-container-high text-primary font-bold' : 'text-secondary font-medium hover:bg-surface-container'}`}>List View</button>
           </div>
         </div>
 
         {/* Timeline View */}
         {archiveView === 'timeline' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div key={`timeline-${viewKey}`} className="grid grid-cols-1 md:grid-cols-3 gap-8" style={{animation: 'archiveFadeIn 0.4s ease-out'}}>
             <div className="space-y-6">
               <div className="flex items-center gap-3 mb-2"><span className="material-symbols-outlined text-primary">history</span><h4 className="font-bold text-on-surface uppercase text-xs tracking-widest">Consultation History</h4></div>
               <div className="space-y-4">
@@ -158,7 +168,7 @@ export default function PatientDashboardPage() {
 
         {/* List View */}
         {archiveView === 'list' && (
-          <div className="bg-surface-container-lowest rounded-[1.5rem] overflow-hidden border border-outline-variant/10 shadow-sm">
+          <div key={`list-${viewKey}`} className="bg-surface-container-lowest rounded-[1.5rem] overflow-hidden border border-outline-variant/10 shadow-sm" style={{animation: 'archiveFadeIn 0.4s ease-out'}}>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="bg-surface-container-low text-on-surface-variant text-[10px] font-bold uppercase tracking-widest">
@@ -211,6 +221,14 @@ export default function PatientDashboardPage() {
               </div>
               <button type="button" onClick={()=>{
                 if(!rescheduleDate||!rescheduleTime){setRescheduleError('Please select a time slot.');return}
+
+                // Format date for display (e.g. "Oct 20")
+                const dateObj = new Date(rescheduleDate)
+                const monthShort = dateObj.toLocaleString('en-US', { month: 'short' })
+                const day = dateObj.getDate()
+                setAppointmentDate(`${monthShort} ${day}, ${dateObj.getFullYear()}`)
+                setAppointmentTime(rescheduleTime)
+
                 setRescheduleModal(false)
                 setToast(`Appointment rescheduled to ${rescheduleDate} at ${rescheduleTime}`)
                 setTimeout(()=>setToast(''),4000)
@@ -252,6 +270,14 @@ export default function PatientDashboardPage() {
           </div>
         </div>
       )}
+
+      {/* View transition animation */}
+      <style>{`
+        @keyframes archiveFadeIn {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   )
 }

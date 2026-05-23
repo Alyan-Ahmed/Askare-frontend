@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
@@ -36,6 +36,9 @@ export default function VideoCallPage() {
   const chatRef = useRef(null)
   const timerRef = useRef(null)
   const localVideoRef = useRef(null)
+  const screenVideoRef = useRef(null)
+  const mediaStreamRef = useRef(null)
+  const screenStreamRef = useRef(null)
 
   const params = new URLSearchParams(location.search)
   const routeRole = params.get('role')
@@ -58,13 +61,26 @@ export default function VideoCallPage() {
     const videoEl = localVideoRef.current
     navigator.mediaDevices?.getUserMedia({ video: true, audio: true })
       .then(stream => {
+        mediaStreamRef.current = stream
         if (videoEl) videoEl.srcObject = stream
         setIsVideoOff(false)
+        setIsMuted(false)
       })
-      .catch(() => {})
+      .catch(() => {
+        // If camera fails, try audio only
+        navigator.mediaDevices?.getUserMedia({ audio: true })
+          .then(stream => {
+            mediaStreamRef.current = stream
+            setIsMuted(false)
+          })
+          .catch(() => {})
+      })
     return () => {
-      if (videoEl?.srcObject) {
-        videoEl.srcObject.getTracks().forEach(t => t.stop())
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(t => t.stop())
+      }
+      if (screenStreamRef.current) {
+        screenStreamRef.current.getTracks().forEach(t => t.stop())
       }
     }
   }, [])
@@ -74,6 +90,86 @@ export default function VideoCallPage() {
   }, [messages])
 
   const formatTime = (s) => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`
+
+  // Toggle microphone
+  const toggleMute = useCallback(() => {
+    if (mediaStreamRef.current) {
+      const audioTracks = mediaStreamRef.current.getAudioTracks()
+      audioTracks.forEach(track => {
+        track.enabled = isMuted // if currently muted, enable; if unmuted, disable
+      })
+    }
+    setIsMuted(!isMuted)
+  }, [isMuted])
+
+  // Toggle camera
+  const toggleVideo = useCallback(() => {
+    if (mediaStreamRef.current) {
+      const videoTracks = mediaStreamRef.current.getVideoTracks()
+      if (videoTracks.length > 0) {
+        videoTracks.forEach(track => {
+          track.enabled = isVideoOff // if currently off, enable; if on, disable
+        })
+        setIsVideoOff(!isVideoOff)
+      } else {
+        // No video track yet, try to get camera
+        navigator.mediaDevices?.getUserMedia({ video: true })
+          .then(stream => {
+            const newVideoTrack = stream.getVideoTracks()[0]
+            mediaStreamRef.current.addTrack(newVideoTrack)
+            if (localVideoRef.current) {
+              localVideoRef.current.srcObject = mediaStreamRef.current
+            }
+            setIsVideoOff(false)
+          })
+          .catch(() => {})
+      }
+    } else {
+      // No stream at all, request camera + audio
+      navigator.mediaDevices?.getUserMedia({ video: true, audio: true })
+        .then(stream => {
+          mediaStreamRef.current = stream
+          if (localVideoRef.current) localVideoRef.current.srcObject = stream
+          setIsVideoOff(false)
+          setIsMuted(false)
+        })
+        .catch(() => {})
+    }
+  }, [isVideoOff])
+
+  // Toggle screen sharing
+  const toggleScreenShare = useCallback(async () => {
+    if (isScreenSharing) {
+      // Stop screen sharing
+      if (screenStreamRef.current) {
+        screenStreamRef.current.getTracks().forEach(t => t.stop())
+        screenStreamRef.current = null
+      }
+      setIsScreenSharing(false)
+    } else {
+      // Start screen sharing
+      try {
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false })
+        screenStreamRef.current = screenStream
+
+        // Show screen share in the main video area
+        if (screenVideoRef.current) {
+          screenVideoRef.current.srcObject = screenStream
+        }
+
+        setIsScreenSharing(true)
+
+        // Listen for user clicking "Stop sharing" in browser
+        screenStream.getVideoTracks()[0].addEventListener('ended', () => {
+          screenStreamRef.current = null
+          setIsScreenSharing(false)
+        })
+      } catch (err) {
+        // User cancelled or error
+        setIsScreenSharing(false)
+      }
+    }
+  }, [isScreenSharing])
 
   const sendChat = () => {
     if (!chatInput.trim()) return
@@ -90,7 +186,8 @@ export default function VideoCallPage() {
 
   const endCall = () => {
     if (timerRef.current) clearInterval(timerRef.current)
-    if (localVideoRef.current?.srcObject) localVideoRef.current.srcObject.getTracks().forEach(t => t.stop())
+    if (mediaStreamRef.current) mediaStreamRef.current.getTracks().forEach(t => t.stop())
+    if (screenStreamRef.current) screenStreamRef.current.getTracks().forEach(t => t.stop())
     navigate(effectiveRole === 'doctor' ? '/doctor-dashboard' : '/patient-dashboard')
   }
 
@@ -107,7 +204,7 @@ export default function VideoCallPage() {
           </button>
           <div>
             <h1 className="text-white text-sm font-bold">{peerName}</h1>
-            <p className="text-white/50 text-xs">{isConnected ? 'Video consultation in progress' : 'Connecting...'}</p>
+            <p className="text-white/50 text-xs">{isScreenSharing ? 'Screen sharing active' : isConnected ? 'Video consultation in progress' : 'Connecting...'}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -126,7 +223,16 @@ export default function VideoCallPage() {
 
       {/* ── Main Video Area ── */}
       <div className="flex-1 relative flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(145deg, #0f1517 0%, #162023 50%, #0b1215 100%)' }}>
-        {!isConnected ? (
+        {isScreenSharing ? (
+          /* Screen Share View */
+          <div className="w-full h-full flex items-center justify-center" style={{ animation: 'fadeInUp 0.4s ease-out' }}>
+            <video ref={screenVideoRef} autoPlay playsInline className="max-w-full max-h-full object-contain rounded-lg" style={{ border: '2px solid rgba(255,255,255,0.06)' }} />
+            <div className="absolute top-20 left-1/2 -translate-x-1/2 inline-flex items-center gap-2 rounded-full px-4 py-2 z-10" style={{ background: 'rgba(0,105,119,0.9)', backdropFilter: 'blur(12px)' }}>
+              <span className="material-symbols-outlined text-white text-sm">screen_share</span>
+              <span className="text-white text-xs font-semibold">You are sharing your screen</span>
+            </div>
+          </div>
+        ) : !isConnected ? (
           /* Connecting State with Ripple */
           <div className="text-center" style={{ animation: 'fadeInUp 0.5s ease-out' }}>
             <div className="relative w-40 h-40 mx-auto mb-8 flex items-center justify-center">
@@ -150,7 +256,7 @@ export default function VideoCallPage() {
       </div>
 
       {/* ── Self/Local Video (PiP) ── */}
-      <div className="absolute z-20 rounded-[20px] overflow-hidden" style={{ bottom: '120px', right: '24px', width: '200px', height: '280px', background: '#1a2428', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', border: '2px solid rgba(255,255,255,0.08)' }}>
+      <div className="absolute z-20 rounded-[20px] overflow-hidden" style={{ bottom: '120px', right: isChatOpen ? '404px' : '24px', width: '200px', height: '280px', background: '#1a2428', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', border: '2px solid rgba(255,255,255,0.08)', transition: 'right 0.3s ease' }}>
         {isVideoOff ? (
           <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(145deg, #1a2428, #0f1517)' }}>
             <div className="text-center">
@@ -164,6 +270,11 @@ export default function VideoCallPage() {
         <div className="absolute bottom-3 left-3 bg-black/50 rounded-lg px-2.5 py-1 z-10" style={{ backdropFilter: 'blur(8px)' }}>
           <span className="text-[11px] text-white font-semibold">You</span>
         </div>
+        {isMuted && (
+          <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-500/80 flex items-center justify-center" style={{ backdropFilter: 'blur(8px)' }}>
+            <span className="material-symbols-outlined text-white text-sm" style={{ fontVariationSettings: '"FILL" 1' }}>mic_off</span>
+          </div>
+        )}
       </div>
 
       {/* ── Chat Side Panel ── */}
@@ -213,25 +324,25 @@ export default function VideoCallPage() {
       {/* ── Bottom Control Bar ── */}
       <div className="absolute bottom-0 left-0 right-0 z-30 h-24 flex items-center justify-center gap-3 px-6" style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(11,15,16,0.85) 40%, rgba(11,15,16,0.97) 100%)' }}>
         {/* Mic */}
-        <button onClick={() => setIsMuted(!isMuted)} className="group relative w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95" style={{ background: isMuted ? 'rgba(168,56,54,0.25)' : 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', color: isMuted ? '#fa746f' : 'white' }}>
+        <button onClick={toggleMute} className="group relative w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95" style={{ background: isMuted ? 'rgba(168,56,54,0.25)' : 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', color: isMuted ? '#fa746f' : 'white' }}>
           <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>{isMuted ? 'mic_off' : 'mic'}</span>
           <span className="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 text-[11px] font-semibold text-white px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all whitespace-nowrap" style={{ background: 'rgba(30,40,44,0.95)', backdropFilter: 'blur(8px)' }}>{isMuted ? 'Unmute' : 'Mute'}</span>
         </button>
 
         {/* Camera */}
-        <button onClick={() => setIsVideoOff(!isVideoOff)} className="group relative w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95" style={{ background: isVideoOff ? 'rgba(168,56,54,0.25)' : 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', color: isVideoOff ? '#fa746f' : 'white' }}>
+        <button onClick={toggleVideo} className="group relative w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95" style={{ background: isVideoOff ? 'rgba(168,56,54,0.25)' : 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', color: isVideoOff ? '#fa746f' : 'white' }}>
           <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>{isVideoOff ? 'videocam_off' : 'videocam'}</span>
           <span className="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 text-[11px] font-semibold text-white px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all whitespace-nowrap" style={{ background: 'rgba(30,40,44,0.95)', backdropFilter: 'blur(8px)' }}>{isVideoOff ? 'Start Video' : 'Stop Video'}</span>
         </button>
 
         {/* Screen Share */}
-        <button onClick={() => setIsScreenSharing(!isScreenSharing)} className="group relative w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95" style={{ background: isScreenSharing ? 'white' : 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', color: isScreenSharing ? '#0b0f10' : 'white' }}>
+        <button onClick={toggleScreenShare} className="group relative w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95" style={{ background: isScreenSharing ? 'white' : 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', color: isScreenSharing ? '#0b0f10' : 'white' }}>
           <span className="material-symbols-outlined">{isScreenSharing ? 'stop_screen_share' : 'screen_share'}</span>
           <span className="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 text-[11px] font-semibold text-white px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all whitespace-nowrap" style={{ background: 'rgba(30,40,44,0.95)', backdropFilter: 'blur(8px)' }}>{isScreenSharing ? 'Stop Sharing' : 'Share Screen'}</span>
         </button>
 
         {/* Chat */}
-        <button onClick={() => { setIsChatOpen(!isChatOpen); if (!isChatOpen) setUnread(0) }} className="group relative w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', color: 'white' }}>
+        <button onClick={() => { setIsChatOpen(!isChatOpen); if (!isChatOpen) setUnread(0) }} className="group relative w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95" style={{ background: isChatOpen ? 'rgba(0,105,119,0.5)' : 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', color: 'white' }}>
           <span className="material-symbols-outlined">chat</span>
           {unread > 0 && <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">{unread}</span>}
           <span className="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 text-[11px] font-semibold text-white px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all whitespace-nowrap" style={{ background: 'rgba(30,40,44,0.95)', backdropFilter: 'blur(8px)' }}>Chat</span>

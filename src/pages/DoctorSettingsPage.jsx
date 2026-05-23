@@ -6,8 +6,8 @@ import { AuthenticatorSetup, PhoneNumberField, SecurityMethodCard, SmsVerificati
 export default function DoctorSettingsPage() {
   const { user, updateUser, deleteAccount, deactivateAccount } = useAuth()
   const navigate = useNavigate()
-  const [twoFA, setTwoFA] = useState(true)
-  const [authApp, setAuthApp] = useState(true)
+  const [twoFA, setTwoFA] = useState(false)
+  const [authApp, setAuthApp] = useState(false)
   const [smsEnabled, setSmsEnabled] = useState(false)
   const [emailNotif, setEmailNotif] = useState(true)
   const [urgentAlerts, setUrgentAlerts] = useState(false)
@@ -209,7 +209,7 @@ export default function DoctorSettingsPage() {
               <Toggle checked={twoFA} onChange={setTwoFA} />
             </div>
             <div className={`px-8 pb-6 space-y-3 border-t border-surface-container pt-4 transition-all duration-300 ${!twoFA ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
-              <SecurityMethodCard enabled={authApp} onEnabledChange={setAuthApp} icon="phone_iphone" title="Authenticator App" description="Use Google Authenticator or Authy for login codes.">
+              <SecurityMethodCard enabled={authApp} onEnabledChange={setAuthApp} icon="phone_iphone" title="Authenticator App" description="Use Google Authenticator for login codes.">
                 <AuthenticatorSetup />
               </SecurityMethodCard>
               <SecurityMethodCard enabled={smsEnabled} onEnabledChange={setSmsEnabled} icon="sms" title="SMS Verification" description="Receive a secure code on your mobile number.">

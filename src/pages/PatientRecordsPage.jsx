@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 const PATIENT_RECORDS_KEY = 'askare_patient_records'
 const DEFAULT_PATIENT_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAox2cELp727nc8F0QqlouZa__6ZAv4-XcyEzgKe10NFebkQZ6zwt1AVi5A40vtPQlgILrsZO4LEBhgNSHYHes6nqyU_4kjT4LRk4umkaWEpp9o_VpetLVnbbB9Zd2jNVNrpUvg_5U6PulVe0fwMTqmJQ8iB76aIZ86NAX_D7f-WEhXXum1-y8GdUP44sNRoZKGW9TEuwIYHcU_HCp90mV_Ha_VHzhFzOMyeHQw2z7EjJ1H95UUmUeqoJLIy7TscjeCBzVcGXi2ZYY'
@@ -57,6 +57,9 @@ function medicationList(record) {
   return []
 }
 
+// Field names for the new record form — used for Enter key navigation
+const NEW_RECORD_FIELDS = ['newrec-name', 'newrec-id', 'newrec-visitDate', 'newrec-illness', 'newrec-medications', 'newrec-notes', 'newrec-status']
+
 export default function PatientRecordsPage() {
   const [allRecords, setAllRecords] = useState(() => [...readStoredRecords(), ...records])
   const [search, setSearch] = useState('')
@@ -67,6 +70,12 @@ export default function PatientRecordsPage() {
   const [dateFilter, setDateFilter] = useState('All Time')
   const [draftStatusFilter, setDraftStatusFilter] = useState('all')
   const [draftDateFilter, setDraftDateFilter] = useState('All Time')
+  const [toast, setToast] = useState('')
+  const [toastType, setToastType] = useState('success')
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const formRef = useRef(null)
+
+  const showToast = useCallback((msg, type = 'success') => { setToastType(type); setToast(msg); setTimeout(() => setToast(''), 4000) }, [])
 
   useEffect(() => {
     if (filterOpen || newRecordOpen || recordModal) document.body.style.overflow = 'hidden'
@@ -102,6 +111,49 @@ export default function PatientRecordsPage() {
     setFilterOpen(false)
   }
 
+  // Delete record handler
+  const deleteRecord = (record) => {
+    // Remove from allRecords state
+    setAllRecords(prev => prev.filter(r => r.id !== record.id || r.name !== record.name))
+    // Remove from sessionStorage if it was stored there
+    const stored = readStoredRecords()
+    const updated = stored.filter(r => r.id !== record.id || r.name !== record.name)
+    writeStoredRecords(updated)
+    setRecordModal(null)
+    setDeleteConfirm(false)
+    showToast(`Record for ${record.name} deleted successfully`)
+  }
+
+  // Handle Enter / Shift+Enter on form fields
+  const handleFieldKeyDown = (e, fieldName) => {
+    if (e.key === 'Enter') {
+      if (e.shiftKey) {
+        // Shift+Enter: for textareas, let default newline happen; for inputs, do nothing
+        if (e.target.tagName === 'INPUT') e.preventDefault()
+        return
+      }
+      // Regular Enter: prevent default and go to next field
+      e.preventDefault()
+      const idx = NEW_RECORD_FIELDS.indexOf(fieldName)
+      if (idx >= 0 && idx < NEW_RECORD_FIELDS.length - 1) {
+        const nextField = document.getElementById(NEW_RECORD_FIELDS[idx + 1])
+        if (nextField) { nextField.focus(); return }
+      }
+      // If last field or all required filled, try submit
+      if (formRef.current) {
+        const form = formRef.current
+        const name = form.querySelector('[name="name"]')?.value.trim()
+        const id = form.querySelector('[name="id"]')?.value.trim()
+        const visitDate = form.querySelector('[name="visitDate"]')?.value
+        const illness = form.querySelector('[name="illness"]')?.value.trim()
+        const notes = form.querySelector('[name="notes"]')?.value.trim()
+        if (name && id && visitDate && illness && notes) {
+          form.requestSubmit()
+        }
+      }
+    }
+  }
+
   const createRecord = (event) => {
     event.preventDefault()
     const form = new FormData(event.currentTarget)
@@ -125,6 +177,7 @@ export default function PatientRecordsPage() {
     setAllRecords(prev => [newRecord, ...prev])
     setNewRecordOpen(false)
     event.currentTarget.reset()
+    showToast(`Record for ${newRecord.name} created successfully`)
   }
 
   return (
@@ -156,8 +209,8 @@ export default function PatientRecordsPage() {
               <div className="flex items-start text-sm"><span className="material-symbols-outlined text-outline text-[18px] mr-2 mt-0.5">description</span><span className="text-secondary leading-relaxed">{record.condition}</span></div>
             </div>
             <div className="flex gap-2 mt-4">
-              <button className="flex-1 text-xs font-bold text-primary bg-primary-container/20 px-3 py-2 rounded-lg hover:bg-primary-container/40 transition-colors" onClick={() => setRecordModal({ ...record, tab: 'report' })}>View Report</button>
-              <button className="flex-1 text-xs font-bold text-tertiary bg-tertiary-container/20 px-3 py-2 rounded-lg hover:bg-tertiary-container/40 transition-colors" onClick={() => setRecordModal({ ...record, tab: 'scans' })}>Scans</button>
+              <button className="flex-1 text-xs font-bold text-primary bg-primary-container/20 px-3 py-2 rounded-lg hover:bg-primary-container/40 transition-colors" onClick={() => { setRecordModal({ ...record, tab: 'report' }); setDeleteConfirm(false) }}>View Report</button>
+              <button className="flex-1 text-xs font-bold text-tertiary bg-tertiary-container/20 px-3 py-2 rounded-lg hover:bg-tertiary-container/40 transition-colors" onClick={() => { setRecordModal({ ...record, tab: 'scans' }); setDeleteConfirm(false) }}>Scans</button>
             </div>
           </div>
         ))}
@@ -186,28 +239,34 @@ export default function PatientRecordsPage() {
           <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={() => setNewRecordOpen(false)}></div>
           <div className="relative bg-surface-container-lowest w-full max-w-lg rounded-2xl shadow-2xl p-8 z-10 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-bold text-on-surface">New Patient Record</h2><button className="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high" onClick={() => setNewRecordOpen(false)}>close</button></div>
-            <form className="space-y-5" onSubmit={createRecord}>
-              <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Patient Name <span className="text-error">*</span></label><input name="name" type="text" placeholder="Enter patient full name" className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline" required /></div>
-              <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Patient ID <span className="text-error">*</span></label><input name="id" type="text" placeholder="e.g. RE-1234" className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline" required /></div>
-              {/* Illness Block */}
+            <form ref={formRef} className="space-y-5" onSubmit={createRecord}>
+              {/* Step 1: Patient Info */}
+              <div className="flex items-center gap-2 mb-1"><span className="w-6 h-6 rounded-full bg-primary text-on-primary text-[10px] font-bold flex items-center justify-center">1</span><span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Patient Information</span></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Patient Name <span className="text-error">*</span></label><input id="newrec-name" name="name" type="text" placeholder="Enter patient full name" className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline" required onKeyDown={e => handleFieldKeyDown(e, 'newrec-name')} /></div>
+                <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Patient ID <span className="text-error">*</span></label><input id="newrec-id" name="id" type="text" placeholder="e.g. RE-1234" className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline" required onKeyDown={e => handleFieldKeyDown(e, 'newrec-id')} /></div>
+              </div>
+              <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Visit Date <span className="text-error">*</span></label><input id="newrec-visitDate" name="visitDate" type="date" className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" required onKeyDown={e => handleFieldKeyDown(e, 'newrec-visitDate')} /></div>
+
+              {/* Step 2: Diagnosis */}
+              <div className="flex items-center gap-2 mb-1 pt-2"><span className="w-6 h-6 rounded-full bg-primary text-on-primary text-[10px] font-bold flex items-center justify-center">2</span><span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Clinical Details</span></div>
               <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/10">
                 <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-tertiary text-lg">coronavirus</span><label className="text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Illness / Diagnosis <span className="text-error">*</span></label></div>
-                <input name="illness" type="text" placeholder="e.g. Mild hypertension" className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline" required />
+                <textarea id="newrec-illness" name="illness" placeholder="e.g. Mild hypertension" className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline resize-none overflow-hidden" rows="1" required onKeyDown={e => handleFieldKeyDown(e, 'newrec-illness')} onInput={e=>{e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'}}></textarea>
               </div>
-              {/* Medications Block (Optional) */}
               <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/10">
                 <div className="flex items-center justify-between mb-3"><div className="flex items-center gap-2"><span className="material-symbols-outlined text-primary text-lg" style={{fontVariationSettings:'"FILL" 1'}}>medication</span><label className="text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Prescribed Medications</label></div><span className="text-[10px] text-secondary font-medium italic">Optional</span></div>
-                <input name="medications" type="text" placeholder="e.g. Lisinopril 10mg, Atorvastatin 20mg" className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline" />
+                <textarea id="newrec-medications" name="medications" placeholder="e.g. Lisinopril 10mg, Atorvastatin 20mg" className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline resize-none overflow-hidden" rows="1" onKeyDown={e => handleFieldKeyDown(e, 'newrec-medications')} onInput={e=>{e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'}}></textarea>
               </div>
-              {/* Doctor's Notes Block */}
+
+              {/* Step 3: Notes */}
+              <div className="flex items-center gap-2 mb-1 pt-2"><span className="w-6 h-6 rounded-full bg-primary text-on-primary text-[10px] font-bold flex items-center justify-center">3</span><span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Notes & Status</span></div>
               <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/10">
-                <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-primary text-lg">clinical_notes</span><label className="text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Doctor's Notes <span className="text-error">*</span></label></div>
-                <textarea name="notes" placeholder="Recommendations, follow-up plan, or additional notes..." rows="3" className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline resize-none" required></textarea>
+                <div className="flex items-center gap-2 mb-1"><span className="material-symbols-outlined text-primary text-lg">clinical_notes</span><label className="text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Doctor's Notes <span className="text-error">*</span></label></div>
+                <p className="text-[10px] text-secondary mb-3">Press Shift+Enter for a new line</p>
+                <textarea id="newrec-notes" name="notes" placeholder="Recommendations, follow-up plan, or additional notes..." rows="3" className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline resize-none overflow-hidden" required onKeyDown={e => handleFieldKeyDown(e, 'newrec-notes')} onInput={e=>{e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'}}></textarea>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Status</label><select name="status" className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20">{RECORD_STATUS_OPTIONS.map(status => <option key={status}>{status}</option>)}</select></div>
-                <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Visit Date</label><input name="visitDate" type="date" className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" /></div>
-              </div>
+              <div><label className="block text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Status</label><select id="newrec-status" name="status" className="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20" onKeyDown={e => handleFieldKeyDown(e, 'newrec-status')}>{RECORD_STATUS_OPTIONS.map(status => <option key={status}>{status}</option>)}</select></div>
               <button type="submit" className="w-full py-4 bg-primary text-on-primary rounded-xl font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition-all flex items-center justify-center gap-2"><span className="material-symbols-outlined text-sm">add</span>Create Record</button>
             </form>
           </div>
@@ -224,7 +283,6 @@ export default function PatientRecordsPage() {
             </div>
             {recordModal.tab === 'report' && (
               <div className="space-y-4">
-                <div className="bg-surface-container-low p-4 rounded-xl"><p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Clinical Summary</p><p className="text-sm text-on-surface leading-relaxed">{recordModal.condition}</p></div>
                 <div className="bg-surface-container-low p-4 rounded-xl"><p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Illness Diagnosis</p><p className="text-sm text-on-surface">{recordModal.illness || recordModal.condition}</p></div>
                 <div className="bg-surface-container-low p-4 rounded-xl"><p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Last Visit</p><p className="text-sm text-on-surface">{recordModal.lastVisit}</p></div>
                 <div className="bg-surface-container-low p-4 rounded-xl">
@@ -236,9 +294,36 @@ export default function PatientRecordsPage() {
                   )}
                 </div>
                 <div className="bg-surface-container-low p-4 rounded-xl"><p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Doctor's Notes</p><p className="text-sm text-on-surface leading-relaxed">{recordModal.notes || 'No additional notes recorded.'}</p></div>
+
+                {/* Delete Record */}
+                <div className="pt-4 border-t border-outline-variant/10">
+                  {!deleteConfirm ? (
+                    <button className="w-full py-3 rounded-xl font-bold text-sm text-error bg-error-container/20 hover:bg-error-container/40 transition-colors flex items-center justify-center gap-2" onClick={() => setDeleteConfirm(true)}>
+                      <span className="material-symbols-outlined text-base">delete</span> Delete Record
+                    </button>
+                  ) : (
+                    <div className="bg-error-container/10 border border-error/20 rounded-xl p-4">
+                      <p className="text-sm text-error font-semibold mb-3">Are you sure you want to delete this record? This action cannot be undone.</p>
+                      <div className="flex gap-3">
+                        <button className="flex-1 py-2.5 rounded-xl font-semibold text-sm text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/20" onClick={() => setDeleteConfirm(false)}>Cancel</button>
+                        <button className="flex-1 py-2.5 rounded-xl font-bold text-sm bg-error text-on-error hover:opacity-90" onClick={() => deleteRecord(recordModal)}>Confirm Delete</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
             {recordModal.tab === 'scans' && <div className="bg-surface-container-low p-6 rounded-xl text-center"><span className="material-symbols-outlined text-4xl text-outline-variant/40 mb-3 block">image</span><p className="text-sm text-secondary">No scans uploaded for this record yet.</p></div>}
+          </div>
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div className="fixed bottom-8 right-8 z-[90]">
+          <div className={`${toastType === 'error' ? 'bg-error' : 'bg-primary'} text-on-primary px-6 py-3 rounded-xl shadow-xl flex items-center gap-3 font-semibold text-sm animate-slide-up`}>
+            <span className="material-symbols-outlined" style={{fontVariationSettings:'"FILL" 1'}}>{toastType === 'error' ? 'cancel' : 'check_circle'}</span>
+            <span>{toast}</span>
           </div>
         </div>
       )}

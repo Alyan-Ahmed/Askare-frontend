@@ -6,8 +6,8 @@ import { AuthenticatorSetup, PhoneNumberField, SecurityMethodCard, SmsVerificati
 export default function PatientSettingsPage() {
   const { user, updateUser, deleteAccount, deactivateAccount } = useAuth()
   const navigate = useNavigate()
-  const [twoFA, setTwoFA] = useState(true)
-  const [authApp, setAuthApp] = useState(true)
+  const [twoFA, setTwoFA] = useState(false)
+  const [authApp, setAuthApp] = useState(false)
   const [smsEnabled, setSmsEnabled] = useState(false)
   const [emailAlerts, setEmailAlerts] = useState(true)
   const [smsNotif, setSmsNotif] = useState(false)
@@ -198,7 +198,7 @@ export default function PatientSettingsPage() {
 
             {/* 2FA Options */}
             <div className={`px-8 pb-6 space-y-3 border-t border-surface-container pt-4 ${!twoFA ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
-              <SecurityMethodCard enabled={authApp} onEnabledChange={setAuthApp} icon="phone_iphone" title="Authenticator App" description="Use Google Authenticator or Authy for login codes.">
+              <SecurityMethodCard enabled={authApp} onEnabledChange={setAuthApp} icon="phone_iphone" title="Authenticator App" description="Use Google Authenticator for login codes.">
                 <AuthenticatorSetup />
               </SecurityMethodCard>
               <SecurityMethodCard enabled={smsEnabled} onEnabledChange={setSmsEnabled} icon="sms" title="SMS Verification" description="Receive a secure code on your mobile number.">

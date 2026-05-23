@@ -82,7 +82,8 @@ export default function MySchedulePage() {
   const sel = days[selIdx]
   const dateStr = `${FULL[SHORT[sel.getDay()]]}, ${MONTHS[sel.getMonth()]} ${sel.getDate()}${suffix(sel.getDate())}, ${sel.getFullYear()}`
   const selDateStr = `${sel.getFullYear()}-${String(sel.getMonth()+1).padStart(2,'0')}-${String(sel.getDate()).padStart(2,'0')}`
-  const filteredAppts = appointments.filter(a => a.date === selDateStr)
+  const parseTimeMin = (t) => { const [c,m] = t.split(' '); let [h,mi] = c.split(':').map(Number); if(m==='PM'&&h!==12)h+=12; if(m==='AM'&&h===12)h=0; return h*60+mi }
+  const filteredAppts = appointments.filter(a => a.date === selDateStr).sort((a,b) => parseTimeMin(a.time) - parseTimeMin(b.time))
   const isPastDay = selDateStr < todayStr()
 
   useEffect(()=>{const h=()=>setMenuOpen(null);document.addEventListener('click',h);return()=>document.removeEventListener('click',h)},[])
@@ -91,8 +92,8 @@ export default function MySchedulePage() {
   const prevWeek=()=>{setAnchor(d=>{const n=new Date(d);n.setDate(n.getDate()-7);return n});setSelIdx(0)}
   const nextWeek=()=>{setAnchor(d=>{const n=new Date(d);n.setDate(n.getDate()+7);return n});setSelIdx(0)}
 
-  const openAction=(action,appt)=>{setMenuOpen(null);setDetailPatient(appt);setContactMessage('');setModal(action)}
-  const closeModal=()=>{setModal(null);setDetailPatient(null);setContactMessage('')}
+  const openAction=(action,appt)=>{setMenuOpen(null);setDetailPatient(appt);setContactMessage('');setModalError('');setRescheduleDate('');setRescheduleTime('');setModal(action)}
+  const closeModal=()=>{setModal(null);setDetailPatient(null);setContactMessage('');setModalError('')}
   const cancelAppointment=()=>{const patientName=detailPatient.name;setAppointments(prev=>prev.filter(appt=>appt.id!==detailPatient.id));closeModal();showToast(`Appointment for ${patientName} cancelled`)}
   const jumpToDate=(dateValue)=>{const d=new Date(`${dateValue}T00:00:00`);if(Number.isNaN(d.getTime()))return;const weekStart=new Date(d);weekStart.setDate(d.getDate()-d.getDay());setAnchor(weekStart);setSelIdx(d.getDay())}
   const resetRecordForm=(appt)=>{setRecordDiagnosis(appt?.purpose || '');setRecordMedicines('');setRecordStatus('Active');setRecordNotes(appt?.notes || '')}
@@ -196,13 +197,12 @@ export default function MySchedulePage() {
                             setMenuOpen(null)
                             if(a.status==='No-Show'){showToast(`Cannot add record — ${a.name} did not attend the meeting`,'error');return}
                             if(addedRecords.includes(a.id)){showToast(`Record for ${a.name} already added`);return}
-                            resetRecordForm(a);setRecordModal(a)
+                            resetRecordForm(a);setModalError('');setRecordModal(a)
                           }}><span className={`material-symbols-outlined text-base ${addedRecords.includes(a.id)?'text-green-600':'text-primary'}`}>{addedRecords.includes(a.id)?'check_circle':'post_add'}</span> {addedRecords.includes(a.id)?'Record Added':'Add to Patient Records'}</button>
                         )}
-                        {!(a.status==='Completed'||a.status==='No-Show')&&(<>
-                          <div className="border-t border-outline-variant/10 my-1"></div>
+                        {!(a.status==='Completed'||a.status==='No-Show')&&(
                           <button className="w-full text-left px-4 py-2.5 text-sm text-error hover:bg-error-container/20 flex items-center gap-3" onClick={()=>openAction('cancel',a)}><span className="material-symbols-outlined text-base">cancel</span> Cancel Appointment</button>
-                        </>)}
+                        )}
                       </div>
                     )}
                   </div>
@@ -240,14 +240,14 @@ export default function MySchedulePage() {
 
           <div className="bg-surface-container-low p-6 rounded-xl space-y-3">
             <h4 className="text-xs font-bold text-secondary uppercase tracking-widest mb-4">Availability Management</h4>
-            <button className="w-full text-left p-4 rounded-lg bg-surface-container-lowest flex items-center justify-between hover:translate-x-1 transition-transform group shadow-sm" onClick={()=>setBlockModal(true)}>
+            <button className="w-full text-left p-4 rounded-lg bg-surface-container-lowest flex items-center justify-between hover:translate-x-1 transition-transform group shadow-sm" onClick={()=>{setModalError('');setBlockDate('');setBlockModal(true)}}>
               <span className="flex items-center gap-3 font-semibold"><span className="material-symbols-outlined text-primary">schedule</span> Block Out Time</span>
               <span className="material-symbols-outlined text-outline group-hover:text-primary">arrow_forward</span>
             </button>
             <button className="w-full text-left p-4 rounded-lg bg-surface-container-lowest flex items-center justify-between hover:translate-x-1 transition-transform group shadow-sm" onClick={()=>{
               setRescheduleDate(selDateStr)
               setRescheduleTime('')
-              setModalError(isPastDay ? 'You cannot reschedule a whole previous day. Please reschedule past meetings one by one.' : '')
+              setModalError('')
               setRescheduleModal(true)
             }}>
               <span className="flex items-center gap-3 font-semibold"><span className="material-symbols-outlined text-primary">sync_alt</span> Reschedule Day</span>
@@ -271,20 +271,27 @@ export default function MySchedulePage() {
                 <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={()=>{
                   if(!rescheduleDate){setModalError('Please select a new date.');return}
                   if(!rescheduleTime){setModalError('Please select a new time.');return}
+                  if(rescheduleDate < todayStr()){setModalError('Cannot reschedule to a past date.');return}
                   const [hh,mm] = rescheduleTime.split(':')
                   let h = parseInt(hh,10)
                   const ampm = h >= 12 ? 'PM' : 'AM'
                   h = h % 12 || 12
                   const formattedTime = `${String(h).padStart(2,'0')}:${mm} ${ampm}`
+                  // Check for time conflict on target date
+                  const conflicting = appointments.filter(a=>a.id!==detailPatient.id && a.date===rescheduleDate && a.time===formattedTime)
+                  if(conflicting.length>0){setModalError(`Cannot schedule two meetings on the same date and time.`);return}
+                  // Check for duplicate (same patient already on target date)
+                  const duplicate = appointments.filter(a=>a.id!==detailPatient.id && a.date===rescheduleDate && a.name===detailPatient.name)
+                  if(duplicate.length>0){setModalError(`This meeting is already scheduled. Please attend the existing appointment first.`);return}
                   const isPast = detailPatient.status==='Completed'||detailPatient.status==='No-Show'
                   if(isPast){
                     setAppointments(prev=>[...prev, { ...detailPatient, id: Date.now(), date: rescheduleDate, time: formattedTime, status: 'Pending', color: 'bg-surface-container-highest', faded: true, needsPatientAcceptance: true }])
                   } else {
-                    setAppointments(prev=>prev.map(a=>a.id===detailPatient.id?{...a,date:rescheduleDate,time:formattedTime,status:'Confirmed'}:a))
+                    setAppointments(prev=>prev.map(a=>a.id===detailPatient.id?{...a,date:rescheduleDate,time:formattedTime,status:'Pending',color:'bg-surface-container-highest',faded:true}:a))
                   }
                   jumpToDate(rescheduleDate)
                   closeModal();setRescheduleDate('');setRescheduleTime('');setModalError('')
-                  showToast(isPast ? `Pending reschedule sent to ${detailPatient.name} for acceptance` : `${detailPatient.name} rescheduled to ${rescheduleDate}`)
+                  showToast(`Notification sent to ${detailPatient.name} for acceptance`)
                 }}>Confirm</button>
               </div>
             </div>
@@ -365,7 +372,7 @@ export default function MySchedulePage() {
             <div className="flex justify-between items-center mb-2"><h2 className="text-xl font-bold text-on-surface flex items-center gap-2"><span className="material-symbols-outlined text-primary">schedule</span> Block Out Time</h2><button className="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high" onClick={()=>setBlockModal(false)}>close</button></div>
             <p className="text-xs text-secondary mb-6">Mark yourself as unavailable for a specific time period.</p>
             <div className="space-y-5">
-              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Date</label><input type="date" value={blockDate} onChange={e=>{setBlockDate(e.target.value);setModalError('')}} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface" /></div>
+              <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Date</label><input type="date" min={todayStr()} value={blockDate} onChange={e=>{setBlockDate(e.target.value);setModalError('')}} className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface" /></div>
               <div><label className="block text-[11px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Time Range</label>
                 <div className="flex items-center gap-3">
                   <div className="flex-1"><label className="block text-[10px] text-secondary mb-1">From</label><input type="time" defaultValue="09:00" className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface font-semibold text-center" /></div>
@@ -379,7 +386,7 @@ export default function MySchedulePage() {
               {modalError && <p className="text-xs text-error font-medium">{modalError}</p>}
               <div className="flex gap-3 pt-2">
                 <button className="flex-1 py-3 rounded-xl font-semibold text-sm text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/20" onClick={()=>{setBlockModal(false);setModalError('')}}>Cancel</button>
-                <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={()=>{if(!blockDate){setModalError('Please select a date.');return};setBlockModal(false);setBlockDate('');setModalError('');showToast('Time blocked out successfully')}}>Block Time</button>
+                <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={()=>{if(!blockDate){setModalError('Please select a date.');return};if(blockDate<todayStr()){setModalError('Cannot block out past dates.');return};setBlockModal(false);setBlockDate('');setModalError('');showToast('Time blocked out successfully')}}>Block Time</button>
               </div>
             </div>
           </div>
@@ -402,12 +409,29 @@ export default function MySchedulePage() {
                 <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90" onClick={()=>{
                   if(!rescheduleDate||!rescheduleTime){setModalError('Please select both dates.');return}
                   if(rescheduleDate===rescheduleTime){setModalError('Original and target dates cannot be the same.');return}
-                  if(rescheduleDate < todayStr()){setModalError('You cannot reschedule a whole previous day. Please reschedule past meetings one by one.');return}
-                  const count = appointments.filter(a=>a.date===rescheduleDate).length
-                  if(count===0){setModalError('No appointments found on the original date.');return}
-                  setAppointments(prev=>prev.map(a=>a.date===rescheduleDate?{...a,date:rescheduleTime}:a))
+                  const sourceAppts = appointments.filter(a=>a.date===rescheduleDate)
+                  if(sourceAppts.length===0){setModalError('No meetings found on this date to reschedule.');return}
+                  if(rescheduleDate < todayStr()){setModalError('This day has already passed and cannot be rescheduled. Please reschedule past appointments individually using the 3-dot menu.');return}
+                  if(rescheduleTime < todayStr()){setModalError('Cannot reschedule meetings to a past date.');return}
+                  const targetAppts = appointments.filter(a=>a.date===rescheduleTime)
+                  // Check for time conflicts on target date
+                  for(const src of sourceAppts){
+                    const conflict = targetAppts.find(t=>t.time===src.time)
+                    if(conflict){setModalError(`Cannot schedule two meetings on the same date and time.`);return}
+                  }
+                  // Check for duplicate times within source appointments themselves on the target
+                  const srcTimes = sourceAppts.map(s=>s.time)
+                  const hasDupTimes = srcTimes.some((t,i)=>srcTimes.indexOf(t)!==i)
+                  if(hasDupTimes){setModalError('Cannot schedule 2 meetings on the same date and time.');return}
+                  // Check if any source patient already has a meeting on target date
+                  for(const src of sourceAppts){
+                    const dup = targetAppts.find(t=>t.name===src.name)
+                    if(dup){setModalError(`This meeting is already scheduled. Please attend the existing appointment first.`);return}
+                  }
+                  const count = sourceAppts.length
+                  setAppointments(prev=>prev.map(a=>a.date===rescheduleDate?{...a,date:rescheduleTime,status:'Pending',color:'bg-surface-container-highest',faded:true}:a))
                   setRescheduleModal(false);setRescheduleDate('');setRescheduleTime('');setModalError('')
-                  showToast(`${count} appointment${count!==1?'s':''} moved successfully`)
+                  showToast(`Notification sent to ${count} patient${count!==1?'s':''} for acceptance`)
                 }}>Reschedule All</button>
               </div>
             </div>
@@ -415,7 +439,7 @@ export default function MySchedulePage() {
         </div>
       )}
 
-      {recordModal&&(
+      {recordModal&&(/* Clear error when opening */
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={()=>setRecordModal(null)}></div>
           <div className="relative bg-surface-container-lowest w-full max-w-lg rounded-3xl shadow-2xl z-10 p-10 max-h-[90vh] overflow-y-auto">
@@ -431,17 +455,18 @@ export default function MySchedulePage() {
               {/* Illness Block */}
               <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/10">
                 <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-tertiary text-lg">coronavirus</span><label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Illness / Diagnosis <span className="text-error">*</span></label></div>
-                <input type="text" value={recordDiagnosis} onChange={e=>setRecordDiagnosis(e.target.value)} className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm" placeholder="e.g. Mild Hypertension" />
+                <textarea id="schedule-rec-diagnosis" value={recordDiagnosis} onChange={e=>{setRecordDiagnosis(e.target.value);e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'}} className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm resize-none overflow-hidden" rows="1" placeholder="e.g. Mild Hypertension" onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.getElementById('schedule-rec-medicines')?.focus()}}}></textarea>
               </div>
               {/* Medications Block (Optional) */}
               <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/10">
                 <div className="flex items-center justify-between mb-3"><div className="flex items-center gap-2"><span className="material-symbols-outlined text-primary text-lg" style={{fontVariationSettings:'"FILL" 1'}}>medication</span><label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Prescribed Medications</label></div><span className="text-[10px] text-secondary font-medium italic">Optional</span></div>
-                <input type="text" value={recordMedicines} onChange={e=>setRecordMedicines(e.target.value)} className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm" placeholder="e.g. Lisinopril 10mg, Atorvastatin 20mg" />
+                <textarea id="schedule-rec-medicines" value={recordMedicines} onChange={e=>{setRecordMedicines(e.target.value);e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'}} className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface text-sm resize-none overflow-hidden" rows="1" placeholder="e.g. Lisinopril 10mg, Atorvastatin 20mg" onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.getElementById('schedule-rec-notes')?.focus()}}}></textarea>
               </div>
               {/* Doctor's Notes Block */}
               <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/10">
-                <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-primary text-lg">clinical_notes</span><label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Doctor's Notes <span className="text-error">*</span></label></div>
-                <textarea value={recordNotes} onChange={e=>setRecordNotes(e.target.value)} className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface resize-none text-sm" rows="3" placeholder="Write clinical notes, recommendations, prescriptions..."></textarea>
+                <div className="flex items-center gap-2 mb-1"><span className="material-symbols-outlined text-primary text-lg">clinical_notes</span><label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Doctor's Notes <span className="text-error">*</span></label></div>
+                <p className="text-[10px] text-secondary mb-3">Press Shift+Enter for a new line</p>
+                <textarea id="schedule-rec-notes" value={recordNotes} onChange={e=>{setRecordNotes(e.target.value);e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'}} className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-4 py-3 text-on-surface resize-none overflow-hidden text-sm" rows="3" placeholder="Write clinical notes, recommendations, prescriptions..." onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(recordDiagnosis.trim()&&recordNotes.trim()){addPatientRecord()}else{setModalError('Please fill all required fields.')}}}}></textarea>
               </div>
               {modalError && <p className="text-xs text-error font-medium bg-error-container/20 p-3 rounded-lg">{modalError}</p>}
               <div className="flex gap-3 pt-4">
