@@ -134,8 +134,12 @@ export default function BookVideoCallPage() {
 
       {/* Doctor Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filtered.map((doc) => (
-          <div key={doc.name} className="group bg-surface-container-lowest rounded-[1.5rem] overflow-hidden hover:shadow-[0_12px_32px_rgba(44,52,54,0.06)] transition-all duration-300 border border-transparent hover:border-outline-variant/10">
+        {filtered.length === 0 ? (
+          <div className="md:col-span-2 lg:col-span-3 py-16 text-center text-on-surface-variant animate-fade-in">
+            <p className="text-lg font-semibold text-on-surface">No results found</p>
+          </div>
+        ) : filtered.map((doc, i) => (
+          <div key={doc.name} className="group bg-surface-container-lowest rounded-[1.5rem] overflow-hidden hover:shadow-[0_12px_32px_rgba(44,52,54,0.06)] transition-all duration-300 border border-transparent hover:border-outline-variant/10 animate-fade-in" style={{ animationDelay: `${Math.min(i, 4) * 0.06}s` }}>
             <div className="relative h-64 overflow-hidden">
               <img alt={doc.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" src={doc.img} />
             </div>
