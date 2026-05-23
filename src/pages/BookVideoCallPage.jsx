@@ -9,7 +9,8 @@ const doctors = [
 
 const timeSlots = ['09:00 AM', '10:30 AM', '11:00 AM', '01:30 PM', '04:00 PM', '06:30 PM']
 const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December']
-const defaultFilters = { specialty: 'All Specialties', gender: [], availability: [], price: 'Any Price' }
+const allSpecialties = ['All Specialties','General Physician','Pediatrician','Psychiatrist','Cardiologist','Neurologist']
+const getDefaultFilters = () => ({ specialty: 'All Specialties', gender: [], availability: [], price: 'Any Price' })
 const availabilityOptions = [
   { label: 'Available Today', value: 'today' },
   { label: 'Available Tomorrow', value: 'tomorrow' },
@@ -31,19 +32,23 @@ function matchesPrice(price, selectedRange) {
 
 export default function BookVideoCallPage() {
   const navigate = useNavigate()
-  const [filters, setFilters] = useState(defaultFilters)
-  const [draftFilters, setDraftFilters] = useState(defaultFilters)
+  const [filters, setFilters] = useState(getDefaultFilters())
+  const [draftFilters, setDraftFilters] = useState(getDefaultFilters())
   const [filterOpen, setFilterOpen] = useState(false)
   const [modal, setModal] = useState(null)
   const [selectedTime, setSelectedTime] = useState('11:00 AM')
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [selectedDay, setSelectedDay] = useState(new Date().getDate())
+  const [specSearch, setSpecSearch] = useState('')
+  const [specOpen, setSpecOpen] = useState(false)
 
   useEffect(() => {
     if (modal || filterOpen) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
-    return () => { document.body.style.overflow = '' }
+    const clickOut = (e) => { if (!e.target.closest('[data-spec-search]')) setSpecOpen(false) }
+    document.addEventListener('click', clickOut)
+    return () => { document.body.style.overflow = ''; document.removeEventListener('click', clickOut) }
   }, [modal, filterOpen])
 
   const filtered = doctors.filter(d => {
@@ -92,8 +97,10 @@ export default function BookVideoCallPage() {
   }
 
   const resetFilters = () => {
-    setFilters(defaultFilters)
-    setDraftFilters(defaultFilters)
+    const fresh = getDefaultFilters()
+    setFilters(fresh)
+    setDraftFilters(getDefaultFilters())
+    setSpecSearch('')
     setFilterOpen(false)
   }
 
@@ -106,11 +113,22 @@ export default function BookVideoCallPage() {
 
       {/* Filters */}
       <section className="mb-10 flex flex-col md:flex-row gap-4 items-end reveal reveal-delay-1">
-        <div className="w-full md:w-1/3">
+        <div className="w-full md:w-1/3 relative" data-spec-search>
           <label className="block text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2 ml-1">Specialty</label>
-          <select value={filters.specialty} onChange={(e) => setFilters(prev => ({ ...prev, specialty: e.target.value }))} className="w-full bg-surface-container-low border-none rounded-xl px-4 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all">
-            <option>All Specialties</option><option>General Physician</option><option>Pediatrician</option><option>Psychiatrist</option><option>Cardiologist</option>
-          </select>
+          <div className="relative">
+            <input type="text" value={specSearch} onChange={(e) => { setSpecSearch(e.target.value); setSpecOpen(true) }} onFocus={() => setSpecOpen(true)} placeholder={filters.specialty === 'All Specialties' ? 'Search specialty...' : filters.specialty} className="w-full bg-surface-container-low border-none rounded-xl px-4 py-4 pr-10 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant" />
+            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline text-lg pointer-events-none">search</span>
+          </div>
+          {specOpen && (
+            <div className="absolute left-0 right-0 top-full mt-1 bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant/10 z-50 max-h-56 overflow-y-auto py-1">
+              {allSpecialties.filter(s => s.toLowerCase().includes(specSearch.toLowerCase())).map(s => (
+                <button key={s} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-surface-container-low transition-colors ${filters.specialty === s ? 'text-primary font-bold bg-primary/5' : 'text-on-surface'}`} onClick={() => { setFilters(prev => ({ ...prev, specialty: s })); setSpecSearch(''); setSpecOpen(false) }}>{s}</button>
+              ))}
+              {allSpecialties.filter(s => s.toLowerCase().includes(specSearch.toLowerCase())).length === 0 && (
+                <p className="px-4 py-3 text-sm text-on-surface-variant italic">No specialties found</p>
+              )}
+            </div>
+          )}
         </div>
         <div className="pb-1">
           <button className="flex items-center gap-2 px-6 py-4 bg-surface-container-low text-on-surface rounded-xl font-bold text-sm hover:bg-surface-container-high transition-colors border-none" onClick={openFilters}>
@@ -158,7 +176,7 @@ export default function BookVideoCallPage() {
               <div><h4 className="text-[0.75rem] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Gender</h4><div className="flex gap-6">{['Male','Female'].map(g => <label key={g} className="flex items-center gap-2 cursor-pointer group"><input className="w-5 h-5 rounded border-outline-variant/30 text-primary cursor-pointer" type="checkbox" checked={draftFilters.gender.includes(g.toLowerCase())} onChange={(e) => setDraftArrayFilter('gender', g.toLowerCase(), e.target.checked)} /><span className="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">{g}</span></label>)}</div></div>
             </div>
             <div className="p-6 border-t border-outline-variant/10 bg-surface-container-low flex gap-4">
-              <button className="flex-1 py-4 px-4 rounded-xl bg-primary text-on-primary font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition-all" onClick={() => { setFilters(draftFilters); setFilterOpen(false) }}>Apply Filters</button>
+              <button className="flex-1 py-4 px-4 rounded-xl bg-primary text-on-primary font-bold shadow-lg shadow-primary/10 hover:opacity-90 transition-all" onClick={() => { setFilters({ ...draftFilters, gender: [...draftFilters.gender], availability: [...draftFilters.availability] }); setSpecSearch(''); setFilterOpen(false) }}>Apply Filters</button>
               <button className="px-6 py-4 rounded-xl bg-surface-container-lowest text-on-surface border border-outline-variant/10 font-bold hover:bg-surface-container-high transition-all" onClick={resetFilters}>Reset</button>
             </div>
           </div>

@@ -43,7 +43,7 @@ export default function ResetPasswordPage() {
       sessionStorage.setItem('askare_temp_users', JSON.stringify(tempUsers))
     }
     setSuccess('Password updated successfully! Redirecting to login...')
-    setTimeout(() => navigate('/login'), 2000)
+    setTimeout(() => navigate('/login'), 800)
   }
 
   return (

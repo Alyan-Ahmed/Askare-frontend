@@ -97,10 +97,10 @@ export default function DoctorSettingsPage() {
     setConfirmModal(null)
     if (action === 'deactivate') {
       showToast('Account deactivated. You can log in again anytime.')
-      setTimeout(() => { deactivateAccount(); navigate('/login') }, 1500)
+      setTimeout(() => { deactivateAccount(); navigate('/login') }, 600)
     } else if (action === 'delete') {
       showToast('Account deleted permanently.')
-      setTimeout(() => { deleteAccount(); navigate('/login') }, 1500)
+      setTimeout(() => { deleteAccount(); navigate('/login') }, 600)
     }
   }
 

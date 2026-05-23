@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
     if (otp.length < 6) { setError('Please enter the full 6-digit verification code.'); return }
     if (otp !== VALID_OTP) { setError('Invalid verification code. Please try again.'); return }
     setSuccess('Identity verified! Redirecting to reset password...')
-    setTimeout(() => navigate('/reset-password', { state: { email: em } }), 1500)
+    setTimeout(() => navigate('/reset-password', { state: { email: em } }), 600)
   }
 
   return (

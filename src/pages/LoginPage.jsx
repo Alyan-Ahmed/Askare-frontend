@@ -80,7 +80,7 @@ export default function LoginPage() {
     sessionStorage.setItem('askare_temp_users', JSON.stringify(existing))
     setSuccess('Account created successfully! Redirecting to login...')
     setFullName(''); setSignupEmail(''); setSignupPassword(''); setSignupConfirm('')
-    setTimeout(() => { setAuthMode('login'); setSuccess('') }, 2000)
+    setTimeout(() => { setAuthMode('login'); setSuccess('') }, 800)
   }
 
   return (

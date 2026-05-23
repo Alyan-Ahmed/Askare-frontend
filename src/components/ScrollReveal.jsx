@@ -22,12 +22,12 @@ export default function ScrollReveal() {
       { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
     )
 
-    // Small delay so the DOM has time to render after route change
+    // Minimal delay so the DOM has time to render after route change
     const timer = setTimeout(() => {
       document.querySelectorAll('.reveal:not(.visible)').forEach((el) => {
         observer.observe(el)
       })
-    }, 60)
+    }, 10)
 
     return () => {
       clearTimeout(timer)
