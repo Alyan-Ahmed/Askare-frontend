@@ -92,7 +92,7 @@ export function DoctorScheduleLayout() {
 
 export function AdminLayout() {
   return (
-    <div className="bg-[#0f1d32] text-white antialiased min-h-screen">
+    <div className="bg-[#f8f9fb] text-gray-900 antialiased min-h-screen">
       <Outlet />
     </div>
   )
