@@ -105,3 +105,54 @@ export function AISidebar() {
     </aside>
   )
 }
+
+const adminSections = [
+  { id: 'overview', icon: 'dashboard', label: 'Overview' },
+  { id: 'doctors', icon: 'medical_services', label: 'Doctor Management' },
+  { id: 'patients', icon: 'group', label: 'Patient Management' },
+  { id: 'appointments', icon: 'calendar_month', label: 'Appointments' },
+  { id: 'videocalls', icon: 'videocam', label: 'Video Call Logs' },
+  { id: 'ai', icon: 'psychology', label: 'AI Monitoring' },
+  { id: 'payments', icon: 'payments', label: 'Payments' },
+  { id: 'reports', icon: 'analytics', label: 'Reports & Analytics' },
+  { id: 'complaints', icon: 'support_agent', label: 'Complaints & Support' },
+  { id: 'settings', icon: 'settings', label: 'Settings' },
+]
+
+export function AdminSidebar({ activeSection = 'overview', onSectionChange }) {
+  const { logout } = useAuth()
+  const navigate = useNavigate()
+
+  return (
+    <aside id="sidebar" className="h-screen w-64 fixed left-0 top-0 z-50 bg-[#0a1628] flex flex-col p-4 gap-2 overflow-y-auto sidebar-mobile">
+      <div className="px-4 py-6 mb-2">
+        <h1 className="text-lg font-semibold text-[#00d4aa]">Admin Console</h1>
+        <p className="text-xs text-[#8899a6]">Askare Platform</p>
+      </div>
+      <nav className="flex-1 space-y-1">
+        {adminSections.map((s) => {
+          const isActive = activeSection === s.id
+          return (
+            <button
+              key={s.id}
+              onClick={() => onSectionChange?.(s.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ease-in-out ${
+                isActive
+                  ? 'bg-[#00d4aa]/10 text-[#00d4aa] shadow-sm'
+                  : 'text-[#8899a6] hover:text-[#00d4aa] hover:bg-white/5'
+              }`}
+            >
+              <span className="material-symbols-outlined" style={isActive ? { fontVariationSettings: "'FILL' 1" } : {}}>{s.icon}</span>
+              {s.label}
+            </button>
+          )
+        })}
+      </nav>
+      <div className="mt-auto border-t border-white/10 pt-4 space-y-1">
+        <button className="flex items-center gap-3 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl text-sm font-medium w-full transition-colors" onClick={() => { logout(); navigate('/login') }}>
+          <span className="material-symbols-outlined">logout</span> Sign Out
+        </button>
+      </div>
+    </aside>
+  )
+}

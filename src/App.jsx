@@ -10,6 +10,7 @@ import {
   PatientPaymentLayout,
   AILayout,
   BareLayout,
+  AdminLayout,
 } from './components/Layouts'
 
 // Pages
@@ -34,6 +35,7 @@ import AIDiagnosisPage from './pages/AIDiagnosisPage'
 import PaymentDetailsPage from './pages/PaymentDetailsPage'
 import PaymentConfirmationPage from './pages/PaymentConfirmationPage'
 import VideoCallPage from './pages/VideoCallPage'
+import AdminDashboardPage from './pages/AdminDashboardPage'
 import { useAuth } from './context/AuthContext'
 import ScrollReveal from './components/ScrollReveal'
 
@@ -44,7 +46,7 @@ function RequireAuth({ role }) {
   if (!isLoggedIn) return <Navigate to="/login" replace state={{ from: location }} />
 
   if (role && userRole !== role) {
-    const fallback = userRole === 'doctor' ? '/doctor-dashboard' : userRole === 'patient' ? '/patient-dashboard' : '/login'
+    const fallback = userRole === 'doctor' ? '/doctor-dashboard' : userRole === 'patient' ? '/patient-dashboard' : userRole === 'admin' ? '/admin-dashboard' : '/login'
     return <Navigate to={fallback} replace />
   }
 
@@ -120,6 +122,12 @@ export default function App() {
         {/* Video Call (bare layout) */}
         <Route element={<BareLayout />}>
           <Route path="/video-call" element={<VideoCallPage />} />
+        </Route>
+      </Route>
+
+      <Route element={<RequireAuth role="admin" />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
         </Route>
       </Route>
 

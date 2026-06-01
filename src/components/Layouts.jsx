@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { PublicHeader, PortalHeader } from './Headers'
-import { PatientSidebar, DoctorSidebar, AISidebar } from './Sidebars'
+import { PatientSidebar, DoctorSidebar, AISidebar, AdminSidebar } from './Sidebars'
 import { Footer } from './Footer'
 
 export function PublicLayout({ showNotifications = true }) {
@@ -88,4 +88,12 @@ export function PatientPaymentLayout() {
 
 export function DoctorScheduleLayout() {
   return <DoctorLayout sidebarBreakpoint="md" mainClassName="md:ml-64 min-h-screen flex flex-col" />
+}
+
+export function AdminLayout() {
+  return (
+    <div className="bg-[#0f1d32] text-white antialiased min-h-screen">
+      <Outlet />
+    </div>
+  )
 }

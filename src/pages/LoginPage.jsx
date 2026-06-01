@@ -29,6 +29,12 @@ export default function LoginPage() {
     if (!em) { setError('Please enter your email address.'); return }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { setError('Please enter a valid email address (e.g. name@example.com).'); return }
     if (!pw) { setError('Please enter your password.'); return }
+    // Admin login (hidden — no button on UI)
+    if (em === 'admin@askare.health' && pw === 'Admin@2026') {
+      login('admin', { name: 'Admin', email: em, uid: 'ASK-ADMIN' })
+      navigate('/admin-dashboard')
+      return
+    }
     // Check sessionStorage temp users (from signup)
     const tempUsers = JSON.parse(sessionStorage.getItem('askare_temp_users') || '[]')
     const found = tempUsers.find(u => u.email === em && u.password === pw)
