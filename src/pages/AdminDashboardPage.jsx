@@ -28,23 +28,23 @@ const DEFAULT_PATIENTS = [
 ]
 
 const ALL_APPOINTMENTS = [
-  { id: 1, patient: 'Mrs. Sarah Jenkins', doctor: 'Dr. Arsalan Khan', date: 'Today', time: '09:00 AM', type: 'Check-up', status: 'Confirmed' },
+  { id: 1, patient: 'Mrs. Sarah Jenkins', doctor: 'Dr. Arsalan Khan', date: 'Today', time: '09:00 AM', type: 'Video Consult', status: 'Confirmed' },
   { id: 2, patient: 'Mr. David Ahmed', doctor: 'Dr. Arsalan Khan', date: 'Today', time: '10:30 AM', type: 'Video Consult', status: 'Live Now' },
-  { id: 3, patient: 'Ms. Fatima Noor', doctor: 'Dr. Arsalan Khan', date: 'Tomorrow', time: '11:45 AM', type: 'Lab Review', status: 'Pending' },
-  { id: 4, patient: 'Ayesha Khan', doctor: 'Dr. Sarah Ahmed', date: 'Tomorrow', time: '02:15 PM', type: 'Immunization', status: 'Confirmed' },
-  { id: 5, patient: 'Mr. Rafiq Hussain', doctor: 'Dr. Arsalan Khan', date: 'Yesterday', time: '09:30 AM', type: 'Check-up', status: 'Completed' },
-  { id: 6, patient: 'Mrs. Nadia Patel', doctor: 'Dr. Mansoor Ali', date: 'Yesterday', time: '11:00 AM', type: 'Video Consult', status: 'No-Show' },
-  { id: 7, patient: 'Mr. Tariq Shah', doctor: 'Dr. Sarah Ahmed', date: 'Yesterday', time: '02:00 PM', type: 'Lab Review', status: 'Completed' },
-  { id: 8, patient: 'Alyan Ahmed', doctor: 'Dr. Sarah Khalil', date: 'Oct 24', time: '10:30 AM', type: 'Cardiology', status: 'Confirmed' },
-  { id: 9, patient: 'Alyan Ahmed', doctor: 'Dr. Ahmed Raza', date: 'Oct 28', time: '02:15 PM', type: 'General', status: 'Confirmed' },
-  { id: 10, patient: 'Alyan Ahmed', doctor: 'Dr. Mariam Farooq', date: 'Sept 12', time: '10:00 AM', type: 'Pediatrics', status: 'Completed' },
-  { id: 11, patient: 'Alyan Ahmed', doctor: 'Dr. Sarah Khalil', date: 'Aug 30', time: '11:00 AM', type: 'Cardiology', status: 'Not Attended' },
-  { id: 12, patient: 'Alyan Ahmed', doctor: 'Dr. Ahmed Raza', date: 'Aug 15', time: '09:00 AM', type: 'General', status: 'Completed' },
+  { id: 3, patient: 'Ms. Fatima Noor', doctor: 'Dr. Arsalan Khan', date: 'Tomorrow', time: '11:45 AM', type: 'Video Consult', status: 'Confirmed' },
+  { id: 4, patient: 'Ayesha Khan', doctor: 'Dr. Sarah Ahmed', date: 'Tomorrow', time: '02:15 PM', type: 'Video Consult', status: 'Confirmed' },
+  { id: 5, patient: 'Mr. Rafiq Hussain', doctor: 'Dr. Arsalan Khan', date: 'Yesterday', time: '09:30 AM', type: 'Video Consult', status: 'Completed' },
+  { id: 6, patient: 'Mrs. Nadia Patel', doctor: 'Dr. Mansoor Ali', date: 'Yesterday', time: '11:00 AM', type: 'Video Consult', status: 'Not Attended' },
+  { id: 7, patient: 'Mr. Tariq Shah', doctor: 'Dr. Sarah Ahmed', date: 'Yesterday', time: '02:00 PM', type: 'Video Consult', status: 'Completed' },
+  { id: 8, patient: 'Alyan Ahmed', doctor: 'Dr. Sarah Khalil', date: 'Oct 24', time: '10:30 AM', type: 'Video Consult', status: 'Confirmed' },
+  { id: 9, patient: 'Alyan Ahmed', doctor: 'Dr. Ahmed Raza', date: 'Oct 28', time: '02:15 PM', type: 'Video Consult', status: 'Confirmed' },
+  { id: 10, patient: 'Alyan Ahmed', doctor: 'Dr. Mariam Farooq', date: 'Sept 12', time: '10:00 AM', type: 'Video Consult', status: 'Completed' },
+  { id: 11, patient: 'Alyan Ahmed', doctor: 'Dr. Sarah Khalil', date: 'Aug 30', time: '11:00 AM', type: 'Video Consult', status: 'Not Attended' },
+  { id: 12, patient: 'Alyan Ahmed', doctor: 'Dr. Ahmed Raza', date: 'Aug 15', time: '09:00 AM', type: 'Video Consult', status: 'Completed' },
 ]
 
 const VIDEO_CALLS = [
-  { id: 1, doctor: 'Dr. Arsalan Khan', patient: 'Mr. David Ahmed', date: 'Today', time: '10:30 AM', duration: '32 min', status: 'Live' },
-  { id: 2, doctor: 'Dr. Mansoor Ali', patient: 'Mrs. Nadia Patel', date: 'Yesterday', time: '11:00 AM', duration: '—', status: 'Missed' },
+  { id: 1, doctor: 'Dr. Arsalan Khan', patient: 'Mr. David Ahmed', date: 'Today', time: '10:30 AM', duration: '32 min', status: 'Live Now' },
+  { id: 2, doctor: 'Dr. Mansoor Ali', patient: 'Mrs. Nadia Patel', date: 'Yesterday', time: '11:00 AM', duration: '—', status: 'Not Attended' },
   { id: 3, doctor: 'Dr. Sarah Khalil', patient: 'Alyan Ahmed', date: 'Aug 30', time: '11:00 AM', duration: '—', status: 'Not Attended' },
   { id: 4, doctor: 'Dr. Sarah Ahmed', patient: 'Mrs. Sarah Jenkins', date: 'Oct 10', time: '03:00 PM', duration: '28 min', status: 'Completed' },
   { id: 5, doctor: 'Dr. Arsalan Khan', patient: 'Ayesha Gillani', date: 'Oct 08', time: '04:00 PM', duration: '41 min', status: 'Completed' },
@@ -114,7 +114,7 @@ const NAV = [
 /* ═══════════════════════════════════════════════════════════════
    COMPONENTS
    ═══════════════════════════════════════════════════════════════ */
-const bdg = s => ({ Active:'bg-emerald-50 text-emerald-700 ring-emerald-600/20', Pending:'bg-amber-50 text-amber-700 ring-amber-600/20', Suspended:'bg-red-50 text-red-700 ring-red-600/20', Completed:'bg-emerald-50 text-emerald-700 ring-emerald-600/20', Confirmed:'bg-blue-50 text-blue-700 ring-blue-600/20', 'Live Now':'bg-emerald-50 text-emerald-700 ring-emerald-600/20', 'No-Show':'bg-red-50 text-red-700 ring-red-600/20', 'Not Attended':'bg-red-50 text-red-700 ring-red-600/20', Live:'bg-emerald-50 text-emerald-700 ring-emerald-600/20', Missed:'bg-red-50 text-red-700 ring-red-600/20', 'Refund Requested':'bg-amber-50 text-amber-700 ring-amber-600/20', Open:'bg-red-50 text-red-700 ring-red-600/20', 'In Progress':'bg-amber-50 text-amber-700 ring-amber-600/20', Resolved:'bg-emerald-50 text-emerald-700 ring-emerald-600/20', Blocked:'bg-red-50 text-red-700 ring-red-600/20' })[s] || 'bg-gray-50 text-gray-600 ring-gray-500/20'
+const bdg = s => ({ Active:'bg-emerald-50 text-emerald-700 ring-emerald-600/20', Pending:'bg-amber-50 text-amber-700 ring-amber-600/20', Suspended:'bg-red-50 text-red-700 ring-red-600/20', Completed:'bg-[#059669]/10 text-[#059669] ring-[#059669]/20', Confirmed:'bg-[#2563eb]/10 text-[#2563eb] ring-[#2563eb]/20', 'Live Now':'bg-[#7c3aed]/10 text-[#7c3aed] ring-[#7c3aed]/20', 'Not Attended':'bg-[#dc2626]/10 text-[#dc2626] ring-[#dc2626]/20', 'Refund Requested':'bg-amber-50 text-amber-700 ring-amber-600/20', Open:'bg-red-50 text-red-700 ring-red-600/20', 'In Progress':'bg-amber-50 text-amber-700 ring-amber-600/20', Resolved:'bg-emerald-50 text-emerald-700 ring-emerald-600/20', Blocked:'bg-red-50 text-red-700 ring-red-600/20' })[s] || 'bg-gray-50 text-gray-600 ring-gray-500/20'
 
 function B({ children }) { return <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${bdg(children)}`}>{children}</span> }
 
@@ -246,157 +246,305 @@ export default function AdminDashboardPage() {
      OVERVIEW — ordered by importance (most critical → least)
      ═══════════════════════════════════════════════════════════════ */
   const renderOverview = () => {
-    // Appointment status
-    const apptS = ALL_APPOINTMENTS.reduce((a, x) => { const k = x.status === 'Live Now' ? 'Live' : x.status; a[k] = (a[k] || 0) + 1; return a }, {})
-    const apptDonut = [
-      { label: 'Completed', value: apptS.Completed || 0, color: '#059669' },
-      { label: 'Confirmed', value: apptS.Confirmed || 0, color: '#2563eb' },
-      { label: 'Pending', value: apptS.Pending || 0, color: '#f59e0b' },
-      { label: 'No-Show', value: (apptS['No-Show'] || 0) + (apptS['Not Attended'] || 0), color: '#ef4444' },
-      { label: 'Live', value: apptS.Live || 0, color: '#10b981' },
-    ].filter(s => s.value > 0)
-    // Doctor status
-    const docS = doctors.reduce((a, d) => { a[d.status] = (a[d.status] || 0) + 1; return a }, {})
-    const docDonut = [
-      { label: 'Active', value: docS.Active || 0, color: '#059669' },
-      { label: 'Pending', value: docS.Pending || 0, color: '#f59e0b' },
-      { label: 'Suspended', value: docS.Suspended || 0, color: '#ef4444' },
-    ].filter(s => s.value > 0)
-    // Patient status (same style as doctor status)
-    const patS = patients.reduce((a, p) => { a[p.status] = (a[p.status] || 0) + 1; return a }, {})
-    const patStatusDonut = [
-      { label: 'Active', value: patS.Active || 0, color: '#059669' },
-      { label: 'Blocked', value: patS.Blocked || 0, color: '#ef4444' },
-    ].filter(s => s.value > 0)
-    // Patient gender
-    const patG = patients.reduce((a, p) => { a[p.gender] = (a[p.gender] || 0) + 1; return a }, {})
-    const genderDonut = [
-      { label: 'Male', value: patG.Male || 0, color: '#2563eb' },
-      { label: 'Female', value: patG.Female || 0, color: '#ec4899' },
-      { label: 'Other', value: patG['Not specified'] || 0, color: '#9ca3af' },
-    ].filter(s => s.value > 0)
-    // Payment methods
-    const payM = TRANSACTIONS.reduce((a, t) => { const k = t.method.startsWith('Crypto') ? 'Crypto' : t.method; a[k] = (a[k] || 0) + 1; return a }, {})
-    const payDonut = Object.entries(payM).map(([k, v], i) => ({ label: k, value: v, color: ['#006977', '#6366f1', '#ec4899', '#f59e0b'][i % 4] }))
-    // Specialization distribution
-    const specDist = doctors.filter(d => d.spec !== 'Pending Review').reduce((a, d) => { a[d.spec] = (a[d.spec] || 0) + 1; return a }, {})
-    const maxSpec = Math.max(...Object.values(specDist), 1)
-    const specColors = ['#006977', '#6366f1', '#ec4899', '#f59e0b', '#059669', '#ef4444']
-    // Top doctors
-    const topDocs = [...doctors].filter(d => d.rating !== '—').sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating)).slice(0, 5)
-    // AI stats
+    const countBy = (items, getKey) => items.reduce((acc, item) => {
+      const key = getKey(item) || 'Not specified'
+      acc[key] = (acc[key] || 0) + 1
+      return acc
+    }, {})
+    const percent = (part, total) => Math.round((part / Math.max(total, 1)) * 100)
+    const palette = ['#059669', '#dc2626', '#7c3aed', '#2563eb', '#006977']
+    const colorGroup = { green: '#059669', red: '#dc2626', purple: '#7c3aed', blue: '#2563eb', darkGreen: '#006977' }
+    const toSegments = counts => Object.entries(counts)
+      .filter(([, value]) => value > 0)
+      .map(([label, value], i) => ({ label, value, color: palette[i % palette.length] }))
+
+    const apptS = countBy(ALL_APPOINTMENTS, a => a.status)
+    const videoS = countBy(VIDEO_CALLS, v => v.status)
+    const docS = countBy(doctors, d => d.status)
+    const patS = countBy(patients, p => p.status)
+    const ticketS = countBy(complaints, c => c.status)
+    const paymentS = countBy(TRANSACTIONS, t => t.status)
+    const genderS = countBy(patients, p => p.gender)
+    const payMethodS = countBy(TRANSACTIONS, t => t.method.startsWith('Crypto') ? 'Crypto' : t.method)
+
+    const completedPayments = TRANSACTIONS.filter(t => t.status === 'Completed')
+    const pendingPayments = TRANSACTIONS.filter(t => t.status === 'Pending')
+    const refundRequests = TRANSACTIONS.filter(t => t.status === 'Refund Requested')
     const flaggedCount = AI_QUERIES.filter(q => q.flag).length
+    const safeCount = AI_QUERIES.length - flaggedCount
+    const notAttendedConsultations = (apptS['Not Attended'] || 0) + (videoS['Not Attended'] || 0)
+    const openSupport = (ticketS.Open || 0) + (ticketS['In Progress'] || 0)
+    const restrictedUsers = (docS.Suspended || 0) + (patS.Blocked || 0)
+    const actionCount = (docS.Pending || 0) + openSupport + refundRequests.length + flaggedCount + notAttendedConsultations + restrictedUsers
+    const activePrivacyControls = Object.values(privacy).filter(Boolean).length
+    const trendLabel = chartRange === 'month' ? 'Last 6 months' : 'All 12 months'
+
+    const appointmentSegments = [
+      { label: 'Completed', value: apptS.Completed || 0, color: colorGroup.green },
+      { label: 'Confirmed', value: apptS.Confirmed || 0, color: colorGroup.red },
+      { label: 'Not Attended', value: apptS['Not Attended'] || 0, color: colorGroup.purple },
+      { label: 'Live Now', value: apptS['Live Now'] || 0, color: colorGroup.blue },
+    ].filter(s => s.value > 0)
+    const videoSegments = [
+      { label: 'Completed', value: videoS.Completed || 0, color: colorGroup.green },
+      { label: 'Not Attended', value: videoS['Not Attended'] || 0, color: colorGroup.red },
+      { label: 'Live Now', value: videoS['Live Now'] || 0, color: colorGroup.blue },
+    ].filter(s => s.value > 0)
+    const doctorSegments = [
+      { label: 'Active', value: docS.Active || 0, color: colorGroup.green },
+      { label: 'Suspended', value: docS.Suspended || 0, color: colorGroup.red },
+      { label: 'Pending', value: docS.Pending || 0, color: colorGroup.purple },
+    ].filter(s => s.value > 0)
+    const patientSegments = [
+      { label: 'Active', value: patS.Active || 0, color: colorGroup.green },
+      { label: 'Blocked', value: patS.Blocked || 0, color: colorGroup.red },
+    ].filter(s => s.value > 0)
+    const paymentSegments = [
+      { label: 'Completed', value: paymentS.Completed || 0, color: colorGroup.green },
+      { label: 'Refund Requested', value: paymentS['Refund Requested'] || 0, color: colorGroup.red },
+      { label: 'Pending', value: paymentS.Pending || 0, color: colorGroup.purple },
+    ].filter(s => s.value > 0)
+    const supportSegments = [
+      { label: 'Resolved', value: ticketS.Resolved || 0, color: colorGroup.green },
+      { label: 'Open', value: ticketS.Open || 0, color: colorGroup.red },
+      { label: 'In Progress', value: ticketS['In Progress'] || 0, color: colorGroup.purple },
+    ].filter(s => s.value > 0)
+    const aiSegments = [
+      { label: 'Safe', value: safeCount, color: colorGroup.green },
+      { label: 'Flagged', value: flaggedCount, color: colorGroup.red },
+    ].filter(s => s.value > 0)
+    const genderSegments = toSegments(genderS)
+
+    const specDist = doctors.filter(d => d.spec !== 'Pending Review').reduce((acc, d) => {
+      acc[d.spec] = (acc[d.spec] || 0) + 1
+      return acc
+    }, SPECS.reduce((acc, spec) => { acc[spec] = 0; return acc }, {}))
+    const maxSpec = Math.max(...Object.values(specDist), 1)
+    const specRows = Object.entries(specDist).sort(([, a], [, b]) => b - a)
+    const revenueByMethod = Object.entries(payMethodS).map(([label, count]) => ({
+      label,
+      count,
+      value: TRANSACTIONS
+        .filter(t => (t.method.startsWith('Crypto') ? 'Crypto' : t.method) === label && t.status === 'Completed')
+        .reduce((sum, t) => sum + t.amount, 0),
+    })).sort((a, b) => b.value - a.value)
+    const maxMethodRevenue = Math.max(...revenueByMethod.map(m => m.value), 1)
+    const topDoctors = [...doctors]
+      .filter(d => Number.isFinite(parseFloat(d.rating)))
+      .sort((a, b) => b.patients - a.patients)
+      .slice(0, 5)
+    const maxDoctorPatients = Math.max(...topDoctors.map(d => d.patients), 1)
+
+    const actionQueue = [
+      { label: 'Doctor approvals', value: docS.Pending || 0, icon: 'verified_user', color: '#f59e0b' },
+      { label: 'Open support tickets', value: openSupport, icon: 'contact_support', color: '#ef4444' },
+      { label: 'Refund requests', value: refundRequests.length, icon: 'undo', color: '#8b5cf6' },
+      { label: 'Flagged AI cases', value: flaggedCount, icon: 'flag', color: '#dc2626' },
+      { label: 'Not attended consults', value: notAttendedConsultations, icon: 'event_busy', color: '#f97316' },
+      { label: 'Restricted users', value: restrictedUsers, icon: 'block', color: '#64748b' },
+    ]
+    const healthMetrics = [
+      { label: 'Appointment completion', value: percent(apptS.Completed || 0, ALL_APPOINTMENTS.length), sub: `${apptS.Completed || 0} of ${ALL_APPOINTMENTS.length}` },
+      { label: 'Video call completion', value: percent(videoS.Completed || 0, VIDEO_CALLS.length), sub: `${videoS.Completed || 0} completed` },
+      { label: 'AI safe response rate', value: percent(safeCount, AI_QUERIES.length), sub: `${flaggedCount} flagged` },
+      { label: 'Payment collection', value: percent(completedPayments.length, TRANSACTIONS.length), sub: `${pendingPayments.length + refundRequests.length} exceptions` },
+      { label: 'Privacy controls active', value: percent(activePrivacyControls, Object.keys(privacy).length), sub: `${activePrivacyControls} enabled` },
+    ]
+
+    const SectionHead = ({ title, desc, children }) => (
+      <div className="flex items-end justify-between gap-4 mb-4 flex-wrap">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+          <p className="text-sm text-gray-500 mt-1">{desc}</p>
+        </div>
+        {children}
+      </div>
+    )
+    const Legend = ({ segments }) => (
+      <div className="space-y-2 flex-1 min-w-0">
+        {segments.map(s => (
+          <div key={s.label} className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
+            <span className="text-sm text-gray-600 flex-1 truncate">{s.label}</span>
+            <span className="text-sm font-bold text-gray-800">{s.value}</span>
+          </div>
+        ))}
+      </div>
+    )
+    const TrendPanel = ({ title, dataKey, color }) => (
+      <Card className="p-5">
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <h3 className="text-base font-bold text-gray-900">{title}</h3>
+          <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">{trendLabel}</span>
+        </div>
+        <AreaChart data={chartData} dataKey={dataKey} color={color} height={180} />
+      </Card>
+    )
+    const DonutPanel = ({ title, segments, centerLabel }) => (
+      <Card className="p-5">
+        <h3 className="text-base font-bold text-gray-900 mb-4">{title}</h3>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <DonutChart segments={segments} size={142} centerLabel={centerLabel} />
+          <Legend segments={segments} />
+        </div>
+      </Card>
+    )
+    const BarRow = ({ label, value, max, color, valueLabel }) => (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-sm font-semibold text-gray-700 truncate">{label}</span>
+          <span className="text-sm font-bold text-gray-900 whitespace-nowrap">{valueLabel || value}</span>
+        </div>
+        <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-full rounded-full transition-all" style={{ width: `${value > 0 ? Math.min(Math.max((value / Math.max(max, 1)) * 100, 8), 92) : 0}%`, backgroundColor: color }} />
+        </div>
+      </div>
+    )
 
     return (
       <>
-        <div className="mb-8"><h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1><p className="text-base text-gray-500 mt-2">Welcome back, Admin. Here&apos;s your complete platform analytics.</p></div>
-
-        {/* ——— TIER 1: KPI Cards (most important) ——— */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-          <Kpi icon="account_balance_wallet" label="Total Revenue" value={`PKR ${totalRev.toLocaleString()}`} sub="+18%" color="#006977" />
-          <Kpi icon="event_note" label="Total Appointments" value={ALL_APPOINTMENTS.length} sub={`${apptS.Completed || 0} completed`} color="#6366f1" />
-          <Kpi icon="groups" label="Total Patients" value={patients.length} sub={`${patS.Active || 0} active`} />
-          <Kpi icon="stethoscope" label="Total Doctors" value={doctors.length} sub={`${docS.Pending || 0} pending`} color="#f59e0b" />
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 rounded-2xl bg-[#006977]/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[#006977] text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>monitoring</span>
+            </div>
+            <div>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.18em]">Admin Control Center</p>
+              <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+            </div>
+          </div>
+          <p className="text-base text-gray-500 max-w-3xl">Platform health across doctors, patients, appointments, video calls, AI monitoring, payments, and support.</p>
         </div>
 
-        {/* ——— TIER 2: Revenue & Appointment Trends (high importance) ——— */}
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-sm font-semibold text-gray-500 mr-2">Time Range:</span>
-          {[{ id: 'month', label: 'Last 6 Months' }, { id: 'all', label: 'All Time (12M)' }].map(r => <button key={r.id} onClick={() => setChartRange(r.id)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${chartRange === r.id ? 'bg-[#006977] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>{r.label}</button>)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+          <Kpi icon="account_balance_wallet" label="Revenue Collected" value={`PKR ${totalRev.toLocaleString()}`} sub={`Avg PKR ${Math.round(totalRev / Math.max(completedPayments.length, 1)).toLocaleString()}`} color="#006977" />
+          <Kpi icon="event_note" label="Consultations" value={ALL_APPOINTMENTS.length} sub={`${apptS.Completed || 0} completed`} color="#6366f1" />
+          <Kpi icon="stethoscope" label="Doctors" value={doctors.length} sub={`${docS.Active || 0} active`} color="#f59e0b" />
+          <Kpi icon="groups" label="Patients" value={patients.length} sub={`${patS.Active || 0} active`} color="#ec4899" />
         </div>
+
+        <SectionHead title="Trend Analytics" desc="Growth and transaction movement over the selected period.">
+          <div className="flex items-center gap-2">
+            {[{ id: 'month', label: 'Last 6 Months' }, { id: 'all', label: 'All Time' }].map(r => (
+              <button key={r.id} onClick={() => setChartRange(r.id)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${chartRange === r.id ? 'bg-[#006977] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>{r.label}</button>
+            ))}
+          </div>
+        </SectionHead>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="p-6"><div className="flex items-center justify-between mb-2"><h3 className="text-base font-bold text-gray-900">Revenue Trend (PKR)</h3><span className="text-sm text-gray-400">{chartRange === 'month' ? 'Jul – Dec' : 'Jan – Dec'}</span></div><AreaChart data={chartData} dataKey="rev" color="#006977" /></Card>
-          <Card className="p-6"><div className="flex items-center justify-between mb-2"><h3 className="text-base font-bold text-gray-900">Appointments Trend</h3><span className="text-sm text-gray-400">{chartRange === 'month' ? 'Jul – Dec' : 'Jan – Dec'}</span></div><AreaChart data={chartData} dataKey="appts" color="#6366f1" /></Card>
+          <TrendPanel title="Revenue Trend" dataKey="rev" color="#006977" />
+          <TrendPanel title="Appointment Volume" dataKey="appts" color="#6366f1" />
+          <TrendPanel title="Patient Signups" dataKey="patients" color="#ec4899" />
+          <TrendPanel title="Doctor Onboarding" dataKey="doctors" color="#f59e0b" />
         </div>
 
-        {/* ——— TIER 3: Appointment + Doctor + Patient Status Donuts ——— */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="p-6">
-            <h3 className="text-base font-bold text-gray-900 mb-4">Appointment Breakdown</h3>
-            <div className="flex items-center gap-5">
-              <DonutChart segments={apptDonut} centerLabel="Appts" />
-              <div className="space-y-2 flex-1">{apptDonut.map(s => (<div key={s.label} className="flex items-center gap-2"><span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} /><span className="text-sm text-gray-600 flex-1">{s.label}</span><span className="text-sm font-bold text-gray-800">{s.value}</span></div>))}</div>
-            </div>
-          </Card>
-          <Card className="p-6">
-            <h3 className="text-base font-bold text-gray-900 mb-4">Doctor Status</h3>
-            <div className="flex items-center gap-5">
-              <DonutChart segments={docDonut} centerLabel="Doctors" />
-              <div className="space-y-2 flex-1">{docDonut.map(s => (<div key={s.label} className="flex items-center gap-2"><span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} /><span className="text-sm text-gray-600 flex-1">{s.label}</span><span className="text-sm font-bold text-gray-800">{s.value}</span></div>))}</div>
-            </div>
-          </Card>
-          <Card className="p-6">
-            <h3 className="text-base font-bold text-gray-900 mb-4">Patient Status</h3>
-            <div className="flex items-center gap-5">
-              <DonutChart segments={patStatusDonut} centerLabel="Patients" />
-              <div className="space-y-2 flex-1">{patStatusDonut.map(s => (<div key={s.label} className="flex items-center gap-2"><span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} /><span className="text-sm text-gray-600 flex-1">{s.label}</span><span className="text-sm font-bold text-gray-800">{s.value}</span></div>))}</div>
-            </div>
-          </Card>
+        <SectionHead title="Distribution Analytics" desc="Status mix across consultations, users, payments, support, and AI reviews." />
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
+          <DonutPanel title="Appointments" segments={appointmentSegments} centerLabel="Appts" />
+          <DonutPanel title="Doctors" segments={doctorSegments} centerLabel="Doctors" />
+          <DonutPanel title="Patients" segments={patientSegments} centerLabel="Patients" />
+          <DonutPanel title="Payments" segments={paymentSegments} centerLabel="Payments" />
+          <DonutPanel title="Support Tickets" segments={supportSegments} centerLabel="Tickets" />
+          <DonutPanel title="Patient Gender" segments={genderSegments} centerLabel="Gender" />
         </div>
 
-        {/* ——— TIER 4: Patient & Doctor Growth Charts ——— */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="p-6"><div className="flex items-center justify-between mb-2"><h3 className="text-base font-bold text-gray-900">Patient Signups</h3></div><AreaChart data={chartData} dataKey="patients" color="#ec4899" /></Card>
-          <Card className="p-6"><div className="flex items-center justify-between mb-2"><h3 className="text-base font-bold text-gray-900">Doctor Onboarding</h3></div><AreaChart data={chartData} dataKey="doctors" color="#f59e0b" /></Card>
-        </div>
-
-        {/* ——— TIER 5: Patient Gender + AI Stats + Payments ——— */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="p-6">
-            <h3 className="text-base font-bold text-gray-900 mb-4">Patient Gender</h3>
-            <div className="flex items-center gap-5">
-              <DonutChart segments={genderDonut} centerLabel="Patients" />
-              <div className="space-y-2 flex-1">{genderDonut.map(s => (<div key={s.label} className="flex items-center gap-2"><span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} /><span className="text-sm text-gray-600 flex-1">{s.label}</span><span className="text-sm font-bold text-gray-800">{s.value}</span></div>))}</div>
+        <SectionHead title="Bar And Ranking Analytics" desc="Coverage, payment channels, and doctor workload by platform data." />
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+          <Card className="p-5">
+            <h3 className="text-base font-bold text-gray-900 mb-5">Specialization Coverage</h3>
+            <div className="space-y-4">
+              {specRows.map(([label, value], i) => (
+                <BarRow key={label} label={label} value={value} max={maxSpec} color={palette[i % palette.length]} />
+              ))}
             </div>
           </Card>
-          <Card className="p-6">
-            <h3 className="text-base font-bold text-gray-900 mb-4">AI Monitoring</h3>
-            <div className="space-y-4 mt-2">
-              <div className="flex items-center justify-between"><span className="text-sm text-gray-600">Total Queries</span><span className="text-xl font-bold text-gray-900">{AI_QUERIES.length}</span></div>
-              <div className="flex items-center justify-between"><span className="text-sm text-gray-600">Avg Response</span><span className="text-xl font-bold text-gray-900">1.8s</span></div>
-              <div className="flex items-center justify-between"><span className="text-sm text-gray-600">Flagged (Urgent)</span><span className="text-xl font-bold text-red-600">{flaggedCount}</span></div>
-              <div className="flex items-center justify-between"><span className="text-sm text-gray-600">Safe Queries</span><span className="text-xl font-bold text-emerald-600">{AI_QUERIES.length - flaggedCount}</span></div>
+          <Card className="p-5">
+            <h3 className="text-base font-bold text-gray-900 mb-5">Revenue By Payment Method</h3>
+            <div className="space-y-4">
+              {revenueByMethod.map((method, i) => (
+                <BarRow key={method.label} label={`${method.label} (${method.count})`} value={method.value} max={maxMethodRevenue} color={palette[i % palette.length]} valueLabel={`PKR ${method.value.toLocaleString()}`} />
+              ))}
             </div>
           </Card>
-          <Card className="p-6">
-            <h3 className="text-base font-bold text-gray-900 mb-4">Payment Methods</h3>
-            <div className="flex items-center gap-5">
-              <DonutChart segments={payDonut} centerLabel="Payments" />
-              <div className="space-y-2 flex-1">{payDonut.map(s => (<div key={s.label} className="flex items-center gap-2"><span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} /><span className="text-sm text-gray-600 flex-1">{s.label}</span><span className="text-sm font-bold text-gray-800">{s.value}</span></div>))}</div>
+          <Card className="p-5">
+            <h3 className="text-base font-bold text-gray-900 mb-5">Doctor Workload</h3>
+            <div className="space-y-4">
+              {topDoctors.map((doctor, i) => (
+                <div key={doctor.id} className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+                    {doctor.img ? <img src={doctor.img} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-gray-400 text-lg">person</span>}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <BarRow label={doctor.name} value={doctor.patients} max={maxDoctorPatients} color={palette[i % palette.length]} valueLabel={`${doctor.patients} patients`} />
+                    <p className="text-xs text-gray-400 mt-1 truncate">{doctor.spec}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </Card>
         </div>
 
-        {/* ——— TIER 6: Specialization + Top Doctors ——— */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="p-6">
-            <h3 className="text-base font-bold text-gray-900 mb-5">Specialization Distribution</h3>
-            <div className="space-y-4">{Object.entries(specDist).map(([s, c], i) => <HBar key={s} label={s} value={c} max={maxSpec} color={specColors[i % specColors.length]} />)}</div>
+        <SectionHead title="Operations Health" desc="Items that need admin attention and service quality indicators." />
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+          <Card className="p-5">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-base font-bold text-gray-900">Action Queue</h3>
+              <span className="text-sm font-bold text-red-600 bg-red-50 px-3 py-1 rounded-full">{actionCount} total</span>
+            </div>
+            <div className="space-y-3">
+              {actionQueue.map(item => (
+                <div key={item.label} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: item.color + '14' }}>
+                    <span className="material-symbols-outlined text-lg" style={{ color: item.color, fontVariationSettings: "'FILL' 1" }}>{item.icon}</span>
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700 flex-1">{item.label}</span>
+                  <span className="text-lg font-bold text-gray-900">{item.value}</span>
+                </div>
+              ))}
+            </div>
           </Card>
-          <Card className="p-6">
-            <h3 className="text-base font-bold text-gray-900 mb-5">Top Rated Doctors</h3>
-            <div className="space-y-4">{topDocs.map((d, i) => (
-              <div key={d.id} className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-full bg-[#006977] flex items-center justify-center shrink-0"><span className="text-white font-bold text-sm">#{i + 1}</span></div>
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0">{d.img ? <img src={d.img} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-gray-400 text-lg">person</span>}</div>
-                <div className="flex-1 min-w-0"><p className="text-base font-semibold text-gray-900 truncate">{d.name}</p><p className="text-xs text-gray-400">{d.spec} · {d.patients} patients</p></div>
-                <span className="text-amber-500 font-bold text-base">★ {d.rating}</span>
-              </div>
-            ))}</div>
+          <Card className="p-5">
+            <h3 className="text-base font-bold text-gray-900 mb-5">Service Health</h3>
+            <div className="space-y-4">
+              {healthMetrics.map(metric => (
+                <div key={metric.label} className="space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-gray-700">{metric.label}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{metric.sub}</p>
+                    </div>
+                    <span className="text-lg font-bold text-gray-900">{metric.value}%</span>
+                  </div>
+                  <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full bg-[#006977]" style={{ width: `${metric.value}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+          <Card className="p-5">
+            <h3 className="text-base font-bold text-gray-900 mb-5">Recent Activity</h3>
+            <div className="space-y-1">
+              {[
+                { icon: 'person_add', text: 'New patient registered on the platform', time: '2 min ago', color: '#006977' },
+                { icon: 'check_circle', text: 'Dr. Arsalan Khan accepted appointment for Ayesha Gillani', time: '15 min ago', color: '#059669' },
+                { icon: 'videocam', text: 'Video call started with Mr. David Ahmed', time: '30 min ago', color: '#6366f1' },
+                { icon: 'flag', text: 'AI flagged urgent chest tightness query', time: '1 hr ago', color: '#ef4444' },
+                { icon: 'payments', text: 'Payment received from Mrs. Sarah Jenkins', time: '2 hrs ago', color: '#006977' },
+                { icon: 'person_add', text: 'Dr. Mariam Farooq is pending approval', time: '3 hrs ago', color: '#f59e0b' },
+              ].map((activity, i) => (
+                <div key={i} className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: activity.color + '14' }}>
+                    <span className="material-symbols-outlined text-lg" style={{ color: activity.color, fontVariationSettings: "'FILL' 1" }}>{activity.icon}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-700 leading-snug">{activity.text}</p>
+                    <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </Card>
         </div>
-
-        {/* ——— TIER 7: Activity Feed (lowest priority) ——— */}
-        <Card className="p-6">
-          <h3 className="text-base font-bold text-gray-900 mb-5">Recent Activity</h3>
-          {[{ icon: 'person_add', text: 'New patient registered on the platform', time: '2 min ago', c: '#006977' },
-            { icon: 'check_circle', text: 'Dr. Arsalan Khan accepted appointment — Ayesha Gillani', time: '15 min ago', c: '#059669' },
-            { icon: 'videocam', text: 'Video call started: Dr. Arsalan Khan ↔ Mr. David Ahmed', time: '30 min ago', c: '#6366f1' },
-            { icon: 'flag', text: 'AI flagged urgent query — chest tightness (Arsalan Khan)', time: '1 hr ago', c: '#ef4444' },
-            { icon: 'payments', text: 'Patient payment PKR 2,500 from Mrs. Sarah Jenkins', time: '2 hrs ago', c: '#006977' },
-            { icon: 'person_add', text: 'Dr. Mariam Farooq registered — pending approval', time: '3 hrs ago', c: '#f59e0b' },
-          ].map((a, i) => (<div key={i} className="flex items-center gap-4 py-4 border-b border-gray-100 last:border-0"><div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: a.c + '12' }}><span className="material-symbols-outlined text-lg" style={{ color: a.c, fontVariationSettings: "'FILL' 1" }}>{a.icon}</span></div><p className="flex-1 text-base text-gray-700">{a.text}</p><span className="text-sm text-gray-400 whitespace-nowrap">{a.time}</span></div>))}
-        </Card>
       </>
     )
   }
@@ -448,7 +596,7 @@ export default function AdminDashboardPage() {
   /* ─── APPOINTMENTS ─── */
   const renderAppointments = () => (<>
     <Head icon="event_note" title="Appointment Management" count={ALL_APPOINTMENTS.length} />
-    <div className="flex flex-wrap gap-2 mb-6">{['All', 'Confirmed', 'Completed', 'Pending', 'No-Show', 'Not Attended', 'Live Now'].map(f => <button key={f} onClick={() => setApptFilter(f)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${apptFilter === f ? 'bg-[#006977] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>{f}</button>)}</div>
+    <div className="flex flex-wrap gap-2 mb-6">{['All', 'Completed', 'Confirmed', 'Not Attended', 'Live Now'].map(f => <button key={f} onClick={() => setApptFilter(f)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${apptFilter === f ? 'bg-[#006977] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>{f}</button>)}</div>
     <Card><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50/80 border-b border-gray-100"><TH>Patient</TH><TH>Doctor</TH><TH>Date</TH><TH>Time</TH><TH>Type</TH><TH>Status</TH></tr></thead>
     <tbody className="divide-y divide-gray-50">{filteredAppts.map(a => (<tr key={a.id} className="hover:bg-gray-50/60 transition-colors"><td className="px-5 py-5 text-base font-semibold text-gray-900">{a.patient}</td><td className="px-5 py-5 text-base text-gray-600">{a.doctor}</td><td className="px-5 py-5 text-base text-gray-500">{a.date}</td><td className="px-5 py-5 text-base text-gray-500">{a.time}</td><td className="px-5 py-5 text-sm text-gray-500">{a.type}</td><td className="px-5 py-5"><B>{a.status}</B></td></tr>))}</tbody></table></div>
     {filteredAppts.length === 0 && <p className="py-12 text-center text-base text-gray-400">No appointments match this filter.</p>}</Card>
