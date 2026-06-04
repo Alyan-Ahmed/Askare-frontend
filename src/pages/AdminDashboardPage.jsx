@@ -204,23 +204,6 @@ export default function AdminDashboardPage() {
     if (toastTimer.current) clearTimeout(toastTimer.current)
   }, [])
 
-  // Load real signups from sessionStorage
-  useEffect(() => {
-    const tempUsers = JSON.parse(sessionStorage.getItem('askare_temp_users') || '[]')
-    if (!tempUsers.length) return
-    const newDocs = tempUsers.filter(u => u.role === 'doctor' && !doctors.find(d => d.email === u.email)).map((u, i) => ({
-      id: 100 + i, name: u.name, email: u.email, spec: 'Pending Review', location: 'Karachi', rating: '—', price: 'Not Set',
-      gender: u.gender || 'Not specified', status: 'Pending', joined: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      patients: 0, img: '', about: 'Newly registered — awaiting admin approval.', uid: u.uid,
-    }))
-    const newPats = tempUsers.filter(u => u.role === 'patient' && !patients.find(p => p.email === u.email)).map(u => ({
-      uid: u.uid, name: u.name, email: u.email, gender: u.gender || 'Not specified', status: 'Active',
-      joined: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-    }))
-    if (newDocs.length) setDoctors(prev => [...prev, ...newDocs])
-    if (newPats.length) setPatients(prev => [...prev, ...newPats])
-  }, [])
-
   const filteredAppts = useMemo(() => apptFilter === 'All' ? ALL_APPOINTMENTS : ALL_APPOINTMENTS.filter(a => a.status === apptFilter), [apptFilter])
   const totalRev = TRANSACTIONS.filter(t => t.status === 'Completed').reduce((s, t) => s + t.amount, 0)
   const filteredDocs = useMemo(() => { const q = docSearch.toLowerCase(); return q ? doctors.filter(d => d.name.toLowerCase().includes(q) || d.id.toString().includes(q) || d.spec.toLowerCase().includes(q) || (d.email || '').toLowerCase().includes(q)) : doctors }, [docSearch, doctors])

@@ -40,7 +40,7 @@ export default function LoginPage() {
     const found = tempUsers.find(u => u.email === em && u.password === pw)
     if (found) {
       login(found.role, found)
-      navigate(found.role === 'doctor' ? '/doctor-dashboard' : '/')
+      navigate(found.role === 'doctor' ? '/doctor-dashboard' : '/patient-dashboard')
       return
     }
     setError('Invalid email or password. Please try again.')

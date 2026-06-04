@@ -16,6 +16,13 @@ function getMaxLen(code) {
   return entry ? entry.maxLen : 10
 }
 
+const allowedCodeKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End']
+
+function handleNumericCodeKeyDown(event) {
+  if (event.ctrlKey || event.metaKey || event.altKey) return
+  if (!/^\d$/.test(event.key) && !allowedCodeKeys.includes(event.key)) event.preventDefault()
+}
+
 export function Toggle({ checked, onChange, size = 'lg' }) {
   return (
     <label className="relative inline-flex items-center cursor-pointer">
@@ -33,11 +40,18 @@ export function PhoneNumberField({
   value,
   onChange,
   placeholder = '300 1234567',
+  digitsOnly = false,
+  exactLength = false,
 }) {
   const maxLen = getMaxLen(code)
+  const displayedValue = digitsOnly ? value.replace(/\D/g, '').slice(0, maxLen) : value
 
   const handleChange = (event) => {
-    const digits = event.target.value.replace(/[^\d\s-]/g, '').replace(/[\s-]/g, '')
+    const digits = event.target.value.replace(/\D/g, '').slice(0, maxLen)
+    if (digitsOnly) {
+      onChange(digits)
+      return
+    }
     if (digits.length <= maxLen) {
       onChange(event.target.value.replace(/[^\d\s-]/g, ''))
     } else {
@@ -55,6 +69,13 @@ export function PhoneNumberField({
     }
   }
 
+  const handleCodeChange = (event) => {
+    const nextCode = event.target.value
+    const nextMaxLen = getMaxLen(nextCode)
+    onCodeChange(nextCode)
+    if (digitsOnly) onChange(displayedValue.slice(0, nextMaxLen))
+  }
+
   return (
     <div className="space-y-1.5">
       <label htmlFor={id} className="text-[11px] font-bold text-outline uppercase tracking-wider">{label}</label>
@@ -63,7 +84,7 @@ export function PhoneNumberField({
           aria-label={`${label} country code`}
           className="w-[7.25rem] shrink-0 border-0 border-r border-outline-variant/20 bg-surface-container-high px-3 py-3 text-sm font-bold text-primary focus:ring-0"
           value={code}
-          onChange={(event) => onCodeChange(event.target.value)}
+          onChange={handleCodeChange}
         >
           {COUNTRY_CODES.map((item) => (
             <option key={item.code} value={item.code}>{item.code}</option>
@@ -74,13 +95,14 @@ export function PhoneNumberField({
           className="min-w-0 flex-1 border-0 bg-transparent px-4 py-3 text-on-surface placeholder:text-outline focus:ring-0"
           type="tel"
           inputMode="numeric"
-          value={value}
+          pattern="[0-9]*"
+          value={displayedValue}
           onChange={handleChange}
           placeholder={placeholder}
-          maxLength={maxLen + 3}
+          maxLength={digitsOnly ? maxLen : maxLen + 3}
         />
       </div>
-      <p className="text-[10px] text-outline mt-1">Max {maxLen} digits for {COUNTRY_CODES.find(c => c.code === code)?.country || 'selected country'}</p>
+      <p className="text-[10px] text-outline mt-1">{exactLength ? 'Use exactly' : 'Max'} {maxLen} digits for {COUNTRY_CODES.find(c => c.code === code)?.country || 'selected country'}</p>
     </div>
   )
 }
@@ -121,6 +143,21 @@ export function AuthenticatorSetup() {
   const [authCode, setAuthCode] = useState('')
   const [authStatus, setAuthStatus] = useState(null) // null | 'success' | 'error'
   const [authMessage, setAuthMessage] = useState('')
+  const [authSuccessTick, setAuthSuccessTick] = useState(0)
+
+  const acceptAuthCode = () => {
+    setAuthSuccessTick(tick => tick + 1)
+    setAuthStatus('success')
+    setAuthMessage('Authenticator verified successfully!')
+    setTimeout(() => { setAuthStatus(null); setAuthMessage('') }, 4000)
+  }
+
+  const handleAuthCodeChange = (event) => {
+    const digits = event.target.value.replace(/\D/g, '').slice(0, 6)
+    setAuthCode(digits)
+    setAuthStatus(null)
+    setAuthMessage('')
+  }
 
   const handleVerify = () => {
     const digits = authCode.replace(/\D/g, '')
@@ -129,15 +166,7 @@ export function AuthenticatorSetup() {
       setAuthMessage('Please enter a valid 6-digit code.')
       return
     }
-    // Simulate verification — accept "123456" as valid for demo
-    if (digits === '123456') {
-      setAuthStatus('success')
-      setAuthMessage('Authenticator verified successfully!')
-    } else {
-      setAuthStatus('error')
-      setAuthMessage('Invalid verification code. Please try again.')
-    }
-    setTimeout(() => { setAuthStatus(null); setAuthMessage('') }, 4000)
+    acceptAuthCode()
   }
 
   return (
@@ -160,15 +189,15 @@ export function AuthenticatorSetup() {
               inputMode="numeric"
               pattern="[0-9]*"
               maxLength={6}
-              className={`w-full bg-surface-container-low border rounded-xl px-4 py-3.5 text-on-surface text-center text-xl font-bold tracking-[0.6em] focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all ${authStatus === 'error' ? 'border-error/50' : authStatus === 'success' ? 'border-green-500/50' : 'border-outline-variant/20'}`}
+              className={`w-full bg-surface-container-low border rounded-xl px-4 py-3.5 text-on-surface text-center text-xl font-bold tracking-[0.6em] focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all duration-300 ${authStatus === 'error' ? 'border-error/50' : authStatus === 'success' ? 'border-green-500/50 scale-[1.02] shadow-lg shadow-green-500/10' : 'border-outline-variant/20'}`}
               placeholder="• • • • • •"
               value={authCode}
-              onChange={(e) => { setAuthCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setAuthStatus(null); setAuthMessage('') }}
-              onKeyDown={(event) => { if (!/[0-9]|Backspace|Tab|ArrowLeft|ArrowRight|Delete/.test(event.key)) event.preventDefault() }}
+              onChange={handleAuthCodeChange}
+              onKeyDown={handleNumericCodeKeyDown}
             />
           </div>
           {authMessage && (
-            <div className={`flex items-center gap-2 text-xs font-medium px-3 py-2 rounded-lg ${authStatus === 'success' ? 'bg-green-50 text-green-600' : 'bg-error-container/10 text-error'}`}>
+            <div key={authStatus === 'success' ? authSuccessTick : 'auth-error'} className={`flex items-center gap-2 text-xs font-medium px-3 py-2 rounded-lg ${authStatus === 'success' ? 'bg-green-50 text-green-600 animate-slide-up' : 'bg-error-container/10 text-error'}`}>
               <span className="material-symbols-outlined text-sm" style={authStatus === 'success' ? {fontVariationSettings:'"FILL" 1'} : {}}>{authStatus === 'success' ? 'check_circle' : 'error'}</span>
               {authMessage}
             </div>
@@ -194,20 +223,35 @@ export function SmsVerificationSetup({ code, onCodeChange, phone, onPhoneChange 
   const [smsCode, setSmsCode] = useState('')
   const [smsStatus, setSmsStatus] = useState(null) // null | 'success' | 'error'
   const [smsMessage, setSmsMessage] = useState('')
+  const [smsSuccessTick, setSmsSuccessTick] = useState(0)
 
   const handleSendCode = () => {
     const digits = phone.replace(/\D/g, '')
     const maxLen = getMaxLen(code)
-    if (digits.length < 7 || digits.length > maxLen) {
+    if (digits.length !== maxLen) {
       setSmsStatus('error')
-      setSmsMessage(`Please enter a valid phone number (7-${maxLen} digits).`)
+      setSmsMessage(`Please enter exactly ${maxLen} digits for this country.`)
       setTimeout(() => { setSmsStatus(null); setSmsMessage('') }, 4000)
       return
     }
     setSmsSent(true)
     setSmsStatus('success')
-    setSmsMessage(`Verification code sent to ${code} ${phone}`)
+    setSmsMessage(`Verification code sent to ${code} ${digits}`)
     setTimeout(() => { setSmsStatus(null); setSmsMessage('') }, 4000)
+  }
+
+  const acceptSmsCode = () => {
+    setSmsSuccessTick(tick => tick + 1)
+    setSmsStatus('success')
+    setSmsMessage('Phone number verified successfully!')
+    setTimeout(() => { setSmsStatus(null); setSmsMessage('') }, 4000)
+  }
+
+  const handleSmsCodeChange = (event) => {
+    const digits = event.target.value.replace(/\D/g, '').slice(0, 6)
+    setSmsCode(digits)
+    setSmsStatus(null)
+    setSmsMessage('')
   }
 
   const handleVerifySms = () => {
@@ -218,15 +262,7 @@ export function SmsVerificationSetup({ code, onCodeChange, phone, onPhoneChange 
       setTimeout(() => { setSmsStatus(null); setSmsMessage('') }, 4000)
       return
     }
-    // Simulate: accept "123456" as valid
-    if (digits === '123456') {
-      setSmsStatus('success')
-      setSmsMessage('Phone number verified successfully!')
-    } else {
-      setSmsStatus('error')
-      setSmsMessage('Invalid code. Please try again.')
-    }
-    setTimeout(() => { setSmsStatus(null); setSmsMessage('') }, 4000)
+    acceptSmsCode()
   }
 
   return (
@@ -243,7 +279,9 @@ export function SmsVerificationSetup({ code, onCodeChange, phone, onPhoneChange 
         onCodeChange={onCodeChange}
         value={phone}
         onChange={onPhoneChange}
-        placeholder="300 1234567"
+        placeholder="3001234567"
+        digitsOnly
+        exactLength
       />
       {!smsSent ? (
         <button className="w-full py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90 transition-all flex items-center justify-center gap-2" type="button" onClick={handleSendCode}>
@@ -258,13 +296,19 @@ export function SmsVerificationSetup({ code, onCodeChange, phone, onPhoneChange 
               inputMode="numeric"
               pattern="[0-9]*"
               maxLength={6}
-              className={`w-full bg-surface-container-low border rounded-xl px-4 py-3.5 text-on-surface text-center text-xl font-bold tracking-[0.6em] focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all ${smsStatus === 'error' ? 'border-error/50' : smsStatus === 'success' ? 'border-green-500/50' : 'border-outline-variant/20'}`}
+              className={`w-full bg-surface-container-low border rounded-xl px-4 py-3.5 text-on-surface text-center text-xl font-bold tracking-[0.6em] focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all duration-300 ${smsStatus === 'error' ? 'border-error/50' : smsStatus === 'success' ? 'border-green-500/50 scale-[1.02] shadow-lg shadow-green-500/10' : 'border-outline-variant/20'}`}
               placeholder="• • • • • •"
               value={smsCode}
-              onChange={(e) => { setSmsCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setSmsStatus(null); setSmsMessage('') }}
-              onKeyDown={(event) => { if (!/[0-9]|Backspace|Tab|ArrowLeft|ArrowRight|Delete/.test(event.key)) event.preventDefault() }}
+              onChange={handleSmsCodeChange}
+              onKeyDown={handleNumericCodeKeyDown}
             />
           </div>
+          {smsMessage && (
+            <div key={smsStatus === 'success' ? smsSuccessTick : 'sms-error'} className={`flex items-center gap-2 text-xs font-medium px-3 py-2 rounded-lg ${smsStatus === 'success' ? 'bg-green-50 text-green-600 animate-slide-up' : 'bg-error-container/10 text-error'}`}>
+              <span className="material-symbols-outlined text-sm" style={smsStatus === 'success' ? {fontVariationSettings:'"FILL" 1'} : {}}>{smsStatus === 'success' ? 'check_circle' : 'error'}</span>
+              {smsMessage}
+            </div>
+          )}
           <div className="flex gap-3">
             <button className="flex-1 py-3 rounded-xl font-bold text-sm bg-primary text-on-primary hover:opacity-90 transition-all flex items-center justify-center gap-2" type="button" onClick={handleVerifySms}>
               <span className="material-symbols-outlined text-base">verified</span>Verify Code
@@ -273,12 +317,6 @@ export function SmsVerificationSetup({ code, onCodeChange, phone, onPhoneChange 
               Resend
             </button>
           </div>
-        </div>
-      )}
-      {smsMessage && (
-        <div className={`flex items-center gap-2 text-xs font-medium px-3 py-2 rounded-lg ${smsStatus === 'success' ? 'bg-green-50 text-green-600' : 'bg-error-container/10 text-error'}`}>
-          <span className="material-symbols-outlined text-sm" style={smsStatus === 'success' ? {fontVariationSettings:'"FILL" 1'} : {}}>{smsStatus === 'success' ? 'check_circle' : 'error'}</span>
-          {smsMessage}
         </div>
       )}
     </div>
