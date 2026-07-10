@@ -13,6 +13,11 @@ const initialUpcomingAppointments = [
 ]
 
 const doctorAvailability = {
+  'Dr. Mariam Farooq': [
+    { date: 'October 25, 2026', time: '10:00 AM' },
+    { date: 'October 27, 2026', time: '02:00 PM' },
+    { date: 'October 30, 2026', time: '11:30 AM' },
+  ],
   'Dr. Sarah Khalil': [
     { date: 'October 26, 2026', time: '09:00 AM' },
     { date: 'October 27, 2026', time: '10:30 AM' },
@@ -60,11 +65,12 @@ export default function AppointmentsPage() {
 
   const confirmReschedule = () => {
     if (!rescheduleModal || !selectedSlot) return
-    if (isMissedReschedule) {
-      const docName = rescheduleModal.doc
+    const docName = rescheduleModal.doc
+    const isCompleted = rescheduleModal.id?.startsWith('completed-')
+    if (isMissedReschedule || isCompleted) {
       setRescheduleModal(null)
       setIsMissedReschedule(false)
-      navigate('/payment-details', { state: { doctor: { name: docName, spec: rescheduleModal.spec || 'Specialist', price: 'PKR 5,000' }, date: selectedSlot.date, time: selectedSlot.time, missedReschedule: true } })
+      navigate('/payment-details', { state: { doctor: { name: docName, spec: rescheduleModal.spec || 'Specialist', price: 'PKR 5,000' }, date: selectedSlot.date, time: selectedSlot.time, missedReschedule: isMissedReschedule } })
       return
     }
     setAppointments(prev => {
@@ -142,16 +148,18 @@ export default function AppointmentsPage() {
               </thead>
               <tbody className="divide-y divide-outline-variant/10">
                 {[
-                  { doc: 'Dr. Mariam Farooq', spec: 'Pediatrics', date: 'Sept 12, 2026', status: 'Completed', statusIcon: 'check_circle', statusColor: 'text-primary', key: 'farooq', action: 'View Notes' },
-                  { doc: 'Dr. Sarah Khalil', spec: 'Cardiology', date: 'Aug 30, 2026', status: 'Not Attended', statusIcon: 'cancel', statusColor: 'text-tertiary', key: 'khalil', action: 'Reschedule' },
-                  { doc: 'Dr. Ahmed Raza', spec: 'General Practitioner', date: 'Aug 15, 2026', status: 'Completed', statusIcon: 'check_circle', statusColor: 'text-primary', key: 'raza', action: 'View Summary' },
+                  { doc: 'Dr. Mariam Farooq', spec: 'Pediatrics', date: 'Sept 12, 2026', status: 'Completed', statusIcon: 'check_circle', statusColor: 'text-primary', key: 'farooq' },
+                  { doc: 'Dr. Sarah Khalil', spec: 'Cardiology', date: 'Aug 30, 2026', status: 'Not Attended', statusIcon: 'cancel', statusColor: 'text-tertiary', key: 'khalil' },
+                  { doc: 'Dr. Ahmed Raza', spec: 'General Practitioner', date: 'Aug 15, 2026', status: 'Completed', statusIcon: 'check_circle', statusColor: 'text-primary', key: 'raza' },
                 ].map((r, i) => (
                   <tr key={i} className="hover:bg-surface-container-low/50 transition-colors">
                     <td className="px-6 py-6"><div className="font-bold text-on-surface">{r.doc}</div></td>
                     <td className="px-6 py-6 text-secondary font-medium">{r.spec}</td>
                     <td className="px-6 py-6 text-on-surface-variant">{r.date}</td>
                     <td className="px-6 py-6"><span className={`inline-flex items-center gap-1.5 text-xs font-bold ${r.statusColor}`}><span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: '"FILL" 1' }}>{r.statusIcon}</span>{r.status}</span></td>
-                    <td className="px-6 py-6 text-right"><button onClick={() => { if (r.action === 'Reschedule') { setIsMissedReschedule(true); openReschedule({ id: `missed-${r.key}`, doc: r.doc, spec: r.spec, date: r.date, time: '10:30 AM' }) } else { setModal(r.key) }}} className="text-primary font-bold text-xs hover:underline uppercase tracking-wider">{r.action}</button></td>
+                    <td className="px-6 py-6 text-right">
+                      <button onClick={() => { setIsMissedReschedule(r.status === 'Not Attended'); openReschedule({ id: `completed-${r.key}`, doc: r.doc, spec: r.spec, date: r.date, time: '10:30 AM' }) }} className="text-primary font-bold text-xs hover:underline uppercase tracking-wider">Reschedule</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -218,7 +226,7 @@ export default function AppointmentsPage() {
                   </button>
                 ))}
               </div>
-              <button type="button" onClick={confirmReschedule} className={`w-full py-3 rounded-xl text-sm font-bold transition-all ${isMissedReschedule?'bg-error text-on-error hover:opacity-90':'bg-primary text-on-primary hover:bg-primary-dim'}`}>{isMissedReschedule?'Proceed to Payment':'Confirm Reschedule'}</button>
+              <button type="button" onClick={confirmReschedule} className={`w-full py-3 rounded-xl text-sm font-bold transition-all ${isMissedReschedule?'bg-error text-on-error hover:opacity-90':'bg-primary text-on-primary hover:bg-primary-dim'}`}>{isMissedReschedule?'Proceed to Payment':'Confirm & Pay'}</button>
             </div>
           </div>
         </div>

@@ -29,6 +29,10 @@ export default function VideoCallPage() {
   const [isScreenSharing, setIsScreenSharing] = useState(false)
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [endModal, setEndModal] = useState(false)
+  const [summaryModal, setSummaryModal] = useState(false)
+  const [summaryDiagnosis, setSummaryDiagnosis] = useState('')
+  const [summaryRecommendations, setSummaryRecommendations] = useState('')
+  const [summaryMedicines, setSummaryMedicines] = useState('')
   const [elapsed, setElapsed] = useState(0)
   const [messages, setMessages] = useState(INITIAL_MESSAGES)
   const [chatInput, setChatInput] = useState('')
@@ -188,7 +192,27 @@ export default function VideoCallPage() {
     if (timerRef.current) clearInterval(timerRef.current)
     if (mediaStreamRef.current) mediaStreamRef.current.getTracks().forEach(t => t.stop())
     if (screenStreamRef.current) screenStreamRef.current.getTracks().forEach(t => t.stop())
-    navigate(effectiveRole === 'doctor' ? '/doctor-dashboard' : '/patient-dashboard')
+    if (effectiveRole === 'doctor') {
+      setEndModal(false)
+      setSummaryModal(true)
+    } else {
+      navigate(effectiveRole === 'doctor' ? '/doctor-dashboard' : '/patient-dashboard')
+    }
+  }
+
+  const submitSummary = () => {
+    const summaries = JSON.parse(sessionStorage.getItem('askare_call_summaries') || '[]')
+    summaries.push({
+      patient: patientName,
+      doctor: doctorName,
+      diagnosis: summaryDiagnosis,
+      recommendations: summaryRecommendations,
+      medicines: summaryMedicines.split('\n').filter(m => m.trim()),
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    })
+    sessionStorage.setItem('askare_call_summaries', JSON.stringify(summaries))
+    navigate('/doctor-dashboard')
   }
 
   const dashPath = effectiveRole === 'doctor' ? '/doctor-dashboard' : '/patient-dashboard'
@@ -376,6 +400,41 @@ export default function VideoCallPage() {
       )}
 
       {/* Keyframe animations */}
+
+      {/* Doctor Post-Call Summary Modal */}
+      {summaryModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}>
+          <div className="rounded-3xl p-8 max-w-[520px] w-[92%] max-h-[85vh] overflow-y-auto" style={{ background: '#1a2428', border: '1px solid rgba(255,255,255,0.06)', animation: 'fadeInUp 0.35s ease-out' }}>
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,105,119,0.2)' }}>
+                <span className="material-symbols-outlined text-[#8be9f6] text-2xl" style={{ fontVariationSettings: '"FILL" 1' }}>clinical_notes</span>
+              </div>
+              <div>
+                <h3 className="text-white text-xl font-bold">Post-Call Summary</h3>
+                <p className="text-white/50 text-sm">Patient: {patientName}</p>
+              </div>
+            </div>
+            <div className="space-y-5">
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/50 mb-2">Diagnosis / Illness</label>
+                <textarea value={summaryDiagnosis} onChange={e => setSummaryDiagnosis(e.target.value)} rows="3" placeholder="Enter the diagnosis or illness identified..." className="w-full rounded-xl px-4 py-3 text-white text-sm outline-none resize-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }} />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/50 mb-2">Doctor&apos;s Recommendations</label>
+                <textarea value={summaryRecommendations} onChange={e => setSummaryRecommendations(e.target.value)} rows="3" placeholder="Enter your recommendations for the patient..." className="w-full rounded-xl px-4 py-3 text-white text-sm outline-none resize-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }} />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/50 mb-2">Prescribed Medicines <span className="normal-case text-white/30">(one per line)</span></label>
+                <textarea value={summaryMedicines} onChange={e => setSummaryMedicines(e.target.value)} rows="4" placeholder={"Paracetamol 500mg - Twice daily\nAmoxicillin 250mg - Three times daily"} className="w-full rounded-xl px-4 py-3 text-white text-sm outline-none resize-none font-mono" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }} />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-8">
+              <button onClick={() => navigate('/doctor-dashboard')} className="flex-1 px-5 py-3 rounded-xl text-white font-semibold text-sm hover:bg-white/15 transition-all" style={{ background: 'rgba(255,255,255,0.1)' }}>Skip</button>
+              <button onClick={submitSummary} disabled={!summaryDiagnosis.trim()} className="flex-1 px-5 py-3 rounded-xl text-white font-semibold text-sm hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed" style={{ background: '#006977' }}>Submit &amp; End</button>
+            </div>
+          </div>
+        </div>
+      )}
       <style>{`
         @keyframes ripple {
           0% { transform: scale(0.7); opacity: 1; }

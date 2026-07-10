@@ -6,15 +6,15 @@ const yesterdayStr = () => { const d = new Date(); d.setDate(d.getDate()-1); ret
 
 const APPTS = [
   // Yesterday (past — completed / uncompleted)
-  { time: '09:30 AM', date: yesterdayStr(), name: 'Mr. Rafiq Hussain', type: 'General Check-up', location: 'Room 201', status: 'Completed', color: 'bg-primary-fixed-dim', purpose: 'Annual physical exam', notes: 'All vitals normal. Follow-up in 6 months.' },
-  { time: '11:00 AM', date: yesterdayStr(), name: 'Mrs. Nadia Patel', type: 'Video Consult', location: 'Online', status: 'No-Show', color: 'bg-tertiary-fixed-dim', icon: 'videocam', isVideo: true, purpose: 'Dermatology follow-up', notes: 'Patient did not join the call.' },
-  { time: '02:00 PM', date: yesterdayStr(), name: 'Mr. Tariq Shah', type: 'Lab Review', location: 'Room 302', status: 'Completed', color: 'bg-primary-fixed-dim', purpose: 'Blood work review', notes: 'Cholesterol slightly elevated. Diet plan prescribed.' },
+  { time: '09:30 AM', date: yesterdayStr(), name: 'Mr. Rafiq Hussain', type: 'Video Consultation', location: 'Online', status: 'Completed', color: 'bg-primary-fixed-dim', icon: 'videocam', isVideo: true, purpose: 'Annual physical exam', notes: 'All vitals normal. Follow-up in 6 months.' },
+  { time: '11:00 AM', date: yesterdayStr(), name: 'Mrs. Nadia Patel', type: 'Video Consultation', location: 'Online', status: 'No-Show', color: 'bg-tertiary-fixed-dim', icon: 'videocam', isVideo: true, purpose: 'Dermatology follow-up', notes: 'Patient did not join the call.' },
+  { time: '02:00 PM', date: yesterdayStr(), name: 'Mr. Tariq Shah', type: 'Video Consultation', location: 'Online', status: 'Completed', color: 'bg-primary-fixed-dim', icon: 'videocam', isVideo: true, purpose: 'Blood work review', notes: 'Cholesterol slightly elevated. Diet plan prescribed.' },
   // Today
-  { time: '09:00 AM', date: todayStr(), name: 'Mrs. Sarah Jenkins', type: 'General Check-up', location: 'Room 302', status: 'Confirmed', color: 'bg-primary-fixed-dim', purpose: 'Routine health assessment', notes: 'Patient has a history of mild hypertension.' },
-  { time: '10:30 AM', date: todayStr(), name: 'Mr. David Ahmed', type: 'Video Consult', location: 'Online', status: 'Live Now', color: 'bg-tertiary-fixed-dim', icon: 'videocam', isVideo: true, purpose: 'Follow-up consultation', notes: 'Post-surgery follow-up.' },
+  { time: '09:00 AM', date: todayStr(), name: 'Mrs. Sarah Jenkins', type: 'Video Consultation', location: 'Online', status: 'Confirmed', color: 'bg-primary-fixed-dim', icon: 'videocam', isVideo: true, purpose: 'Routine health assessment', notes: 'Patient has a history of mild hypertension.' },
+  { time: '10:30 AM', date: todayStr(), name: 'Mr. David Ahmed', type: 'Video Consultation', location: 'Online', status: 'Live Now', color: 'bg-tertiary-fixed-dim', icon: 'videocam', isVideo: true, purpose: 'Follow-up consultation', notes: 'Post-surgery follow-up.' },
   // Tomorrow
-  { time: '11:45 AM', date: tomorrowStr(), name: 'Ms. Fatima Noor', type: 'Lab Review', location: 'In-Person', status: 'Pending', color: 'bg-surface-container-highest', faded: true, purpose: 'Laboratory results review', notes: 'Review recent CBC and thyroid panel.' },
-  { time: '02:15 PM', date: tomorrowStr(), name: 'Ayesha Khan', type: 'Immunization', location: 'Room 104', status: 'Confirmed', color: 'bg-primary-fixed-dim', purpose: 'Scheduled immunization', notes: 'Hepatitis B vaccine – dose 2 of 3.' },
+  { time: '11:45 AM', date: tomorrowStr(), name: 'Ms. Fatima Noor', type: 'Video Consultation', location: 'Online', status: 'Pending', color: 'bg-surface-container-highest', icon: 'videocam', isVideo: true, faded: true, purpose: 'Laboratory results review', notes: 'Review recent CBC and thyroid panel.' },
+  { time: '02:15 PM', date: tomorrowStr(), name: 'Ayesha Khan', type: 'Video Consultation', location: 'Online', status: 'Confirmed', color: 'bg-primary-fixed-dim', icon: 'videocam', isVideo: true, purpose: 'Scheduled immunization', notes: 'Hepatitis B vaccine – dose 2 of 3.' },
 ]
 
 const SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']

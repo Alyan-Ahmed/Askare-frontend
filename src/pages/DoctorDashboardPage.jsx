@@ -11,10 +11,10 @@ const initialAgenda = [
     patient: 'Mrs. Sarah Jenkins',
     time: '09:00 AM',
     date: todayStr(),
-    badge: 'Check-up',
+    badge: 'Video Consultation',
     badgeClass: 'bg-primary/10 text-primary',
-    description: 'General Check-up | Room 302',
-    joinLabel: 'Join Room',
+    description: 'Video Consultation | Online',
+    joinLabel: 'Join Video Call',
     videoTo: '/video-call?role=doctor&patient=Sarah%20Jenkins',
     slots: ['01:30 PM', '03:00 PM', '05:15 PM'],
   },
@@ -23,10 +23,10 @@ const initialAgenda = [
     patient: 'Mr. David Ahmed',
     time: '10:30 AM',
     date: todayStr(),
-    badge: 'Follow-up',
-    badgeClass: 'bg-tertiary-container/30 text-tertiary',
-    description: 'Post-Surgery Follow-up | Video Consult',
-    joinLabel: 'Join Call',
+    badge: 'Video Consultation',
+    badgeClass: 'bg-primary/10 text-primary',
+    description: 'Video Consultation | Online',
+    joinLabel: 'Join Video Call',
     videoTo: '/video-call?role=doctor&patient=David%20Ahmed',
     slots: ['02:15 PM', '04:00 PM', '06:30 PM'],
   },
@@ -58,10 +58,10 @@ export default function DoctorDashboardPage() {
       patient: req.name,
       time: req.schedTime,
       date: req.schedDate,
-      badge: 'New',
+      badge: 'Video Consultation',
       badgeClass: 'bg-primary/10 text-primary',
-      description: `Consultation Booking | ${req.time}`,
-      joinLabel: 'Join Room',
+      description: 'Video Consultation | Online',
+      joinLabel: 'Join Video Call',
       videoTo: `/video-call?role=doctor&patient=${encodeURIComponent(req.name)}`,
       slots: ['01:00 PM', '03:30 PM', '05:00 PM'],
     }
@@ -161,11 +161,8 @@ export default function DoctorDashboardPage() {
                   <p className={`text-lg font-bold ${index === 0 ? 'text-primary' : 'text-on-surface-variant'}`}>{meridiem}</p>
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-lg font-bold text-on-surface">{item.patient}</h3>
-                    <span className={`${item.badgeClass} text-[10px] px-2 py-0.5 rounded-full font-bold uppercase`}>{item.badge}</span>
-                  </div>
-                  <p className="text-sm text-on-surface-variant">{item.description}</p>
+                  <h3 className="text-lg font-bold text-on-surface">{item.patient}</h3>
+                  <p className="text-sm text-on-surface-variant">Video Consultation</p>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
                   <Link to={item.videoTo} className="flex-1 md:flex-none px-6 py-2.5 bg-primary text-on-primary rounded-full text-sm font-bold hover:opacity-90 transition-all text-center no-underline">{item.joinLabel}</Link>
