@@ -15,7 +15,7 @@ export default function PaymentConfirmationPage() {
   const txId = `#ASK-${String(100000 + (txSeed % 900000)).padStart(6, '0')}`
 
   return (
-    <main className="flex-grow pt-16 pb-20 px-6">
+    <main className="flex-grow pt-28 pb-20 px-6">
       <div className="max-w-4xl mx-auto">
         {/* Success Header */}
         <div className="text-center mb-12 reveal">

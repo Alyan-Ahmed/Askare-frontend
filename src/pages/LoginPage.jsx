@@ -86,16 +86,20 @@ export default function LoginPage() {
     setTimeout(() => { setAuthMode('login'); setSuccess('') }, 800)
   }
 
+  const [sliding, setSliding] = useState(false)
+
   const switchTo = (mode) => {
     setError(''); setSuccess('')
     if (mode === 'signup') { setEmail(''); setPassword('') }
     else { setSignupEmail(''); setSignupPassword(''); setSignupConfirm(''); setFullName('') }
+    setSliding(true)
     setAuthMode(mode)
+    setTimeout(() => setSliding(false), 700)
   }
 
   /* ── Shared form fields rendered into both slots so content doesn't jump ── */
   const formContent = (
-    <div className="flex flex-col justify-center h-full px-8 md:px-12 py-10">
+    <div className="flex flex-col justify-center px-8 md:px-12 py-10" style={{ minHeight: '840px', opacity: sliding ? 0 : 1, transition: 'opacity 0s ease', transitionDelay: sliding ? '0s' : '0s' }}>
       {/* Role Toggle (Signup Only) */}
       {authMode === 'signup' && (
         <div className="flex justify-center mb-8">
@@ -110,14 +114,10 @@ export default function LoginPage() {
         </div>
       )}
 
-      <div className="flex justify-between items-center mb-10 gap-4">
+      <div className="mb-10">
         <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-on-surface whitespace-nowrap">
           {isLogin ? 'Welcome' : (role === 'doctor' ? 'Provider Registration' : 'Join Askare')}
         </h2>
-        <div className="flex p-1 bg-surface-container-low rounded-full shrink-0">
-          <button className={`px-5 py-2 text-sm font-semibold rounded-full transition-all duration-300 whitespace-nowrap ${isLogin ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`} onClick={() => switchTo('login')}>Login</button>
-          <button className={`px-5 py-2 text-sm font-medium rounded-full transition-all duration-300 whitespace-nowrap ${!isLogin ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`} onClick={() => switchTo('signup')}>Sign Up</button>
-        </div>
       </div>
 
       <div className="space-y-6">
@@ -268,7 +268,7 @@ export default function LoginPage() {
   )
 
   const brandingContent = (
-    <div className="hidden lg:flex flex-col justify-center p-12 relative overflow-hidden h-full" style={{ background: 'linear-gradient(145deg, #006977 0%, #004d57 50%, #00363d 100%)' }}>
+    <div className="hidden lg:flex flex-col justify-center p-12 relative overflow-hidden h-full" style={{ background: 'linear-gradient(145deg, #006977 0%, #004d57 50%, #00363d 100%)', filter: sliding ? 'blur(6px)' : 'blur(0px)', transition: 'filter 0.3s ease' }}>
       <div className="relative z-10 space-y-10">
         <div>
           <div className="flex items-center gap-2 mb-6">
@@ -318,7 +318,7 @@ export default function LoginPage() {
       <main className="flex-grow flex items-center justify-center p-6 md:p-12 min-h-screen">
         <div className="w-full max-w-6xl">
           {/* Main Container — fixed height so it doesn't resize on mode switch */}
-          <div className="relative overflow-hidden rounded-[2rem] shadow-[0_20px_60px_rgba(44,52,54,0.08)] ring-1 ring-outline-variant/5 bg-surface-container-lowest" style={{ minHeight: '720px' }}>
+          <div className="relative overflow-hidden rounded-[2rem] shadow-[0_20px_60px_rgba(44,52,54,0.08)] ring-1 ring-outline-variant/5 bg-surface-container-lowest" style={{ minHeight: '840px' }}>
 
             {/* ─── Image / Branding Panel (slides between left and right) ─── */}
             <div
