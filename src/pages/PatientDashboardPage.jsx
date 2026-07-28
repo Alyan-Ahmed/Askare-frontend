@@ -13,13 +13,13 @@ const summaryData = {
 }
 
 const listRows = [
-  { date: 'PRESENT', cat: 'Video Consultation', catIcon: 'videocam', catColor: 'text-primary', desc: 'Hypertension Mgmt — Active management of blood pressure.', status: 'ACTIVE', statusCls: 'bg-primary-container/30 text-primary', key: 'hypertension', action: 'View Details' },
-  { date: 'SEP 12, 2025', cat: 'Video Consultation', catIcon: 'videocam', catColor: 'text-primary', desc: 'Dr. Julian Vance — General Wellness Audit', status: 'COMPLETED', statusCls: 'bg-secondary-container text-on-secondary-container', key: 'vance', action: 'View Summary' },
-  { date: 'JUL 04, 2025', cat: 'Video Consultation', catIcon: 'videocam', catColor: 'text-primary', desc: 'Dr. Sarah Patel — Ophthalmology Check', status: 'COMPLETED', statusCls: 'bg-secondary-container text-on-secondary-container', key: 'patel', action: 'View Summary' },
-  { date: 'AUG 20, 2025', cat: 'Video Consultation', catIcon: 'videocam', catColor: 'text-primary', desc: 'Amoxicillin 500mg — Course completed', status: 'COMPLETED', statusCls: 'bg-secondary-container text-on-secondary-container', key: 'amoxicillin', action: 'View Details' },
-  { date: 'MAY 12, 2025', cat: 'Video Consultation', catIcon: 'videocam', catColor: 'text-primary', desc: 'Prednisone Taper — Course ended', status: 'TAPERED', statusCls: 'bg-tertiary-container text-on-tertiary-container', key: 'prednisone', action: 'View Details' },
-  { date: 'JAN 2025', cat: 'Video Consultation', catIcon: 'videocam', catColor: 'text-primary', desc: 'Seasonal Influenza — Resolved with standard antiviral course.', status: 'RESOLVED', statusCls: 'bg-secondary-container text-on-secondary-container', key: 'influenza', action: 'View Details' },
-  { date: 'NOV 2024', cat: 'Video Consultation', catIcon: 'videocam', catColor: 'text-primary', desc: 'Vitamin D Deficiency — Baseline restored through supplements.', status: 'RESOLVED', statusCls: 'bg-secondary-container text-on-secondary-container', key: 'vitamind', action: 'View Details' },
+  { date: 'SEP 12, 2025', doctor: 'Dr. Julian Vance', desc: 'General Wellness Audit — Mild hypertension with elevated LDL cholesterol levels detected.', status: 'COMPLETED', statusCls: 'bg-secondary-container text-on-secondary-container', key: 'vance', action: 'View Summary' },
+  { date: 'AUG 20, 2025', doctor: 'Dr. Arsalan Khan', desc: 'Upper Respiratory Infection — Amoxicillin 500mg prescribed. Full course completed.', status: 'COMPLETED', statusCls: 'bg-secondary-container text-on-secondary-container', key: 'amoxicillin', action: 'View Summary' },
+  { date: 'JUL 04, 2025', doctor: 'Dr. Sarah Patel', desc: 'Ophthalmology Check — Mild dry eye syndrome noted with slight astigmatism in left eye.', status: 'COMPLETED', statusCls: 'bg-secondary-container text-on-secondary-container', key: 'patel', action: 'View Summary' },
+  { date: 'JUN 18, 2025', doctor: 'Dr. Arsalan Khan', desc: 'Hypertension Follow-up — Scheduled blood pressure review consultation.', status: 'NOT COMPLETED', statusCls: 'bg-error-container/30 text-error', key: 'notcompleted_hyp', action: 'View Summary' },
+  { date: 'MAY 12, 2025', doctor: 'Dr. Sarah Patel', desc: 'Dermatology Consultation — Severe allergic dermatitis with widespread urticaria.', status: 'COMPLETED', statusCls: 'bg-secondary-container text-on-secondary-container', key: 'prednisone', action: 'View Summary' },
+  { date: 'JAN 2025', doctor: 'Dr. Julian Vance', desc: 'Seasonal Influenza (Type A) — High fever, body aches, sore throat. Antiviral prescribed.', status: 'COMPLETED', statusCls: 'bg-secondary-container text-on-secondary-container', key: 'influenza', action: 'View Summary' },
+  { date: 'NOV 2024', doctor: 'Dr. Sarah Patel', desc: 'Vitamin D Deficiency — Serum level at 12 ng/mL. Supplementation plan initiated.', status: 'COMPLETED', statusCls: 'bg-secondary-container text-on-secondary-container', key: 'vitamind', action: 'View Summary' },
 ]
 
 export default function PatientDashboardPage() {
@@ -132,7 +132,6 @@ export default function PatientDashboardPage() {
           </div>
         </div>
 
-        {/* Timeline View */}
         {archiveView === 'timeline' && (
           <div key={`timeline-${viewKey}`} className="grid grid-cols-1 md:grid-cols-3 gap-8" style={{animation: 'archiveFadeIn 0.4s ease-out'}}>
             <div className="space-y-6">
@@ -151,8 +150,8 @@ export default function PatientDashboardPage() {
             <div className="space-y-6">
               <div className="flex items-center gap-3 mb-2"><span className="material-symbols-outlined text-primary">medical_services</span><h4 className="font-bold text-on-surface uppercase text-xs tracking-widest">Prescription Archive</h4></div>
               <div className="space-y-4">
-                <div className="p-5 bg-surface-container-low rounded-xl border-l-4 border-secondary-fixed"><div className="flex justify-between items-start mb-2"><h5 className="font-bold text-on-surface">Amoxicillin 500mg</h5><span className="text-[10px] font-bold px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded">COMPLETED</span></div><p className="text-xs text-secondary">Course ended Aug 20, 2025</p></div>
-                <div className="p-5 bg-surface-container-low rounded-xl border-l-4 border-tertiary-fixed-dim"><div className="flex justify-between items-start mb-2"><h5 className="font-bold text-on-surface">Prednisone Taper</h5><span className="text-[10px] font-bold px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded">TAPERED</span></div><p className="text-xs text-secondary">Course ended May 12, 2025</p></div>
+                <div className="p-5 bg-surface-container-low rounded-xl border-l-4 border-secondary-fixed"><h5 className="font-bold text-on-surface mb-2">Amoxicillin 500mg</h5><p className="text-xs text-secondary">Course ended Aug 20, 2025</p></div>
+                <div className="p-5 bg-surface-container-low rounded-xl border-l-4 border-tertiary-fixed-dim"><h5 className="font-bold text-on-surface mb-2">Prednisone Taper</h5><p className="text-xs text-secondary">Course ended May 12, 2025</p></div>
               </div>
             </div>
             <div className="space-y-6">
@@ -172,14 +171,14 @@ export default function PatientDashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="bg-surface-container-low text-on-surface-variant text-[10px] font-bold uppercase tracking-widest">
-                  <tr><th className="px-6 py-4">Date</th><th className="px-6 py-4">Category</th><th className="px-6 py-4">Description</th><th className="px-6 py-4">Status</th><th className="px-6 py-4 text-right">Actions</th></tr>
+                  <tr><th className="px-6 py-4">Date</th><th className="px-6 py-4">Doctor</th><th className="px-6 py-4">Description</th><th className="px-6 py-4">Status</th><th className="px-6 py-4 text-right">Actions</th></tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant/10">
                   {listRows.map((r, i) => (
                     <tr key={i} className="hover:bg-surface-container-low/50 transition-colors">
-                      <td className="px-6 py-5 text-xs font-bold text-secondary">{r.date}</td>
-                      <td className="px-6 py-5"><span className={`inline-flex items-center gap-1.5 text-xs font-bold ${r.catColor}`}><span className="material-symbols-outlined text-sm">{r.catIcon}</span>{r.cat}</span></td>
-                      <td className="px-6 py-5 font-medium text-on-surface">{r.desc}</td>
+                      <td className="px-6 py-5 text-xs font-bold text-secondary whitespace-nowrap">{r.date}</td>
+                      <td className="px-6 py-5 font-semibold text-on-surface whitespace-nowrap">{r.doctor}</td>
+                      <td className="px-6 py-5 text-sm text-on-surface-variant max-w-md">{r.desc}</td>
                       <td className="px-6 py-5"><span className={`px-2 py-1 ${r.statusCls} text-[10px] font-bold rounded`}>{r.status}</span></td>
                       <td className="px-6 py-5 text-right"><button onClick={() => setModal(r.key)} className="text-primary font-bold text-xs hover:underline uppercase tracking-wider">{r.action}</button></td>
                     </tr>
@@ -240,22 +239,41 @@ export default function PatientDashboardPage() {
       )}
 
       {/* Summary Modal */}
-      {data && (
+      {/* Summary Modal — handles both completed and not-completed */}
+      {modal && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={() => setModal(null)}></div>
           <div className="relative bg-surface-container-lowest w-full max-w-lg rounded-2xl shadow-2xl z-10 overflow-hidden max-h-[90vh] overflow-y-auto">
             <div className="p-8">
-              <div className="flex justify-between items-start mb-6">
-                <div><h2 className="text-xl font-bold text-on-surface">{data.doctor}</h2><p className="text-sm text-secondary">{data.date}</p></div>
-                <button className="p-2 rounded-full hover:bg-surface-container-high transition-colors" onClick={() => setModal(null)}><span className="material-symbols-outlined">close</span></button>
-              </div>
-              <div className="space-y-6">
-                <div className="bg-surface-container-low rounded-xl p-5"><div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-tertiary text-lg">coronavirus</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Diagnosis / Illness</h4></div><p className="text-sm text-on-surface font-medium">{data.illness}</p></div>
-                <div className="bg-surface-container-low rounded-xl p-5"><div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-primary text-lg">stethoscope</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Doctor's Recommendations</h4></div><p className="text-sm text-on-surface">{data.recommendations}</p></div>
-                <div className="bg-surface-container-low rounded-xl p-5"><div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-primary text-lg" style={{ fontVariationSettings: '"FILL" 1' }}>medication</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Prescribed Medicines</h4></div><div className="space-y-2">{data.medicines.map((m, i) => (<div key={i} className="flex items-center justify-between text-sm"><span className="text-on-surface font-medium">{m.name}</span><span className="text-secondary">{m.dosage}</span></div>))}</div></div>
-                <div className="bg-tertiary-container/10 rounded-xl p-5 border border-tertiary/10"><div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-tertiary text-lg">warning</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-tertiary-container">Precautions</h4></div><ul className="text-sm text-on-surface space-y-2">{data.precautions.map((p, i) => (<li key={i} className="flex items-start gap-2"><span className="text-tertiary mt-0.5">•</span>{p}</li>))}</ul></div>
-                <div className="flex items-center justify-between pt-2 border-t border-outline-variant/10"><div className="flex items-center gap-2 text-sm text-secondary"><span className="material-symbols-outlined text-lg">{data.typeIcon}</span><span>{data.type}</span></div><span className="px-3 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded-full uppercase tracking-wider">Completed</span></div>
-              </div>
+              {data ? (
+                <>
+                  <div className="flex justify-between items-start mb-6">
+                    <div><h2 className="text-xl font-bold text-on-surface">{data.doctor}</h2><p className="text-sm text-secondary">{data.date}</p></div>
+                    <button className="p-2 rounded-full hover:bg-surface-container-high transition-colors" onClick={() => setModal(null)}><span className="material-symbols-outlined">close</span></button>
+                  </div>
+                  <div className="space-y-6">
+                    <div className="bg-surface-container-low rounded-xl p-5"><div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-tertiary text-lg">coronavirus</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Diagnosis / Illness</h4></div><p className="text-sm text-on-surface font-medium">{data.illness}</p></div>
+                    <div className="bg-surface-container-low rounded-xl p-5"><div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-primary text-lg">stethoscope</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Doctor's Recommendations</h4></div><p className="text-sm text-on-surface">{data.recommendations}</p></div>
+                    <div className="bg-surface-container-low rounded-xl p-5"><div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-primary text-lg" style={{ fontVariationSettings: '"FILL" 1' }}>medication</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Prescribed Medicines</h4></div><div className="space-y-2">{data.medicines.map((m, i) => (<div key={i} className="flex items-center justify-between text-sm"><span className="text-on-surface font-medium">{m.name}</span><span className="text-secondary">{m.dosage}</span></div>))}</div></div>
+                    <div className="bg-tertiary-container/10 rounded-xl p-5 border border-tertiary/10"><div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-tertiary text-lg">warning</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-tertiary-container">Precautions</h4></div><ul className="text-sm text-on-surface space-y-2">{data.precautions.map((p, i) => (<li key={i} className="flex items-start gap-2"><span className="text-tertiary mt-0.5">•</span>{p}</li>))}</ul></div>
+                    <div className="flex items-center justify-between pt-2 border-t border-outline-variant/10"><div className="flex items-center gap-2 text-sm text-secondary"><span className="material-symbols-outlined text-lg">{data.typeIcon}</span><span>{data.type}</span></div><span className="px-3 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded-full uppercase tracking-wider">Completed</span></div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between items-start mb-6">
+                    <h2 className="text-xl font-bold text-on-surface">No Summary Available</h2>
+                    <button className="p-2 rounded-full hover:bg-surface-container-high transition-colors" onClick={() => setModal(null)}><span className="material-symbols-outlined">close</span></button>
+                  </div>
+                  <div className="text-center py-10">
+                    <div className="w-20 h-20 rounded-full bg-error-container/20 flex items-center justify-center mx-auto mb-6">
+                      <span className="material-symbols-outlined text-error text-4xl">event_busy</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-on-surface mb-2">Meeting Not Attended</h3>
+                    <p className="text-sm text-secondary max-w-sm mx-auto leading-relaxed">This consultation was not attended or did not take place. No summary is available for this appointment. Please reschedule to get a new consultation.</p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

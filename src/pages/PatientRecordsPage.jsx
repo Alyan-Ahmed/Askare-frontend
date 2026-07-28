@@ -210,7 +210,6 @@ export default function PatientRecordsPage() {
             </div>
             <div className="flex gap-2 mt-4">
               <button className="flex-1 text-xs font-bold text-primary bg-primary-container/20 px-3 py-2 rounded-lg hover:bg-primary-container/40 transition-colors" onClick={() => { setRecordModal({ ...record, tab: 'report' }); setDeleteConfirm(false) }}>View Report</button>
-              <button className="flex-1 text-xs font-bold text-tertiary bg-tertiary-container/20 px-3 py-2 rounded-lg hover:bg-tertiary-container/40 transition-colors" onClick={() => { setRecordModal({ ...record, tab: 'scans' }); setDeleteConfirm(false) }}>Scans</button>
             </div>
           </div>
         ))}

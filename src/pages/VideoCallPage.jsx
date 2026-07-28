@@ -30,9 +30,6 @@ export default function VideoCallPage() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [endModal, setEndModal] = useState(false)
   const [summaryModal, setSummaryModal] = useState(false)
-  const [summaryDiagnosis, setSummaryDiagnosis] = useState('')
-  const [summaryRecommendations, setSummaryRecommendations] = useState('')
-  const [summaryMedicines, setSummaryMedicines] = useState('')
   const [elapsed, setElapsed] = useState(0)
   const [messages, setMessages] = useState(INITIAL_MESSAGES)
   const [chatInput, setChatInput] = useState('')
@@ -192,27 +189,27 @@ export default function VideoCallPage() {
     if (timerRef.current) clearInterval(timerRef.current)
     if (mediaStreamRef.current) mediaStreamRef.current.getTracks().forEach(t => t.stop())
     if (screenStreamRef.current) screenStreamRef.current.getTracks().forEach(t => t.stop())
-    if (effectiveRole === 'doctor') {
-      setEndModal(false)
-      setSummaryModal(true)
-    } else {
-      navigate(effectiveRole === 'doctor' ? '/doctor-dashboard' : '/patient-dashboard')
-    }
-  }
-
-  const submitSummary = () => {
+    setEndModal(false)
+    // Save AI-generated summary to sessionStorage
     const summaries = JSON.parse(sessionStorage.getItem('askare_call_summaries') || '[]')
     summaries.push({
       patient: patientName,
       doctor: doctorName,
-      diagnosis: summaryDiagnosis,
-      recommendations: summaryRecommendations,
-      medicines: summaryMedicines.split('\n').filter(m => m.trim()),
+      diagnosis: 'Mild upper respiratory tract infection with post-nasal drip. Vital signs within normal limits. No signs of bacterial infection at this time.',
+      recommendations: 'Continue current hydration regimen. Use saline nasal spray 3-4 times daily. Rest for 48-72 hours and avoid strenuous activity. Follow up in 5-7 days if symptoms persist or worsen.',
+      medicines: ['Cetirizine 10mg — Once daily (Evening)', 'Paracetamol 500mg — As needed for fever (Max 4/day)', 'Saline Nasal Spray — 3-4 times daily'],
+      precautions: ['Monitor temperature twice daily', 'Stay well hydrated (8+ glasses of water)', 'Avoid cold and dusty environments', 'Contact clinic immediately if fever exceeds 102°F'],
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      duration: `${Math.floor(elapsed / 60)}m ${elapsed % 60}s`,
     })
     sessionStorage.setItem('askare_call_summaries', JSON.stringify(summaries))
-    navigate('/doctor-dashboard')
+    // Patient sees AI summary popup; Doctor goes straight to dashboard
+    if (effectiveRole === 'patient' || effectiveRole !== 'doctor') {
+      setSummaryModal(true)
+    } else {
+      navigate('/doctor-dashboard')
+    }
   }
 
   const dashPath = effectiveRole === 'doctor' ? '/doctor-dashboard' : '/patient-dashboard'
@@ -401,36 +398,49 @@ export default function VideoCallPage() {
 
       {/* Keyframe animations */}
 
-      {/* Doctor Post-Call Summary Modal */}
+      {/* Post-Call AI Summary Modal */}
       {summaryModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}>
-          <div className="rounded-3xl p-8 max-w-[520px] w-[92%] max-h-[85vh] overflow-y-auto" style={{ background: '#1a2428', border: '1px solid rgba(255,255,255,0.06)', animation: 'fadeInUp 0.35s ease-out' }}>
+          <div className="rounded-3xl p-8 max-w-[560px] w-[92%] max-h-[85vh] overflow-y-auto" style={{ background: '#1a2428', border: '1px solid rgba(255,255,255,0.06)', animation: 'fadeInUp 0.35s ease-out' }}>
             <div className="flex items-center gap-4 mb-6">
               <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,105,119,0.2)' }}>
-                <span className="material-symbols-outlined text-[#8be9f6] text-2xl" style={{ fontVariationSettings: '"FILL" 1' }}>clinical_notes</span>
+                <span className="material-symbols-outlined text-[#8be9f6] text-2xl" style={{ fontVariationSettings: '"FILL" 1' }}>smart_toy</span>
               </div>
               <div>
-                <h3 className="text-white text-xl font-bold">Post-Call Summary</h3>
-                <p className="text-white/50 text-sm">Patient: {patientName}</p>
+                <h3 className="text-white text-xl font-bold">Consultation Summary</h3>
+                <p className="text-white/50 text-sm">AI-Generated Report • {doctorName}</p>
               </div>
             </div>
-            <div className="space-y-5">
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/50 mb-2">Diagnosis / Illness</label>
-                <textarea value={summaryDiagnosis} onChange={e => setSummaryDiagnosis(e.target.value)} rows="3" placeholder="Enter the diagnosis or illness identified..." className="w-full rounded-xl px-4 py-3 text-white text-sm outline-none resize-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }} />
+
+            <div className="space-y-4">
+              <div className="rounded-xl p-5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-[#8be9f6] text-lg">coronavirus</span><h4 className="text-[11px] font-bold uppercase tracking-widest text-white/50">Diagnosis / Illness</h4></div>
+                <p className="text-white/90 text-sm leading-relaxed">Mild upper respiratory tract infection with post-nasal drip. Vital signs within normal limits. No signs of bacterial infection at this time.</p>
               </div>
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/50 mb-2">Doctor&apos;s Recommendations</label>
-                <textarea value={summaryRecommendations} onChange={e => setSummaryRecommendations(e.target.value)} rows="3" placeholder="Enter your recommendations for the patient..." className="w-full rounded-xl px-4 py-3 text-white text-sm outline-none resize-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }} />
+              <div className="rounded-xl p-5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-[#8be9f6] text-lg">stethoscope</span><h4 className="text-[11px] font-bold uppercase tracking-widest text-white/50">Doctor&apos;s Recommendations</h4></div>
+                <p className="text-white/90 text-sm leading-relaxed">Continue current hydration regimen. Use saline nasal spray 3-4 times daily. Rest for 48-72 hours and avoid strenuous activity. Follow up in 5-7 days if symptoms persist or worsen.</p>
               </div>
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/50 mb-2">Prescribed Medicines <span className="normal-case text-white/30">(one per line)</span></label>
-                <textarea value={summaryMedicines} onChange={e => setSummaryMedicines(e.target.value)} rows="4" placeholder={"Paracetamol 500mg - Twice daily\nAmoxicillin 250mg - Three times daily"} className="w-full rounded-xl px-4 py-3 text-white text-sm outline-none resize-none font-mono" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }} />
+              <div className="rounded-xl p-5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-[#8be9f6] text-lg" style={{ fontVariationSettings: '"FILL" 1' }}>medication</span><h4 className="text-[11px] font-bold uppercase tracking-widest text-white/50">Prescribed Medicines</h4></div>
+                <div className="space-y-2">
+                  {['Cetirizine 10mg — Once daily (Evening)', 'Paracetamol 500mg — As needed for fever (Max 4/day)', 'Saline Nasal Spray — 3-4 times daily'].map((m, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm text-white/80"><span className="w-1.5 h-1.5 rounded-full bg-[#8be9f6] shrink-0"></span>{m}</div>
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-xl p-5" style={{ background: 'rgba(255,170,0,0.06)', border: '1px solid rgba(255,170,0,0.1)' }}>
+                <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-amber-400 text-lg">warning</span><h4 className="text-[11px] font-bold uppercase tracking-widest text-amber-400/70">Precautions</h4></div>
+                <ul className="space-y-2">
+                  {['Monitor temperature twice daily', 'Stay well hydrated (8+ glasses of water)', 'Avoid cold and dusty environments', 'Contact clinic immediately if fever exceeds 102°F'].map((p, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-white/70"><span className="text-amber-400 mt-0.5">•</span>{p}</li>
+                  ))}
+                </ul>
               </div>
             </div>
-            <div className="flex gap-3 mt-8">
-              <button onClick={() => navigate('/doctor-dashboard')} className="flex-1 px-5 py-3 rounded-xl text-white font-semibold text-sm hover:bg-white/15 transition-all" style={{ background: 'rgba(255,255,255,0.1)' }}>Skip</button>
-              <button onClick={submitSummary} disabled={!summaryDiagnosis.trim()} className="flex-1 px-5 py-3 rounded-xl text-white font-semibold text-sm hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed" style={{ background: '#006977' }}>Submit &amp; End</button>
+
+            <div className="mt-8">
+              <button onClick={() => navigate(effectiveRole === 'doctor' ? '/doctor-dashboard' : '/patient-dashboard')} className="w-full px-5 py-3.5 rounded-xl text-white font-semibold text-sm hover:opacity-90 transition-all" style={{ background: '#006977' }}>Done — Return to Dashboard</button>
             </div>
           </div>
         </div>
