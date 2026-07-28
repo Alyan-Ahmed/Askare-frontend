@@ -33,17 +33,27 @@ export default function PatientDashboardPage() {
   const [appointmentDate, setAppointmentDate] = useState('Today, Oct 14')
   const [appointmentTime, setAppointmentTime] = useState('02:30 PM')
   const [viewKey, setViewKey] = useState(0)
+  const [callSummary, setCallSummary] = useState(null)
   const { user } = useAuth()
   const navigate = useNavigate()
   const displayName = user?.name || 'Alyan Ahmed'
 
   useEffect(() => {
-    if (modal) document.body.style.overflow = 'hidden'
+    if (modal || callSummary) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
-    const handler = (e) => { if (e.key === 'Escape') setModal(null) }
+    const handler = (e) => { if (e.key === 'Escape') { setModal(null); setCallSummary(null) } }
     document.addEventListener('keydown', handler)
     return () => { document.removeEventListener('keydown', handler); document.body.style.overflow = '' }
-  }, [modal])
+  }, [modal, callSummary])
+
+  // Check for pending AI summary from a just-ended video call
+  useEffect(() => {
+    const pending = sessionStorage.getItem('askare_pending_summary')
+    if (pending) {
+      try { setCallSummary(JSON.parse(pending)) } catch {}
+      sessionStorage.removeItem('askare_pending_summary')
+    }
+  }, [])
 
   const data = modal ? summaryData[modal] : null
 
@@ -274,6 +284,70 @@ export default function PatientDashboardPage() {
                   </div>
                 </>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Consultation Summary — shown after returning from a video call */}
+      {callSummary && (
+        <div className="fixed inset-0 z-[85] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onClick={() => setCallSummary(null)}></div>
+          <div className="relative bg-surface-container-lowest w-full max-w-xl rounded-2xl shadow-2xl z-10 overflow-hidden max-h-[90vh] overflow-y-auto">
+            <div className="p-8">
+              {/* Header */}
+              <div className="flex justify-between items-start mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary text-2xl" style={{ fontVariationSettings: '"FILL" 1' }}>smart_toy</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-on-surface">Consultation Summary</h2>
+                    <p className="text-sm text-secondary">AI-Generated Report • {callSummary.doctor}</p>
+                  </div>
+                </div>
+                <button className="p-2 rounded-full hover:bg-surface-container-high transition-colors" onClick={() => setCallSummary(null)}><span className="material-symbols-outlined">close</span></button>
+              </div>
+
+              {/* Date & Duration */}
+              <div className="flex items-center gap-4 mb-6 text-sm text-secondary">
+                <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-base">calendar_today</span>{callSummary.date}</span>
+                <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-base">schedule</span>{callSummary.time}</span>
+                {callSummary.duration && <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-base">timer</span>{callSummary.duration}</span>}
+              </div>
+
+              <div className="space-y-5">
+                {/* Diagnosis */}
+                <div className="bg-surface-container-low rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-tertiary text-lg">coronavirus</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Diagnosis / Illness</h4></div>
+                  <p className="text-sm text-on-surface leading-relaxed">{callSummary.diagnosis}</p>
+                </div>
+                {/* Recommendations */}
+                <div className="bg-surface-container-low rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-primary text-lg">stethoscope</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Doctor's Recommendations</h4></div>
+                  <p className="text-sm text-on-surface leading-relaxed">{callSummary.recommendations}</p>
+                </div>
+                {/* Medicines */}
+                <div className="bg-surface-container-low rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-primary text-lg" style={{ fontVariationSettings: '"FILL" 1' }}>medication</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Prescribed Medicines</h4></div>
+                  <div className="space-y-2">
+                    {callSummary.medicines.map((m, i) => (
+                      <div key={i} className="flex items-center gap-2 text-sm text-on-surface"><span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>{m}</div>
+                    ))}
+                  </div>
+                </div>
+                {/* Precautions */}
+                <div className="bg-tertiary-container/10 rounded-xl p-5 border border-tertiary/10">
+                  <div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-tertiary text-lg">warning</span><h4 className="text-xs font-bold uppercase tracking-widest text-on-tertiary-container">Precautions</h4></div>
+                  <ul className="text-sm text-on-surface space-y-2">
+                    {callSummary.precautions.map((p, i) => (
+                      <li key={i} className="flex items-start gap-2"><span className="text-tertiary mt-0.5">•</span>{p}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <button onClick={() => setCallSummary(null)} className="w-full mt-8 py-3.5 bg-primary text-on-primary rounded-xl text-sm font-bold hover:opacity-90 transition-all">Got it — Close Summary</button>
             </div>
           </div>
         </div>
