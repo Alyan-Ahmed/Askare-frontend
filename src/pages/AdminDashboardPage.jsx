@@ -6,14 +6,14 @@ import { useAuth } from '../context/AuthContext'
    DATA
    ═══════════════════════════════════════════════════════════════ */
 const DEFAULT_DOCTORS = [
-  { id: 1, name: 'Dr. Arsalan Khan', email: 'arsalan@askare.health', spec: 'General Physician', location: 'Clifton, Karachi', rating: '4.9', price: 'PKR 2,500', gender: 'Male', status: 'Active', joined: 'Jan 15, 2024', patients: 128, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJ4LyJ5urRhYWaNc0fAHi1aTPLnVNXCr9Jt3_5dGQkr4oLP2ZKJVy6rIpZrwq0M2pRVXyd9husXHlkwbu953qA9NJcmVQTAwcoY5vO9R0WOEZVtm2ycNh4gYQqj8ef4G7tyZBVvySBVcnN79uOgWnsxrVhjq2L1tbDDu3svWyhtYP5QWFMxpJExQVH5qNCL1n71mb-T_7bbgRMoxc4ZKChtFLv2MhapV1uxN-3cexn7PW6JJV9r95g4ia08RxSTMZipeYxtApQyHQ', about: 'Experienced GP with 12+ years in family medicine.' },
-  { id: 2, name: 'Dr. Sarah Ahmed', email: 'sarah.a@askare.health', spec: 'Pediatrician', location: 'DHA Phase VI, Karachi', rating: '5.0', price: 'PKR 3,000', gender: 'Female', status: 'Active', joined: 'Mar 22, 2024', patients: 95, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-KawnVanuKt14ZQFtYKaRGkXXXSy_dSCBaDU6_oWWDI5SkQxorawLqkFKaF28GKp9625EUcBiNzTKK07YeNngi0A4y91Wo6DBSKJSuFG4_A9Lqkh4KAeEXbCq0r8CxB8Q7egHxfNXcwNwJwjuFZtM2QXRDaEk3eaFm4b0dNFhihp70seNnWVEl5xw7SdlbO2ARt_0cMPWiTz7Z_ZGDtSwtYoXJQVrNdrAAXSne880taIH5w9NCdSq17vWdMaMszuEhamhlP5Ea58', about: 'Board-certified pediatrician at Aga Khan University Hospital.' },
-  { id: 3, name: 'Dr. Mansoor Ali', email: 'mansoor@askare.health', spec: 'Psychiatrist', location: 'Gulshan-e-Iqbal, Karachi', rating: '4.8', price: 'PKR 5,000', gender: 'Male', status: 'Active', joined: 'Feb 10, 2024', patients: 67, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0R2oB8OJVQzikzuZsZ6-yi1yy7TSmFjQDJBvIqUptz-S9nkEMSg7m_2T8bN8g_MJqvKANbPxrqi0lLknSMt_nyI9WJBrd-_N38Hw2SvMNxS3IAr74fExUA_bY83zpTQVvIgt4QdZRoEmxfDVX84ATLqB64VZJCC1orZaIXsv38DyxOX1VgVLzUrqJ4_LSzdGgCGca54Kr2iMwFYlHICqj9RGSPgEb1rOvglrTyexlyQPcdJ-6hOenL48N__8-akZdUgGcu8bQ38A', about: 'Senior consultant psychiatrist specializing in CBT.' },
-  { id: 4, name: 'Dr. Mariam Farooq', email: 'mariam@askare.health', spec: 'Pediatrician', location: 'PECHS, Karachi', rating: '4.7', price: 'PKR 2,800', gender: 'Female', status: 'Pending', joined: 'May 01, 2025', patients: 0, img: '', about: 'Pediatrics specialist with focus on neonatal care.' },
-  { id: 5, name: 'Dr. Sarah Khalil', email: 'khalil@askare.health', spec: 'Cardiologist', location: 'North Nazimabad, Karachi', rating: '4.6', price: 'PKR 4,500', gender: 'Female', status: 'Active', joined: 'Apr 18, 2024', patients: 82, img: '', about: 'Interventional cardiologist with 8 years of experience.' },
-  { id: 6, name: 'Dr. Ahmed Raza', email: 'raza@askare.health', spec: 'General Physician', location: 'Bahadurabad, Karachi', rating: '4.5', price: 'PKR 2,000', gender: 'Male', status: 'Suspended', joined: 'Jun 05, 2024', patients: 45, img: '', about: 'GP with interest in preventive medicine.' },
-  { id: 7, name: 'Dr. Nadia Hassan', email: 'nadia@askare.health', spec: 'Cardiologist', location: 'Saddar, Karachi', rating: '4.7', price: 'PKR 4,000', gender: 'Female', status: 'Active', joined: 'Jul 20, 2024', patients: 54, img: '', about: 'Preventive cardiologist with research background.' },
-  { id: 8, name: 'Dr. Usman Tariq', email: 'usman@askare.health', spec: 'Psychiatrist', location: 'Nazimabad, Karachi', rating: '4.4', price: 'PKR 4,500', gender: 'Male', status: 'Active', joined: 'Aug 03, 2024', patients: 39, img: '', about: 'Child & adolescent psychiatry specialist.' },
+  { id: 1, uid: 'DOC-10201', name: 'Dr. Arsalan Khan', email: 'arsalan@askare.health', spec: 'General Physician', rating: '4.9', price: 'PKR 2,500', gender: 'Male', status: 'Active', joined: 'Jan 15, 2024', patients: 128, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJ4LyJ5urRhYWaNc0fAHi1aTPLnVNXCr9Jt3_5dGQkr4oLP2ZKJVy6rIpZrwq0M2pRVXyd9husXHlkwbu953qA9NJcmVQTAwcoY5vO9R0WOEZVtm2ycNh4gYQqj8ef4G7tyZBVvySBVcnN79uOgWnsxrVhjq2L1tbDDu3svWyhtYP5QWFMxpJExQVH5qNCL1n71mb-T_7bbgRMoxc4ZKChtFLv2MhapV1uxN-3cexn7PW6JJV9r95g4ia08RxSTMZipeYxtApQyHQ', about: 'Experienced GP with 12+ years in family medicine.' },
+  { id: 2, uid: 'DOC-10302', name: 'Dr. Sarah Ahmed', email: 'sarah.a@askare.health', spec: 'Pediatrician', rating: '5.0', price: 'PKR 3,000', gender: 'Female', status: 'Active', joined: 'Mar 22, 2024', patients: 95, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-KawnVanuKt14ZQFtYKaRGkXXXSy_dSCBaDU6_oWWDI5SkQxorawLqkFKaF28GKp9625EUcBiNzTKK07YeNngi0A4y91Wo6DBSKJSuFG4_A9Lqkh4KAeEXbCq0r8CxB8Q7egHxfNXcwNwJwjuFZtM2QXRDaEk3eaFm4b0dNFhihp70seNnWVEl5xw7SdlbO2ARt_0cMPWiTz7Z_ZGDtSwtYoXJQVrNdrAAXSne880taIH5w9NCdSq17vWdMaMszuEhamhlP5Ea58', about: 'Board-certified pediatrician at Aga Khan University Hospital.' },
+  { id: 3, uid: 'DOC-10403', name: 'Dr. Mansoor Ali', email: 'mansoor@askare.health', spec: 'Psychiatrist', rating: '4.8', price: 'PKR 5,000', gender: 'Male', status: 'Active', joined: 'Feb 10, 2024', patients: 67, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0R2oB8OJVQzikzuZsZ6-yi1yy7TSmFjQDJBvIqUptz-S9nkEMSg7m_2T8bN8g_MJqvKANbPxrqi0lLknSMt_nyI9WJBrd-_N38Hw2SvMNxS3IAr74fExUA_bY83zpTQVvIgt4QdZRoEmxfDVX84ATLqB64VZJCC1orZaIXsv38DyxOX1VgVLzUrqJ4_LSzdGgCGca54Kr2iMwFYlHICqj9RGSPgEb1rOvglrTyexlyQPcdJ-6hOenL48N__8-akZdUgGcu8bQ38A', about: 'Senior consultant psychiatrist specializing in CBT.' },
+  { id: 4, uid: 'DOC-10504', name: 'Dr. Mariam Farooq', email: 'mariam@askare.health', spec: 'Pediatrician', rating: '4.7', price: 'PKR 2,800', gender: 'Female', status: 'Pending', joined: 'May 01, 2025', patients: 0, img: '', about: 'Pediatrics specialist with focus on neonatal care.' },
+  { id: 5, uid: 'DOC-10605', name: 'Dr. Sarah Khalil', email: 'khalil@askare.health', spec: 'Cardiologist', rating: '4.6', price: 'PKR 4,500', gender: 'Female', status: 'Active', joined: 'Apr 18, 2024', patients: 82, img: '', about: 'Interventional cardiologist with 8 years of experience.' },
+  { id: 6, uid: 'DOC-10706', name: 'Dr. Ahmed Raza', email: 'raza@askare.health', spec: 'General Physician', rating: '4.5', price: 'PKR 2,000', gender: 'Male', status: 'Suspended', joined: 'Jun 05, 2024', patients: 45, img: '', about: 'GP with interest in preventive medicine.' },
+  { id: 7, uid: 'DOC-10807', name: 'Dr. Nadia Hassan', email: 'nadia@askare.health', spec: 'Cardiologist', rating: '4.7', price: 'PKR 4,000', gender: 'Female', status: 'Active', joined: 'Jul 20, 2024', patients: 54, img: '', about: 'Preventive cardiologist with research background.' },
+  { id: 8, uid: 'DOC-10908', name: 'Dr. Usman Tariq', email: 'usman@askare.health', spec: 'Psychiatrist', rating: '4.4', price: 'PKR 4,500', gender: 'Male', status: 'Active', joined: 'Aug 03, 2024', patients: 39, img: '', about: 'Child & adolescent psychiatry specialist.' },
 ]
 
 const DEFAULT_PATIENTS = [
@@ -23,23 +23,23 @@ const DEFAULT_PATIENTS = [
   { uid: 'ASK-12560', name: 'Fatima Jinnah', email: 'fatima.j@gmail.com', gender: 'Female', status: 'Active', joined: 'Nov 01, 2023' },
   { uid: 'ASK-33900', name: 'Bilal Siddiqui', email: 'bilal.s@gmail.com', gender: 'Male', status: 'Active', joined: 'Oct 15, 2023' },
   { uid: 'ASK-77120', name: 'Sara Ahmed', email: 'sara.a@gmail.com', gender: 'Female', status: 'Active', joined: 'Oct 22, 2023' },
-  { uid: 'ASK-19830', name: 'Hammad Ali', email: 'hammad.a@gmail.com', gender: 'Male', status: 'Blocked', joined: 'Sep 20, 2023' },
+  { uid: 'ASK-19830', name: 'Hammad Ali', email: 'hammad.a@gmail.com', gender: 'Male', status: 'Suspended', joined: 'Sep 20, 2023' },
   { uid: 'ASK-55610', name: 'Aisha Noor', email: 'aisha.n@gmail.com', gender: 'Female', status: 'Active', joined: 'Dec 02, 2023' },
 ]
 
 const ALL_APPOINTMENTS = [
-  { id: 1, patient: 'Mrs. Sarah Jenkins', doctor: 'Dr. Arsalan Khan', date: 'Today', time: '09:00 AM', type: 'Video Consult', status: 'Confirmed' },
-  { id: 2, patient: 'Mr. David Ahmed', doctor: 'Dr. Arsalan Khan', date: 'Today', time: '10:30 AM', type: 'Video Consult', status: 'Live Now' },
-  { id: 3, patient: 'Ms. Fatima Noor', doctor: 'Dr. Arsalan Khan', date: 'Tomorrow', time: '11:45 AM', type: 'Video Consult', status: 'Confirmed' },
-  { id: 4, patient: 'Ayesha Khan', doctor: 'Dr. Sarah Ahmed', date: 'Tomorrow', time: '02:15 PM', type: 'Video Consult', status: 'Confirmed' },
-  { id: 5, patient: 'Mr. Rafiq Hussain', doctor: 'Dr. Arsalan Khan', date: 'Yesterday', time: '09:30 AM', type: 'Video Consult', status: 'Completed' },
-  { id: 6, patient: 'Mrs. Nadia Patel', doctor: 'Dr. Mansoor Ali', date: 'Yesterday', time: '11:00 AM', type: 'Video Consult', status: 'Not Attended' },
-  { id: 7, patient: 'Mr. Tariq Shah', doctor: 'Dr. Sarah Ahmed', date: 'Yesterday', time: '02:00 PM', type: 'Video Consult', status: 'Completed' },
-  { id: 8, patient: 'Alyan Ahmed', doctor: 'Dr. Sarah Khalil', date: 'Oct 24', time: '10:30 AM', type: 'Video Consult', status: 'Confirmed' },
-  { id: 9, patient: 'Alyan Ahmed', doctor: 'Dr. Ahmed Raza', date: 'Oct 28', time: '02:15 PM', type: 'Video Consult', status: 'Confirmed' },
-  { id: 10, patient: 'Alyan Ahmed', doctor: 'Dr. Mariam Farooq', date: 'Sept 12', time: '10:00 AM', type: 'Video Consult', status: 'Completed' },
-  { id: 11, patient: 'Alyan Ahmed', doctor: 'Dr. Sarah Khalil', date: 'Aug 30', time: '11:00 AM', type: 'Video Consult', status: 'Not Attended' },
-  { id: 12, patient: 'Alyan Ahmed', doctor: 'Dr. Ahmed Raza', date: 'Aug 15', time: '09:00 AM', type: 'Video Consult', status: 'Completed' },
+  { id: 1, patient: 'Mrs. Sarah Jenkins', doctor: 'Dr. Arsalan Khan', date: 'Today', time: '09:00 AM', duration: '—', status: 'Confirmed' },
+  { id: 2, patient: 'Mr. David Ahmed', doctor: 'Dr. Arsalan Khan', date: 'Today', time: '10:30 AM', duration: '32 min', status: 'Live Now' },
+  { id: 3, patient: 'Ms. Fatima Noor', doctor: 'Dr. Arsalan Khan', date: 'Tomorrow', time: '11:45 AM', duration: '—', status: 'Confirmed' },
+  { id: 4, patient: 'Ayesha Khan', doctor: 'Dr. Sarah Ahmed', date: 'Tomorrow', time: '02:15 PM', duration: '—', status: 'Confirmed' },
+  { id: 5, patient: 'Mr. Rafiq Hussain', doctor: 'Dr. Arsalan Khan', date: 'Yesterday', time: '09:30 AM', duration: '24 min', status: 'Completed' },
+  { id: 6, patient: 'Mrs. Nadia Patel', doctor: 'Dr. Mansoor Ali', date: 'Yesterday', time: '11:00 AM', duration: '—', status: 'Not Attended' },
+  { id: 7, patient: 'Mr. Tariq Shah', doctor: 'Dr. Sarah Ahmed', date: 'Yesterday', time: '02:00 PM', duration: '28 min', status: 'Completed' },
+  { id: 8, patient: 'Alyan Ahmed', doctor: 'Dr. Sarah Khalil', date: 'Oct 24', time: '10:30 AM', duration: '—', status: 'Confirmed' },
+  { id: 9, patient: 'Alyan Ahmed', doctor: 'Dr. Ahmed Raza', date: 'Oct 28', time: '02:15 PM', duration: '—', status: 'Confirmed' },
+  { id: 10, patient: 'Alyan Ahmed', doctor: 'Dr. Mariam Farooq', date: 'Sept 12', time: '10:00 AM', duration: '35 min', status: 'Completed' },
+  { id: 11, patient: 'Alyan Ahmed', doctor: 'Dr. Sarah Khalil', date: 'Aug 30', time: '11:00 AM', duration: '—', status: 'Not Attended' },
+  { id: 12, patient: 'Alyan Ahmed', doctor: 'Dr. Ahmed Raza', date: 'Aug 15', time: '09:00 AM', duration: '41 min', status: 'Completed' },
 ]
 
 const VIDEO_CALLS = [
@@ -97,6 +97,54 @@ const ALL_TIME_DATA = [
   ...MONTHLY,
 ]
 
+
+const DAILY_DATA = [
+  { day: '1', appts: 2, rev: 5000, patients: 1, doctors: 0 },
+  { day: '2', appts: 3, rev: 7500, patients: 0, doctors: 0 },
+  { day: '3', appts: 1, rev: 2500, patients: 1, doctors: 0 },
+  { day: '4', appts: 4, rev: 10000, patients: 2, doctors: 0 },
+  { day: '5', appts: 2, rev: 5000, patients: 0, doctors: 0 },
+  { day: '6', appts: 3, rev: 7500, patients: 1, doctors: 0 },
+  { day: '7', appts: 5, rev: 12500, patients: 1, doctors: 0 },
+  { day: '8', appts: 2, rev: 5000, patients: 0, doctors: 0 },
+  { day: '9', appts: 4, rev: 10000, patients: 2, doctors: 0 },
+  { day: '10', appts: 3, rev: 7500, patients: 1, doctors: 0 },
+  { day: '11', appts: 1, rev: 2500, patients: 0, doctors: 0 },
+  { day: '12', appts: 3, rev: 7500, patients: 1, doctors: 0 },
+  { day: '13', appts: 2, rev: 5000, patients: 0, doctors: 0 },
+  { day: '14', appts: 4, rev: 10000, patients: 2, doctors: 1 },
+  { day: '15', appts: 3, rev: 7500, patients: 1, doctors: 0 },
+  { day: '16', appts: 2, rev: 5000, patients: 0, doctors: 0 },
+  { day: '17', appts: 5, rev: 12500, patients: 2, doctors: 0 },
+  { day: '18', appts: 1, rev: 2500, patients: 0, doctors: 0 },
+  { day: '19', appts: 3, rev: 7500, patients: 1, doctors: 0 },
+  { day: '20', appts: 4, rev: 10000, patients: 1, doctors: 0 },
+  { day: '21', appts: 2, rev: 5000, patients: 0, doctors: 0 },
+  { day: '22', appts: 3, rev: 7500, patients: 1, doctors: 0 },
+  { day: '23', appts: 1, rev: 2500, patients: 0, doctors: 0 },
+  { day: '24', appts: 4, rev: 10000, patients: 2, doctors: 0 },
+  { day: '25', appts: 3, rev: 7500, patients: 1, doctors: 0 },
+  { day: '26', appts: 2, rev: 5000, patients: 0, doctors: 0 },
+  { day: '27', appts: 3, rev: 7500, patients: 1, doctors: 0 },
+  { day: '28', appts: 5, rev: 12500, patients: 2, doctors: 0 },
+  { day: '29', appts: 2, rev: 5000, patients: 0, doctors: 0 },
+  { day: '30', appts: 3, rev: 7500, patients: 1, doctors: 0 },
+]
+
+/* Date sorting helper */
+const parseDateRank = (d) => {
+  if (!d) return 0
+  const dl = d.toLowerCase()
+  if (dl === 'today') return 99999
+  if (dl === 'tomorrow') return 99998
+  if (dl === 'yesterday') return 99997
+  const months = { jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12 }
+  const parts = d.replace(',','').split(' ')
+  if (parts.length >= 2) { const m = months[parts[0].toLowerCase()] || 0; const day = parseInt(parts[1]) || 0; const yr = parts[2] ? parseInt(parts[2]) : 2026; return yr * 10000 + m * 100 + day }
+  return 0
+}
+const sortByDate = (arr) => [...arr].sort((a, b) => parseDateRank(b.date) - parseDateRank(a.date))
+
 const SPECS = ['General Physician', 'Pediatrician', 'Psychiatrist', 'Cardiologist', 'Neurologist', 'Dermatologist', 'Orthopedic Surgeon', 'Oncologist']
 
 const NAV = [
@@ -104,7 +152,6 @@ const NAV = [
   { id: 'doctors', icon: 'stethoscope', label: 'Doctors' },
   { id: 'patients', icon: 'groups', label: 'Patients' },
   { id: 'appointments', icon: 'event_note', label: 'Appointments' },
-  { id: 'videocalls', icon: 'video_camera_front', label: 'Video Calls' },
   { id: 'ai', icon: 'neurology', label: 'AI Monitoring' },
   { id: 'payments', icon: 'account_balance_wallet', label: 'Payments' },
   { id: 'complaints', icon: 'contact_support', label: 'Support' },
@@ -179,6 +226,8 @@ export default function AdminDashboardPage() {
   const [doctors, setDoctors] = useState(DEFAULT_DOCTORS)
   const [patients, setPatients] = useState(DEFAULT_PATIENTS)
   const [apptFilter, setApptFilter] = useState('All')
+  const [payRange, setPayRange] = useState('all')
+  const [payStatus, setPayStatus] = useState('All')
   const [complaints, setComplaints] = useState(COMPLAINTS)
   const [specs, setSpecs] = useState(SPECS)
   const [newSpec, setNewSpec] = useState('')
@@ -187,7 +236,16 @@ export default function AdminDashboardPage() {
   const [docSearch, setDocSearch] = useState('')
   const [patSearch, setPatSearch] = useState('')
   const [chartRange, setChartRange] = useState('month')
+  const [selectedMonth, setSelectedMonth] = useState('Jul')
+  const [showMonthPicker, setShowMonthPicker] = useState(false)
+  const [showPayFilter, setShowPayFilter] = useState(false)
+  const [payDateFrom, setPayDateFrom] = useState('')
+  const [payDateTo, setPayDateTo] = useState('')
   const [privacy, setPrivacy] = useState({ dataRetention: true, hipaa: true, patientConsent: true, anonAI: false, twoFactor: true, auditLog: true, encryptBackup: true, sessionTimeout: true })
+  const [notifSettings, setNotifSettings] = useState({ emailNotif: true, smsAlerts: false, systemAnnouncements: true, maintenanceAlerts: true })
+  const [paySettings, setPaySettings] = useState({ currency: 'PKR', commission: '10', autoRefund: false, methods: ['Debit Card', 'Credit Card', 'Crypto (BTC)', 'Crypto (USDT)', 'JazzCash', 'EasyPaisa'] })
+  const [consultSettings, setConsultSettings] = useState({ defaultDuration: '30', maxDaily: '12', bufferTime: '10', recording: false })
+  const [maintenance, setMaintenance] = useState({ enabled: false, message: 'We are currently performing scheduled maintenance. Please check back soon.', downtime: '2 hours' })
   const toastTimer = useRef(null)
 
   const flash = m => {
@@ -204,11 +262,13 @@ export default function AdminDashboardPage() {
     if (toastTimer.current) clearTimeout(toastTimer.current)
   }, [])
 
-  const filteredAppts = useMemo(() => apptFilter === 'All' ? ALL_APPOINTMENTS : ALL_APPOINTMENTS.filter(a => a.status === apptFilter), [apptFilter])
+  const filteredAppts = useMemo(() => sortByDate(apptFilter === 'All' ? ALL_APPOINTMENTS : ALL_APPOINTMENTS.filter(a => a.status === apptFilter)), [apptFilter])
   const totalRev = TRANSACTIONS.filter(t => t.status === 'Completed').reduce((s, t) => s + t.amount, 0)
-  const filteredDocs = useMemo(() => { const q = docSearch.toLowerCase(); return q ? doctors.filter(d => d.name.toLowerCase().includes(q) || d.id.toString().includes(q) || d.spec.toLowerCase().includes(q) || (d.email || '').toLowerCase().includes(q)) : doctors }, [docSearch, doctors])
+  const allTimeRev = ALL_TIME_DATA.reduce((s, d) => s + d.rev, 0)
+  const allTimeAppts = ALL_TIME_DATA.reduce((s, d) => s + d.appts, 0)
+  const filteredDocs = useMemo(() => { const q = docSearch.toLowerCase(); return q ? doctors.filter(d => d.name.toLowerCase().includes(q) || d.id.toString().includes(q) || (d.uid || '').toLowerCase().includes(q) || d.spec.toLowerCase().includes(q) || (d.email || '').toLowerCase().includes(q)) : doctors }, [docSearch, doctors])
   const filteredPats = useMemo(() => { const q = patSearch.toLowerCase(); return q ? patients.filter(p => p.name.toLowerCase().includes(q) || (p.uid || '').toLowerCase().includes(q) || (p.email || '').toLowerCase().includes(q)) : patients }, [patSearch, patients])
-  const chartData = chartRange === 'month' ? MONTHLY : ALL_TIME_DATA
+  const chartData = chartRange === 'month' ? MONTHLY : chartRange === 'daily' ? DAILY_DATA.map(d => ({ ...d, month: d.day })) : ALL_TIME_DATA
 
   /* ─── SIDEBAR ─── */
   const sidebar = (
@@ -255,12 +315,12 @@ export default function AdminDashboardPage() {
     const refundRequests = TRANSACTIONS.filter(t => t.status === 'Refund Requested')
     const flaggedCount = AI_QUERIES.filter(q => q.flag).length
     const safeCount = AI_QUERIES.length - flaggedCount
-    const notAttendedConsultations = (apptS['Not Attended'] || 0) + (videoS['Not Attended'] || 0)
+    const notAttendedConsultations = (apptS['Not Attended'] || 0)
     const openSupport = (ticketS.Open || 0) + (ticketS['In Progress'] || 0)
     const restrictedUsers = (docS.Suspended || 0) + (patS.Blocked || 0)
     const actionCount = (docS.Pending || 0) + openSupport + refundRequests.length + flaggedCount + notAttendedConsultations + restrictedUsers
     const activePrivacyControls = Object.values(privacy).filter(Boolean).length
-    const trendLabel = chartRange === 'month' ? 'Last 6 months' : 'All 12 months'
+    const trendLabel = chartRange === 'daily' ? selectedMonth + ' (daily)' : chartRange === 'month' ? 'Last 6 months' : 'All 12 months'
 
     const appointmentSegments = [
       { label: 'Completed', value: apptS.Completed || 0, color: colorGroup.green },
@@ -328,7 +388,6 @@ export default function AdminDashboardPage() {
     ]
     const healthMetrics = [
       { label: 'Appointment completion', value: percent(apptS.Completed || 0, ALL_APPOINTMENTS.length), sub: `${apptS.Completed || 0} of ${ALL_APPOINTMENTS.length}` },
-      { label: 'Video call completion', value: percent(videoS.Completed || 0, VIDEO_CALLS.length), sub: `${videoS.Completed || 0} completed` },
       { label: 'AI safe response rate', value: percent(safeCount, AI_QUERIES.length), sub: `${flaggedCount} flagged` },
       { label: 'Payment collection', value: percent(completedPayments.length, TRANSACTIONS.length), sub: `${pendingPayments.length + refundRequests.length} exceptions` },
       { label: 'Privacy controls active', value: percent(activePrivacyControls, Object.keys(privacy).length), sub: `${activePrivacyControls} enabled` },
@@ -396,20 +455,28 @@ export default function AdminDashboardPage() {
               <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
             </div>
           </div>
-          <p className="text-base text-gray-500 max-w-3xl">Platform health across doctors, patients, appointments, video calls, AI monitoring, payments, and support.</p>
+          <p className="text-base text-gray-500 max-w-3xl">Platform health across doctors, patients, appointments, AI monitoring, payments, and support.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
-          <Kpi icon="account_balance_wallet" label="Revenue Collected" value={`PKR ${totalRev.toLocaleString()}`} sub={`Avg PKR ${Math.round(totalRev / Math.max(completedPayments.length, 1)).toLocaleString()}`} color="#006977" />
-          <Kpi icon="event_note" label="Consultations" value={ALL_APPOINTMENTS.length} sub={`${apptS.Completed || 0} completed`} color="#6366f1" />
-          <Kpi icon="stethoscope" label="Doctors" value={doctors.length} sub={`${docS.Active || 0} active`} color="#f59e0b" />
-          <Kpi icon="groups" label="Patients" value={patients.length} sub={`${patS.Active || 0} active`} color="#ec4899" />
+          <Kpi icon="account_balance_wallet" label="Total Revenue (All Time)" value={`PKR ${allTimeRev.toLocaleString()}`} sub={`+${Math.round(((MONTHLY[MONTHLY.length-1].rev - MONTHLY[0].rev) / Math.max(MONTHLY[0].rev,1)) * 100)}% from last year`} color="#006977" />
+          <Kpi icon="event_note" label="Total Consultations" value={allTimeAppts} sub={`${(apptS.Confirmed || 0) + (apptS['Live Now'] || 0)} upcoming`} color="#6366f1" />
+          <Kpi icon="stethoscope" label="Total Doctors" value={doctors.length} sub={`${docS.Pending || 0} pending approval`} color="#f59e0b" />
+          <Kpi icon="groups" label="Total Patients" value={patients.length} sub={`+${MONTHLY[MONTHLY.length - 1].patients} this month`} color="#ec4899" />
         </div>
 
         <SectionHead title="Trend Analytics" desc="Growth and transaction movement over the selected period.">
           <div className="flex items-center gap-2">
-            {[{ id: 'month', label: 'Last 6 Months' }, { id: 'all', label: 'All Time' }].map(r => (
-              <button key={r.id} onClick={() => setChartRange(r.id)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${chartRange === r.id ? 'bg-[#006977] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>{r.label}</button>
+              <div className="relative">
+                <button onClick={() => setShowMonthPicker(p => !p)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 ${chartRange === 'daily' ? 'bg-[#006977] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>{chartRange === 'daily' ? selectedMonth : 'Month'}<span className="material-symbols-outlined text-base">expand_more</span></button>
+                {showMonthPicker && <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 p-3 z-50 grid grid-cols-3 gap-1.5 w-[220px]" style={{ animation: 'fadeIn 0.15s ease' }}>
+                  {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map(m => (
+                    <button key={m} onClick={() => { setSelectedMonth(m); setChartRange('daily'); setShowMonthPicker(false) }} className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${selectedMonth === m && chartRange === 'daily' ? 'bg-[#006977] text-white' : 'text-gray-600 hover:bg-gray-100'}`}>{m}</button>
+                  ))}
+                </div>}
+              </div>
+              {[{ id: 'month', label: 'Last 6 Months' }, { id: 'all', label: 'All Time' }].map(r => (
+              <button key={r.id} onClick={() => { setChartRange(r.id); setShowMonthPicker(false) }} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${chartRange === r.id ? 'bg-[#006977] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>{r.label}</button>
             ))}
           </div>
         </SectionHead>
@@ -449,7 +516,7 @@ export default function AdminDashboardPage() {
             </div>
           </Card>
           <Card className="p-5">
-            <h3 className="text-base font-bold text-gray-900 mb-5">Doctor Workload</h3>
+            <h3 className="text-base font-bold text-gray-900 mb-1">Top Doctors by Patient Volume</h3><p className="text-xs text-gray-400 mb-4">Doctors ranked by total patients served</p>
             <div className="space-y-4">
               {topDoctors.map((doctor, i) => (
                 <div key={doctor.id} className="flex items-center gap-3">
@@ -536,12 +603,12 @@ export default function AdminDashboardPage() {
   const renderDoctors = () => (<>
     <Head icon="stethoscope" title="Doctor Management" count={doctors.length} />
     <SearchBar value={docSearch} onChange={setDocSearch} placeholder="Search by name, email, ID, or specialty…" />
-    <Card><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50/80 border-b border-gray-100"><TH>Doctor</TH><TH>Specialty</TH><TH>Location</TH><TH>Rating</TH><TH>Consult Fee</TH><TH>Status</TH><TH className="text-right">Actions</TH></tr></thead>
+    <Card><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50/80 border-b border-gray-100"><TH>Doctor</TH><TH>UID</TH><TH>Specialty</TH><TH>Rating</TH><TH>Consult Fee</TH><TH>Status</TH><TH className="text-right">Actions</TH></tr></thead>
     <tbody className="divide-y divide-gray-50">{filteredDocs.map(d => (
       <tr key={d.id} className="hover:bg-gray-50/60 transition-colors">
         <td className="px-5 py-5"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0">{d.img ? <img src={d.img} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-gray-400">person</span>}</div><div><p className="text-base font-semibold text-gray-900">{d.name}</p><p className="text-xs text-gray-400">{d.email}</p></div></div></td>
+        <td className="px-5 py-5 text-sm text-[#006977] font-mono font-bold">{d.uid}</td>
         <td className="px-5 py-5 text-base text-gray-600">{d.spec}</td>
-        <td className="px-5 py-5 text-sm text-gray-500">{d.location}</td>
         <td className="px-5 py-5"><span className="text-base font-semibold text-amber-500">{d.rating !== '—' ? `★ ${d.rating}` : '—'}</span></td>
         <td className="px-5 py-5 text-base text-gray-700 font-medium">{d.price}</td>
         <td className="px-5 py-5"><B>{d.status}</B></td>
@@ -569,8 +636,8 @@ export default function AdminDashboardPage() {
         <td className="px-5 py-5"><B>{p.status}</B></td>
         <td className="px-5 py-5 text-right"><div className="flex items-center justify-end gap-2">
           <button onClick={() => setModal({ t: 'pat', d: p })} className="px-3 py-2 rounded-lg text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">View</button>
-          {p.status !== 'Blocked' && <button onClick={() => { setPatients(prev => prev.map(x => x.uid === p.uid ? { ...x, status: 'Blocked' } : x)); flash(`${p.name} blocked`) }} className="px-3 py-2 rounded-lg text-sm font-semibold text-red-600 hover:text-red-700 transition-colors">Block</button>}
-          {p.status === 'Blocked' && <button onClick={() => { setPatients(prev => prev.map(x => x.uid === p.uid ? { ...x, status: 'Active' } : x)); flash(`${p.name} unblocked`) }} className="px-3 py-2 rounded-lg text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">Unblock</button>}
+          {p.status === 'Active' && <button onClick={() => { setPatients(prev => prev.map(x => x.uid === p.uid ? { ...x, status: 'Suspended' } : x)); flash(`${p.name} suspended`) }} className="px-3 py-2 rounded-lg text-sm font-semibold text-red-600 hover:text-red-700 transition-colors">Suspend</button>}
+          {p.status === 'Suspended' && <button onClick={() => { setPatients(prev => prev.map(x => x.uid === p.uid ? { ...x, status: 'Active' } : x)); flash(`${p.name} reactivated`) }} className="px-3 py-2 rounded-lg text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">Reactivate</button>}
         </div></td>
       </tr>
     ))}{filteredPats.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-base text-gray-400">No patients found</td></tr>}</tbody></table></div></Card>
@@ -580,26 +647,53 @@ export default function AdminDashboardPage() {
   const renderAppointments = () => (<>
     <Head icon="event_note" title="Appointment Management" count={ALL_APPOINTMENTS.length} />
     <div className="flex flex-wrap gap-2 mb-6">{['All', 'Completed', 'Confirmed', 'Not Attended', 'Live Now'].map(f => <button key={f} onClick={() => setApptFilter(f)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${apptFilter === f ? 'bg-[#006977] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>{f}</button>)}</div>
-    <Card><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50/80 border-b border-gray-100"><TH>Patient</TH><TH>Doctor</TH><TH>Date</TH><TH>Time</TH><TH>Type</TH><TH>Status</TH></tr></thead>
-    <tbody className="divide-y divide-gray-50">{filteredAppts.map(a => (<tr key={a.id} className="hover:bg-gray-50/60 transition-colors"><td className="px-5 py-5 text-base font-semibold text-gray-900">{a.patient}</td><td className="px-5 py-5 text-base text-gray-600">{a.doctor}</td><td className="px-5 py-5 text-base text-gray-500">{a.date}</td><td className="px-5 py-5 text-base text-gray-500">{a.time}</td><td className="px-5 py-5 text-sm text-gray-500">{a.type}</td><td className="px-5 py-5"><B>{a.status}</B></td></tr>))}</tbody></table></div>
+    <Card><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50/80 border-b border-gray-100"><TH>Patient</TH><TH>Doctor</TH><TH>Date</TH><TH>Time</TH><TH>Duration</TH><TH>Status</TH></tr></thead>
+    <tbody className="divide-y divide-gray-50">{filteredAppts.map(a => (<tr key={a.id} className="hover:bg-gray-50/60 transition-colors"><td className="px-5 py-5 text-base font-semibold text-gray-900">{a.patient}</td><td className="px-5 py-5 text-base text-gray-600">{a.doctor}</td><td className="px-5 py-5 text-base text-gray-500">{a.date}</td><td className="px-5 py-5 text-base text-gray-500">{a.time}</td><td className="px-5 py-5 text-base text-gray-700 font-medium">{a.duration}</td><td className="px-5 py-5"><B>{a.status}</B></td></tr>))}</tbody></table></div>
     {filteredAppts.length === 0 && <p className="py-12 text-center text-base text-gray-400">No appointments match this filter.</p>}</Card>
   </>)
 
-  /* ─── VIDEO CALLS ─── */
-  const renderVideoCalls = () => (<><Head icon="video_camera_front" title="Video Call Logs" count={VIDEO_CALLS.length} /><Card><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50/80 border-b border-gray-100"><TH>Doctor</TH><TH>Patient</TH><TH>Date</TH><TH>Time</TH><TH>Duration</TH><TH>Status</TH></tr></thead><tbody className="divide-y divide-gray-50">{VIDEO_CALLS.map(v => (<tr key={v.id} className="hover:bg-gray-50/60 transition-colors"><td className="px-5 py-5 text-base font-semibold text-gray-900">{v.doctor}</td><td className="px-5 py-5 text-base text-gray-600">{v.patient}</td><td className="px-5 py-5 text-base text-gray-500">{v.date}</td><td className="px-5 py-5 text-base text-gray-500">{v.time}</td><td className="px-5 py-5 text-base text-gray-700 font-medium">{v.duration}</td><td className="px-5 py-5"><B>{v.status}</B></td></tr>))}</tbody></table></div></Card></>)
-
   /* ─── AI ─── */
-  const renderAI = () => (<><Head icon="neurology" title="AI Chat Monitoring" /><div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8"><Kpi icon="forum" label="Total Queries" value={AI_QUERIES.length} color="#8b5cf6" /><Kpi icon="speed" label="Avg Response" value="1.8s" color="#06b6d4" /><Kpi icon="flag" label="Flagged" value={AI_QUERIES.filter(q => q.flag).length} sub="Review" color="#ef4444" /></div><Card><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50/80 border-b border-gray-100"><TH>Patient</TH><TH>Query</TH><TH>AI Response</TH><TH>Time</TH><TH>Safety</TH></tr></thead><tbody className="divide-y divide-gray-50">{AI_QUERIES.map(q => (<tr key={q.id} className="hover:bg-gray-50/60 transition-colors"><td className="px-5 py-5 text-base font-semibold text-gray-900">{q.patient}</td><td className="px-5 py-5 text-base text-gray-600 max-w-[220px]">{q.query}</td><td className="px-5 py-5 text-sm text-gray-500 max-w-[220px]">{q.response}</td><td className="px-5 py-5 text-sm text-gray-400 whitespace-nowrap">{q.time}</td><td className="px-5 py-5">{q.flag ? <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-red-600"><span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>Flagged</span> : <span className="text-sm font-semibold text-emerald-600">✓ Safe</span>}</td></tr>))}</tbody></table></div></Card></>)
+  const renderAI = () => (<><Head icon="neurology" title="AI Chat Monitoring" /><div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8"><Kpi icon="forum" label="Total Queries" value={AI_QUERIES.length} color="#8b5cf6" /><Kpi icon="speed" label="Avg Response" value="1.8s" color="#06b6d4" /><Kpi icon="flag" label="Flagged — Urgent Symptoms" value={AI_QUERIES.filter(q => q.flag).length} sub="Needs Review" color="#ef4444" /></div><Card><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50/80 border-b border-gray-100"><TH>Patient</TH><TH>Query</TH><TH>AI Response</TH><TH>Time</TH><TH>Safety</TH></tr></thead><tbody className="divide-y divide-gray-50">{AI_QUERIES.map(q => (<tr key={q.id} className="hover:bg-gray-50/60 transition-colors"><td className="px-5 py-5 text-base font-semibold text-gray-900">{q.patient}</td><td className="px-5 py-5 text-base text-gray-600 max-w-[220px]">{q.query}</td><td className="px-5 py-5 text-sm text-gray-500 max-w-[220px]">{q.response}</td><td className="px-5 py-5 text-sm text-gray-400 whitespace-nowrap">{q.time}</td><td className="px-5 py-5">{q.flag ? <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-red-600"><span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>Flagged</span> : <span className="text-sm font-semibold text-emerald-600">✓ Safe</span>}</td></tr>))}</tbody></table></div></Card></>)
 
   /* ─── PAYMENTS ─── */
-  const renderPayments = () => { const pend = TRANSACTIONS.filter(t => t.status === 'Pending').reduce((s, t) => s + t.amount, 0); const ref = TRANSACTIONS.filter(t => t.status === 'Refund Requested').reduce((s, t) => s + t.amount, 0); return (<><Head icon="account_balance_wallet" title="Patient Payments" count={TRANSACTIONS.length} /><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8"><Kpi icon="account_balance" label="Total Collected" value={`PKR ${totalRev.toLocaleString()}`} sub="+18%" /><Kpi icon="schedule" label="Pending" value={`PKR ${pend.toLocaleString()}`} color="#f59e0b" /><Kpi icon="undo" label="Refunds" value={`PKR ${ref.toLocaleString()}`} color="#ef4444" /><Kpi icon="trending_up" label="Avg Fee" value="PKR 3,250" color="#6366f1" /></div><Card><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50/80 border-b border-gray-100"><TH>TX ID</TH><TH>Patient (Payer)</TH><TH>Doctor</TH><TH>Amount</TH><TH>Date</TH><TH>Method</TH><TH>Status</TH></tr></thead><tbody className="divide-y divide-gray-50">{TRANSACTIONS.map(t => (<tr key={t.id} className="hover:bg-gray-50/60 transition-colors"><td className="px-5 py-5 text-sm text-[#006977] font-mono font-bold">{t.id}</td><td className="px-5 py-5 text-base font-semibold text-gray-900">{t.patient}</td><td className="px-5 py-5 text-base text-gray-600">{t.doctor}</td><td className="px-5 py-5 text-base text-gray-900 font-bold">PKR {t.amount.toLocaleString()}</td><td className="px-5 py-5 text-base text-gray-500">{t.date}</td><td className="px-5 py-5 text-sm text-gray-500">{t.method}</td><td className="px-5 py-5"><B>{t.status}</B></td></tr>))}</tbody></table></div></Card></>) }
+  const renderPayments = () => {
+    const statusFiltered = payStatus === 'All' ? TRANSACTIONS : TRANSACTIONS.filter(t => t.status === payStatus)
+    const filtered = sortByDate(statusFiltered)
+    const filteredCompleted = filtered.filter(t => t.status === 'Completed')
+    const filteredRev = filteredCompleted.reduce((s, t) => s + t.amount, 0)
+    const pend = filtered.filter(t => t.status === 'Pending').reduce((s, t) => s + t.amount, 0)
+    const ref = filtered.filter(t => t.status === 'Refund Requested').reduce((s, t) => s + t.amount, 0)
+    const avgFee = filteredCompleted.length > 0 ? Math.round(filteredRev / filteredCompleted.length) : 0
+    return (<>
+    <Head icon="account_balance_wallet" title="Patient Payments" count={filtered.length} />
+    <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+      <div className="flex flex-wrap gap-2">{['All', 'Completed', 'Pending', 'Refund Requested'].map(f => <button key={f} onClick={() => setPayStatus(f)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${payStatus === f ? 'bg-[#006977] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>{f}</button>)}</div>
+      <div className="relative">
+        <button onClick={() => setShowPayFilter(p => !p)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 ${(payDateFrom || payDateTo) ? 'bg-[#006977] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}><span className="material-symbols-outlined text-base">filter_list</span>{(payDateFrom && payDateTo) ? `${payDateFrom} — ${payDateTo}` : 'Date Filter'}</button>
+        {showPayFilter && <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 p-5 z-50 w-[300px]" style={{ animation: 'fadeIn 0.15s ease' }}>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Date Range</p>
+          <div className="space-y-3">
+            <div><label className="text-sm text-gray-600 font-medium block mb-1">From</label><input type="date" value={payDateFrom} onChange={e => setPayDateFrom(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:border-[#006977] focus:ring-2 focus:ring-[#006977]/10 outline-none" /></div>
+            <div><label className="text-sm text-gray-600 font-medium block mb-1">To</label><input type="date" value={payDateTo} onChange={e => setPayDateTo(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:border-[#006977] focus:ring-2 focus:ring-[#006977]/10 outline-none" /></div>
+          </div>
+          <div className="flex gap-2 mt-4">
+            <button onClick={() => setShowPayFilter(false)} className="flex-1 px-4 py-2.5 rounded-lg bg-[#006977] text-white text-sm font-semibold hover:bg-[#005a66] transition-colors">Apply</button>
+            <button onClick={() => { setPayDateFrom(''); setPayDateTo(''); setShowPayFilter(false) }} className="flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-600 text-sm font-semibold hover:bg-gray-200 transition-colors">Clear</button>
+          </div>
+        </div>}
+      </div>
+    </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8"><Kpi icon="account_balance" label="Revenue Collected" value={`PKR ${filteredRev.toLocaleString()}`} sub={`${filteredCompleted.length} transactions`} /><Kpi icon="schedule" label="Pending" value={`PKR ${pend.toLocaleString()}`} color="#f59e0b" /><Kpi icon="undo" label="Refunds" value={`PKR ${ref.toLocaleString()}`} color="#ef4444" /><Kpi icon="trending_up" label="Avg Fee" value={`PKR ${avgFee.toLocaleString()}`} color="#6366f1" /></div>
+    <Card><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50/80 border-b border-gray-100"><TH>TX ID</TH><TH>Patient (Payer)</TH><TH>Doctor</TH><TH>Amount</TH><TH>Date</TH><TH>Method</TH><TH>Status</TH></tr></thead><tbody className="divide-y divide-gray-50">{filtered.map(t => (<tr key={t.id} className="hover:bg-gray-50/60 transition-colors"><td className="px-5 py-5 text-sm text-[#006977] font-mono font-bold">{t.id}</td><td className="px-5 py-5 text-base font-semibold text-gray-900">{t.patient}</td><td className="px-5 py-5 text-base text-gray-600">{t.doctor}</td><td className="px-5 py-5 text-base text-gray-900 font-bold">PKR {t.amount.toLocaleString()}</td><td className="px-5 py-5 text-base text-gray-500">{t.date}</td><td className="px-5 py-5 text-sm text-gray-500">{t.method}</td><td className="px-5 py-5"><B>{t.status}</B></td></tr>))}</tbody></table></div>
+    {filtered.length === 0 && <p className="py-12 text-center text-base text-gray-400">No transactions match this filter.</p>}</Card>
+  </>) }
 
   /* ─── SUPPORT (no priority, amber resolve button) ─── */
   const renderComplaints = () => (<>
     <Head icon="contact_support" title="Complaints & Support" count={complaints.length} />
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8"><Kpi icon="error_outline" label="Open" value={complaints.filter(c => c.status === 'Open').length} color="#ef4444" /><Kpi icon="hourglass_top" label="In Progress" value={complaints.filter(c => c.status === 'In Progress').length} color="#f59e0b" /><Kpi icon="task_alt" label="Resolved" value={complaints.filter(c => c.status === 'Resolved').length} /></div>
     <Card><div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50/80 border-b border-gray-100"><TH>Ticket</TH><TH>From</TH><TH>Role</TH><TH>Subject</TH><TH>Date</TH><TH>Status</TH><TH className="text-right">Actions</TH></tr></thead>
-    <tbody className="divide-y divide-gray-50">{complaints.map(c => (
+    <tbody className="divide-y divide-gray-50">{sortByDate(complaints).map(c => (
       <tr key={c.id} className="hover:bg-gray-50/60 transition-colors">
         <td className="px-5 py-5 text-sm text-[#006977] font-mono font-bold">{c.id}</td>
         <td className="px-5 py-5 text-base font-semibold text-gray-900">{c.from}</td>
@@ -619,13 +713,47 @@ export default function AdminDashboardPage() {
   const Toggle = ({ on, onToggle, label, desc }) => (<div className="flex items-center justify-between py-4 border-b border-gray-100 last:border-0"><div className="pr-4"><p className="text-base text-gray-800 font-medium">{label}</p><p className="text-sm text-gray-400 mt-0.5">{desc}</p></div><button onClick={onToggle} className={`relative w-12 h-6 rounded-full transition-colors shrink-0 ${on ? 'bg-[#006977]' : 'bg-gray-200'}`}><div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all ${on ? 'left-[26px]' : 'left-0.5'}`} /></button></div>)
 
   const renderSettings = () => (<><Head icon="manufacturing" title="Platform Settings" /><div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    {/* Platform Information */}
+    <Card className="p-6"><h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-2.5"><span className="material-symbols-outlined text-[#006977] text-xl">info</span>Platform Information</h3>
+      {[{ l: 'Platform Name', v: 'Askare Health' }, { l: 'Version', v: 'v1.0.0' }, { l: 'Admin Email', v: 'admin@askare.health' }, { l: 'Support Email', v: 'support@askare.health' }, { l: 'Platform URL', v: 'https://askare.health' }].map(r => <div key={r.l} className="flex items-center justify-between py-4 border-b border-gray-100 last:border-0"><span className="text-base text-gray-700">{r.l}</span><span className="text-sm font-semibold text-[#006977] bg-[#006977]/5 px-4 py-1.5 rounded-lg">{r.v}</span></div>)}
+    </Card>
+    {/* Manage Specializations */}
     <Card className="p-6"><h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-2.5"><span className="material-symbols-outlined text-[#006977] text-xl">category</span>Manage Specializations</h3><div className="flex gap-2 mb-5"><input type="text" value={newSpec} onChange={e => setNewSpec(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && newSpec.trim() && !specs.includes(newSpec.trim())) { setSpecs(p => [...p, newSpec.trim()]); setNewSpec(''); flash('Added') } }} placeholder="Add specialization…" className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#006977] focus:ring-2 focus:ring-[#006977]/10 outline-none transition-all" /><button onClick={() => { if (newSpec.trim() && !specs.includes(newSpec.trim())) { setSpecs(p => [...p, newSpec.trim()]); setNewSpec(''); flash('Added') } }} className="px-5 py-3 rounded-xl bg-[#006977] text-white text-sm font-semibold hover:bg-[#005a66] transition-colors">Add</button></div><div className="flex flex-wrap gap-2">{specs.map(s => <span key={s} className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-gray-50 text-gray-700 text-sm font-medium border border-gray-200">{s}<button onClick={() => { setSpecs(p => p.filter(x => x !== s)); flash(`Removed ${s}`) }} className="hover:text-red-500 transition-colors"><span className="material-symbols-outlined text-sm">close</span></button></span>)}</div></Card>
+    {/* Notification Settings */}
+    <Card className="p-6"><h3 className="text-base font-bold text-gray-900 mb-2 flex items-center gap-2.5"><span className="material-symbols-outlined text-[#006977] text-xl">notifications</span>Notification Settings</h3><p className="text-sm text-gray-400 mb-4">Control how the platform sends alerts and updates.</p>
+      <Toggle on={notifSettings.emailNotif} onToggle={() => { setNotifSettings(p => ({ ...p, emailNotif: !p.emailNotif })); flash('Email notifications ' + (notifSettings.emailNotif ? 'disabled' : 'enabled')) }} label="Email Notifications" desc="Send appointment confirmations and updates via email" />
+      <Toggle on={notifSettings.smsAlerts} onToggle={() => { setNotifSettings(p => ({ ...p, smsAlerts: !p.smsAlerts })); flash('SMS alerts ' + (notifSettings.smsAlerts ? 'disabled' : 'enabled')) }} label="SMS Alerts" desc="Send critical alerts via SMS to doctors and patients" />
+      <Toggle on={notifSettings.systemAnnouncements} onToggle={() => { setNotifSettings(p => ({ ...p, systemAnnouncements: !p.systemAnnouncements })); flash('System announcements ' + (notifSettings.systemAnnouncements ? 'disabled' : 'enabled')) }} label="System Announcements" desc="Display platform-wide announcements to all users" />
+      <Toggle on={notifSettings.maintenanceAlerts} onToggle={() => { setNotifSettings(p => ({ ...p, maintenanceAlerts: !p.maintenanceAlerts })); flash('Maintenance alerts ' + (notifSettings.maintenanceAlerts ? 'disabled' : 'enabled')) }} label="Maintenance Alerts" desc="Notify users before scheduled maintenance windows" />
+    </Card>
+    {/* Payment Configuration */}
+    <Card className="p-6"><h3 className="text-base font-bold text-gray-900 mb-2 flex items-center gap-2.5"><span className="material-symbols-outlined text-[#006977] text-xl">payments</span>Payment Configuration</h3><p className="text-sm text-gray-400 mb-4">Configure payment methods and commission settings.</p>
+      <div className="flex items-center justify-between py-4 border-b border-gray-100"><span className="text-base text-gray-700">Default Currency</span><span className="text-sm font-semibold text-[#006977] bg-[#006977]/5 px-4 py-1.5 rounded-lg">{paySettings.currency}</span></div>
+      <div className="flex items-center justify-between py-4 border-b border-gray-100"><span className="text-base text-gray-700">Platform Commission</span><span className="text-sm font-semibold text-[#006977] bg-[#006977]/5 px-4 py-1.5 rounded-lg">{paySettings.commission}%</span></div>
+      <Toggle on={paySettings.autoRefund} onToggle={() => { setPaySettings(p => ({ ...p, autoRefund: !p.autoRefund })); flash('Auto-refund ' + (paySettings.autoRefund ? 'disabled' : 'enabled')) }} label="Auto-Refund on No-Show" desc="Automatically refund patients when doctor doesn't attend" />
+      <div className="pt-4"><p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Accepted Methods</p><div className="flex flex-wrap gap-2">{paySettings.methods.map(m => <span key={m} className="px-3.5 py-2 rounded-full bg-gray-50 text-gray-700 text-sm font-medium border border-gray-200">{m}</span>)}</div></div>
+    </Card>
+    {/* Consultation Settings */}
+    <Card className="p-6"><h3 className="text-base font-bold text-gray-900 mb-2 flex items-center gap-2.5"><span className="material-symbols-outlined text-[#006977] text-xl">video_camera_front</span>Consultation Settings</h3><p className="text-sm text-gray-400 mb-4">Configure video consultation defaults and limits.</p>
+      <div className="flex items-center justify-between py-4 border-b border-gray-100"><span className="text-base text-gray-700">Default Call Duration</span><span className="text-sm font-semibold text-[#006977] bg-[#006977]/5 px-4 py-1.5 rounded-lg">{consultSettings.defaultDuration} minutes</span></div>
+      <div className="flex items-center justify-between py-4 border-b border-gray-100"><span className="text-base text-gray-700">Max Daily Appointments / Doctor</span><span className="text-sm font-semibold text-[#006977] bg-[#006977]/5 px-4 py-1.5 rounded-lg">{consultSettings.maxDaily}</span></div>
+      <div className="flex items-center justify-between py-4 border-b border-gray-100"><span className="text-base text-gray-700">Buffer Between Appointments</span><span className="text-sm font-semibold text-[#006977] bg-[#006977]/5 px-4 py-1.5 rounded-lg">{consultSettings.bufferTime} minutes</span></div>
+      <Toggle on={consultSettings.recording} onToggle={() => { setConsultSettings(p => ({ ...p, recording: !p.recording })); flash('Call recording ' + (consultSettings.recording ? 'disabled' : 'enabled')) }} label="Call Recording" desc="Record video consultations for quality assurance" />
+    </Card>
+    {/* Platform Rules */}
     <Card className="p-6"><h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-2.5"><span className="material-symbols-outlined text-[#006977] text-xl">gavel</span>Platform Rules</h3>{[{ l: 'Cancellation Policy', v: 'Non-refundable after confirmation' }, { l: 'No-Show Policy', v: 'Repayment required' }, { l: 'Refund Window', v: '24 hours before appointment' }, { l: 'Max Reschedules', v: '2 per appointment' }].map(r => <div key={r.l} className="flex items-center justify-between py-4 border-b border-gray-100 last:border-0"><span className="text-base text-gray-700">{r.l}</span><span className="text-sm font-semibold text-[#006977] bg-[#006977]/5 px-4 py-1.5 rounded-lg">{r.v}</span></div>)}</Card>
+    {/* Privacy & Compliance — full width */}
     <Card className="p-6 lg:col-span-2"><h3 className="text-base font-bold text-gray-900 mb-2 flex items-center gap-2.5"><span className="material-symbols-outlined text-[#006977] text-xl">shield</span>Privacy & Compliance</h3><p className="text-sm text-gray-400 mb-5">Changes apply immediately.</p><div className="grid grid-cols-1 md:grid-cols-2 gap-x-10"><div><p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 mt-2">Data Protection</p><Toggle on={privacy.dataRetention} onToggle={() => togglePrivacy('dataRetention')} label="Data Retention (5 Years)" desc="Keep records for regulatory compliance" /><Toggle on={privacy.hipaa} onToggle={() => togglePrivacy('hipaa')} label="HIPAA Compliance Mode" desc="Enforce health data privacy regulations" /><Toggle on={privacy.encryptBackup} onToggle={() => togglePrivacy('encryptBackup')} label="Encrypted Backups" desc="AES-256 encryption for all backups" /><Toggle on={privacy.patientConsent} onToggle={() => togglePrivacy('patientConsent')} label="Patient Consent Required" desc="Require consent before data collection" /></div><div><p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 mt-2">Security</p><Toggle on={privacy.twoFactor} onToggle={() => togglePrivacy('twoFactor')} label="Two-Factor Authentication" desc="2FA for admin and doctor accounts" /><Toggle on={privacy.auditLog} onToggle={() => togglePrivacy('auditLog')} label="Audit Logging" desc="Track all admin actions and access" /><Toggle on={privacy.sessionTimeout} onToggle={() => togglePrivacy('sessionTimeout')} label="Session Timeout (30 min)" desc="Auto-logout inactive users" /><Toggle on={privacy.anonAI} onToggle={() => togglePrivacy('anonAI')} label="Anonymous AI Queries" desc="Allow AI use without identification" /></div></div></Card>
+    {/* Maintenance Mode — full width */}
+    <Card className="p-6 lg:col-span-2"><h3 className="text-base font-bold text-gray-900 mb-2 flex items-center gap-2.5"><span className="material-symbols-outlined text-[#006977] text-xl">construction</span>Maintenance Mode</h3><p className="text-sm text-gray-400 mb-5">Put the platform into maintenance mode to prevent user access during updates.</p>
+      <Toggle on={maintenance.enabled} onToggle={() => { setMaintenance(p => ({ ...p, enabled: !p.enabled })); flash('Maintenance mode ' + (maintenance.enabled ? 'disabled' : 'enabled')) }} label="Enable Maintenance Mode" desc="Users will see a maintenance page when enabled" />
+      {maintenance.enabled && <div className="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200"><div className="flex items-center gap-2 mb-3"><span className="material-symbols-outlined text-amber-600 text-lg">warning</span><span className="text-sm font-bold text-amber-700">Platform is in Maintenance Mode</span></div><div className="space-y-3"><div><label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Message to Users</label><textarea value={maintenance.message} onChange={e => setMaintenance(p => ({ ...p, message: e.target.value }))} className="w-full mt-1.5 bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:border-[#006977] focus:ring-2 focus:ring-[#006977]/10 outline-none transition-all resize-none" rows={2} /></div><div className="flex items-center justify-between"><span className="text-sm text-gray-600">Estimated Downtime</span><span className="text-sm font-semibold text-amber-700 bg-amber-100 px-3 py-1 rounded-lg">{maintenance.downtime}</span></div></div></div>}
+    </Card>
+    {/* Appointment Types */}
     <Card className="p-6"><h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-2.5"><span className="material-symbols-outlined text-[#006977] text-xl">event_available</span>Appointment Types</h3>{['General Check-up', 'Video Consultation', 'Lab Review', 'Immunization', 'Follow-up', 'Emergency', 'Prescription Refill'].map(t => <div key={t} className="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0"><span className="w-2 h-2 rounded-full bg-[#006977]" /><span className="text-base text-gray-700">{t}</span></div>)}</Card>
   </div></>)
 
-  const views = { overview: renderOverview, doctors: renderDoctors, patients: renderPatients, appointments: renderAppointments, videocalls: renderVideoCalls, ai: renderAI, payments: renderPayments, complaints: renderComplaints, settings: renderSettings }
+  const views = { overview: renderOverview, doctors: renderDoctors, patients: renderPatients, appointments: renderAppointments, ai: renderAI, payments: renderPayments, complaints: renderComplaints, settings: renderSettings }
 
   return (
     <div className="min-h-screen bg-[#f8f9fb]">
@@ -636,7 +764,7 @@ export default function AdminDashboardPage() {
       {modal && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setModal(null)} /><div className="relative bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden border border-gray-100" style={{ animation: 'fadeIn 0.25s ease' }}>
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100"><h3 className="text-lg font-bold text-gray-900">{modal.t === 'doc' ? 'Doctor Profile' : modal.t === 'pat' ? 'Patient Details' : `Ticket ${modal.d.id}`}</h3><button onClick={() => setModal(null)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"><span className="material-symbols-outlined text-xl">close</span></button></div>
         <div className="px-6 py-6 space-y-5 max-h-[65vh] overflow-y-auto">
-          {modal.t === 'doc' && <><div className="flex items-center gap-4"><div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">{modal.d.img ? <img src={modal.d.img} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-gray-400 text-2xl">person</span>}</div><div><p className="text-lg font-bold text-gray-900">{modal.d.name}</p><p className="text-base text-[#006977]">{modal.d.spec}</p></div></div><div className="grid grid-cols-2 gap-x-6 gap-y-4">{[['Email', modal.d.email], ['Location', modal.d.location], ['Rating', modal.d.rating !== '—' ? `★ ${modal.d.rating}` : '—'], ['Fee', modal.d.price], ['Patients', modal.d.patients], ['Joined', modal.d.joined]].map(([l, v]) => <div key={l}><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">{l}</p><p className="text-base text-gray-800 font-medium">{v}</p></div>)}</div><div><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Status</p><B>{modal.d.status}</B></div><div><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">About</p><p className="text-base text-gray-600 leading-relaxed">{modal.d.about}</p></div></>}
+          {modal.t === 'doc' && <><div className="flex items-center gap-4"><div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">{modal.d.img ? <img src={modal.d.img} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-gray-400 text-2xl">person</span>}</div><div><p className="text-lg font-bold text-gray-900">{modal.d.name}</p><p className="text-base text-[#006977]">{modal.d.spec}</p></div></div><div className="grid grid-cols-2 gap-x-6 gap-y-4">{[['Email', modal.d.email], ['UID', modal.d.uid], ['Rating', modal.d.rating !== '—' ? `★ ${modal.d.rating}` : '—'], ['Fee', modal.d.price], ['Patients', modal.d.patients], ['Joined', modal.d.joined]].map(([l, v]) => <div key={l}><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">{l}</p><p className="text-base text-gray-800 font-medium">{v}</p></div>)}</div><div><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Status</p><B>{modal.d.status}</B></div><div><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">About</p><p className="text-base text-gray-600 leading-relaxed">{modal.d.about}</p></div></>}
           {modal.t === 'pat' && <><div className="grid grid-cols-2 gap-x-6 gap-y-4">{[['Name', modal.d.name], ['Email', modal.d.email], ['UID', modal.d.uid], ['Gender', modal.d.gender], ['Joined', modal.d.joined]].map(([l, v]) => <div key={l}><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">{l}</p><p className="text-base text-gray-800 font-medium">{v}</p></div>)}</div><div><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Account Status</p><B>{modal.d.status}</B></div></>}
           {modal.t === 'cmp' && <><div className="grid grid-cols-2 gap-x-6 gap-y-4">{[['From', modal.d.from], ['Role', modal.d.role], ['Date', modal.d.date]].map(([l, v]) => <div key={l}><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">{l}</p><p className="text-base text-gray-800 font-medium">{v}</p></div>)}</div><div><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Status</p><B>{modal.d.status}</B></div><div><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Subject</p><p className="text-base text-gray-800 font-medium">{modal.d.subject}</p></div><div><p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Details</p><p className="text-base text-gray-600 leading-relaxed">{modal.d.detail}</p></div></>}
         </div></div></div>)}

@@ -218,8 +218,9 @@ export default function MySchedulePage() {
               <h4 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-6">Today's Summary</h4>
               <div className="space-y-4">
                 <div className="flex justify-between items-center border-b border-on-primary/10 pb-4"><span className="text-on-primary/70">Total Appointments</span><span className="text-2xl font-bold">12</span></div>
-                <div className="flex justify-between items-center border-b border-on-primary/10 pb-4"><span className="text-on-primary/70">Video Consultations</span><span className="text-2xl font-bold">4</span></div>
-                <div className="flex justify-between items-center"><span className="text-on-primary/70">Average Wait Time</span><span className="text-2xl font-bold">8m</span></div>
+                <div className="flex justify-between items-center border-b border-on-primary/10 pb-4"><span className="text-on-primary/70">Completed</span><span className="text-2xl font-bold">7</span></div>
+                <div className="flex justify-between items-center border-b border-on-primary/10 pb-4"><span className="text-on-primary/70">Remaining</span><span className="text-2xl font-bold">5</span></div>
+                <div className="flex justify-between items-center"><span className="text-on-primary/70">Next Meeting At</span><span className="text-2xl font-bold">2:15 PM</span></div>
               </div>
             </div>
             <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-primary-container/10 rounded-full"></div>

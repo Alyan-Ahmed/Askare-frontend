@@ -122,18 +122,18 @@ export default function DoctorDashboardPage() {
         {/* Stats */}
         <section className="col-span-12 grid grid-cols-1 md:grid-cols-5 gap-6 mb-4 reveal">
           {[
-            { label: 'Patients Today', value: String(todayAgenda.length), icon: 'trending_up', sub: 'Active schedule', subColor: 'text-secondary' },
-            { label: 'Pending Reports', value: '08', icon: 'error', sub: 'High priority needed', subColor: 'text-tertiary', fill: true },
-            { label: 'Avg. Consultation', value: '18m', icon: 'timer', sub: 'Optimal performance', subColor: 'text-secondary' },
-            { label: 'Active Care Plans', value: '142', icon: 'favorite', sub: 'In monitoring phase', subColor: 'text-secondary' },
-            { label: 'Total Income', value: 'PKR 487K', icon: 'trending_up', sub: '+18% this month', subColor: 'text-secondary' },
+            { label: 'Patients', value: '47', icon: 'groups', sub: '+12% from last month' },
+            { label: 'Avg. Duration', value: '24m', icon: 'timer', sub: 'Per consultation' },
+            { label: 'Avg. Rating', value: '4.9', icon: 'star', sub: '142 total reviews', fill: true },
+            { label: 'Income', value: 'PKR 125K', icon: 'account_balance_wallet', sub: 'This month', fill: true },
+            { label: 'Completion', value: '94%', icon: 'verified', sub: '3 no-shows', fill: true },
           ].map((s, i) => (
-            <div key={i} className="bg-surface-container-low p-6 rounded-xl">
-              <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">{s.label}</p>
-              <h3 className="text-3xl font-bold">{s.value}</h3>
-              <div className={`flex items-center gap-2 mt-2 text-xs ${s.subColor}`}>
+            <div key={i} className="bg-surface-container-low p-6 rounded-xl min-h-[130px] flex flex-col justify-between">
+              <p className="text-[11px] font-bold text-primary uppercase tracking-widest mb-3 truncate">{s.label}</p>
+              <h3 className="text-3xl font-bold leading-none">{s.value}</h3>
+              <div className="flex items-center gap-2 mt-3 text-xs text-primary/70 font-semibold">
                 <span className="material-symbols-outlined text-sm" style={s.fill ? { fontVariationSettings: "'FILL' 1" } : {}}>{s.icon}</span>
-                <span>{s.sub}</span>
+                <span className="truncate">{s.sub}</span>
               </div>
             </div>
           ))}
