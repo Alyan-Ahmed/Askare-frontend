@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
 
 /* ═══════════════════════════════════════════════════════════════
    DATA
@@ -223,6 +223,7 @@ export default function AdminDashboardPage() {
   const { logout } = useAuth()
   const navigate = useNavigate()
   const [section, setSection] = useState('overview')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [doctors, setDoctors] = useState(DEFAULT_DOCTORS)
   const [patients, setPatients] = useState(DEFAULT_PATIENTS)
   const [apptFilter, setApptFilter] = useState('All')
@@ -272,11 +273,11 @@ export default function AdminDashboardPage() {
 
   /* ─── SIDEBAR ─── */
   const sidebar = (
-    <aside className="fixed left-0 top-0 bottom-0 w-[270px] bg-white border-r border-gray-200/80 flex flex-col z-50">
+    <aside className={`fixed left-0 top-0 bottom-0 w-[270px] bg-white border-r border-gray-200/80 flex flex-col z-50 transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
       <div className="px-7 py-7 border-b border-gray-100"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl bg-[#006977] flex items-center justify-center"><span className="material-symbols-outlined text-white text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>local_hospital</span></div><div><p className="text-base font-bold text-gray-900 leading-none">Askare</p><p className="text-xs text-gray-400 font-medium tracking-wider uppercase mt-0.5">Admin Console</p></div></div></div>
       <nav className="flex-1 px-4 py-5 space-y-1 overflow-y-auto">
         <p className="px-3 pt-1 pb-3 text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em]">Navigation</p>
-        {NAV.map(n => { const a = section === n.id; return (<button key={n.id} onClick={() => setSection(n.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${a ? 'bg-[#006977]/[0.08] text-[#006977] font-semibold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}><span className="material-symbols-outlined text-[22px]" style={a ? { fontVariationSettings: "'FILL' 1" } : {}}>{n.icon}</span>{n.label}</button>) })}
+        {NAV.map(n => { const a = section === n.id; return (<button key={n.id} onClick={() => { setSection(n.id); setSidebarOpen(false) }} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${a ? 'bg-[#006977]/[0.08] text-[#006977] font-semibold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}><span className="material-symbols-outlined text-[22px]" style={a ? { fontVariationSettings: "'FILL' 1" } : {}}>{n.icon}</span>{n.label}</button>) })}
       </nav>
       <div className="px-4 pb-5 border-t border-gray-100 pt-4 space-y-2">
         <div className="px-4 py-3 flex items-center gap-3"><div className="w-9 h-9 rounded-full bg-[#006977] flex items-center justify-center"><span className="material-symbols-outlined text-white text-base">admin_panel_settings</span></div><div><p className="text-sm font-semibold text-gray-900">Admin</p><p className="text-xs text-gray-400">admin@askare.health</p></div></div>
@@ -757,8 +758,14 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fb]">
+      {/* Mobile hamburger */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 py-3 flex items-center gap-3">
+        <button onClick={() => setSidebarOpen(p => !p)} className="p-2 rounded-lg hover:bg-gray-100 transition-colors"><span className="material-symbols-outlined text-gray-700">menu</span></button>
+        <div className="flex items-center gap-2"><div className="w-8 h-8 rounded-lg bg-[#006977] flex items-center justify-center"><span className="material-symbols-outlined text-white text-base" style={{ fontVariationSettings: "'FILL' 1" }}>local_hospital</span></div><span className="text-sm font-bold text-gray-900">Askare Admin</span></div>
+      </div>
+      {sidebarOpen && <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
       {sidebar}
-      <main className="ml-[270px] p-8 max-w-[1400px]">{(views[section] || renderOverview)()}</main>
+      <main className="ml-0 lg:ml-[270px] p-4 md:p-8 max-w-[1400px]"><div className="pt-14 lg:pt-0">{(views[section] || renderOverview)()}</div></main>
 
       {/* Modal */}
       {modal && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setModal(null)} /><div className="relative bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden border border-gray-100" style={{ animation: 'fadeIn 0.25s ease' }}>

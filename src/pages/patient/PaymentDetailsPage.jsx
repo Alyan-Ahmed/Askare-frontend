@@ -38,7 +38,7 @@ export default function PaymentDetailsPage() {
   const formatName = (e) => { e.target.value = e.target.value.replace(/[^a-zA-Z\s\-'\.]/g, '') }
 
   return (
-    <main className="pt-12 pb-20 px-6 max-w-7xl mx-auto">
+    <main className="pt-8 md:pt-12 pb-12 md:pb-20 px-4 md:px-6 max-w-7xl mx-auto">
       <header className="mb-16 max-w-3xl reveal">
         <span className="text-primary font-bold tracking-[0.2em] uppercase text-xs mb-4 block">Secure Checkout</span>
         <h1 className="text-5xl font-medium tracking-tight text-on-surface leading-tight">Complete your <span className="text-primary italic">Askare</span> session.</h1>

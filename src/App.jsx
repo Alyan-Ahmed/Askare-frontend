@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import {
   PublicLayout,
   DoctorLayout,
@@ -11,47 +11,46 @@ import {
   AILayout,
   BareLayout,
   AdminLayout,
-} from './components/Layouts'
+} from './components/layout/Layouts'
 
-// Pages
-import HomePage from './pages/HomePage'
-import AboutPage from './pages/AboutPage'
-import ContactPage from './pages/ContactPage'
-import LoginPage from './pages/LoginPage'
-import ForgotPasswordPage from './pages/ForgotPasswordPage'
-import ResetPasswordPage from './pages/ResetPasswordPage'
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
-import TermsOfUsePage from './pages/TermsOfUsePage'
-import PatientDashboardPage from './pages/PatientDashboardPage'
-import DoctorDashboardPage from './pages/DoctorDashboardPage'
-import AppointmentsPage from './pages/AppointmentsPage'
-import MedicalRecordsPage from './pages/MedicalRecordsPage'
-import BookVideoCallPage from './pages/BookVideoCallPage'
-import MySchedulePage from './pages/MySchedulePage'
-import PatientRecordsPage from './pages/PatientRecordsPage'
-import PatientSettingsPage from './pages/PatientSettingsPage'
-import DoctorSettingsPage from './pages/DoctorSettingsPage'
-import AIDiagnosisPage from './pages/AIDiagnosisPage'
-import PaymentDetailsPage from './pages/PaymentDetailsPage'
-import PaymentConfirmationPage from './pages/PaymentConfirmationPage'
-import VideoCallPage from './pages/VideoCallPage'
-import AdminDashboardPage from './pages/AdminDashboardPage'
+// Route guards
+import { RequireAuth } from './routes'
+
+// Public pages
+import HomePage from './pages/public/HomePage'
+import AboutPage from './pages/public/AboutPage'
+import ContactPage from './pages/public/ContactPage'
+import PrivacyPolicyPage from './pages/public/PrivacyPolicyPage'
+import TermsOfUsePage from './pages/public/TermsOfUsePage'
+
+// Auth pages
+import LoginPage from './pages/auth/LoginPage'
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
+import ResetPasswordPage from './pages/auth/ResetPasswordPage'
+
+// Patient pages
+import PatientDashboardPage from './pages/patient/PatientDashboardPage'
+import AppointmentsPage from './pages/patient/AppointmentsPage'
+import MedicalRecordsPage from './pages/patient/MedicalRecordsPage'
+import BookVideoCallPage from './pages/patient/BookVideoCallPage'
+import PatientSettingsPage from './pages/patient/PatientSettingsPage'
+import AIDiagnosisPage from './pages/patient/AIDiagnosisPage'
+import PaymentDetailsPage from './pages/patient/PaymentDetailsPage'
+import PaymentConfirmationPage from './pages/patient/PaymentConfirmationPage'
+import VideoCallPage from './pages/shared/VideoCallPage'
+
+// Doctor pages
+import DoctorDashboardPage from './pages/doctor/DoctorDashboardPage'
+import MySchedulePage from './pages/doctor/MySchedulePage'
+import PatientRecordsPage from './pages/doctor/PatientRecordsPage'
+import DoctorSettingsPage from './pages/doctor/DoctorSettingsPage'
+
+// Admin pages
+import AdminDashboardPage from './pages/admin/AdminDashboardPage'
+
+// Utilities
 import { useAuth } from './context/AuthContext'
-import ScrollReveal from './components/ScrollReveal'
-
-function RequireAuth({ role }) {
-  const { isLoggedIn, userRole } = useAuth()
-  const location = useLocation()
-
-  if (!isLoggedIn) return <Navigate to="/login" replace state={{ from: location }} />
-
-  if (role && userRole !== role) {
-    const fallback = userRole === 'doctor' ? '/doctor-dashboard' : userRole === 'patient' ? '/patient-dashboard' : userRole === 'admin' ? '/admin-dashboard' : '/login'
-    return <Navigate to={fallback} replace />
-  }
-
-  return <Outlet />
-}
+import ScrollReveal from './components/common/ScrollReveal'
 
 export default function App() {
   return (

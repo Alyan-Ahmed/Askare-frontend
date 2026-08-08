@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
 
 const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` }
 const tomorrowStr = () => { const d = new Date(); d.setDate(d.getDate()+1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` }
@@ -110,17 +110,17 @@ export default function DoctorDashboardPage() {
   const todayAgenda = agenda.filter(item => item.date === today).sort((a, b) => parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time))
 
   return (
-    <div className="flex-1 p-8 max-w-7xl mx-auto w-full">
+    <div className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
       {/* Header Welcome */}
       <header className="mb-12 reveal">
-        <h1 className="text-4xl font-medium text-on-background tracking-tight mb-2">Welcome back, <span className="font-extrabold text-primary">{displayName}</span></h1>
+        <h1 className="text-2xl md:text-4xl font-medium text-on-background tracking-tight mb-2">Welcome back, <span className="font-extrabold text-primary">{displayName}</span></h1>
         <p className="text-on-surface-variant max-w-2xl leading-relaxed">Your clinical agenda is ready. You have {todayAgenda.length} consultation{todayAgenda.length !== 1 ? 's' : ''} scheduled for today and {requests.length} pending booking request{requests.length !== 1 ? 's' : ''}.</p>
       </header>
 
       {/* Bento Grid */}
-      <div className="grid grid-cols-12 gap-8">
+      <div className="grid grid-cols-12 gap-4 md:gap-8">
         {/* Stats */}
-        <section className="col-span-12 grid grid-cols-1 md:grid-cols-5 gap-6 mb-4 reveal">
+        <section className="col-span-12 grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 mb-4 reveal">
           {[
             { label: 'Patients', value: '47', icon: 'groups', sub: '+12% from last month' },
             { label: 'Avg. Duration', value: '24m', icon: 'timer', sub: 'Per consultation' },
@@ -140,7 +140,7 @@ export default function DoctorDashboardPage() {
         </section>
 
         {/* Today's Agenda — ONLY today's appointments */}
-        <section className="col-span-12 lg:col-span-8 space-y-6 reveal reveal-delay-1">
+        <section className="col-span-12 lg:col-span-8 space-y-4 md:space-y-6 reveal reveal-delay-1">
           <div className="flex justify-between items-end mb-4">
             <h2 className="text-2xl font-semibold tracking-tight">Today's Agenda</h2>
             <Link to="/my-schedule" className="text-primary text-sm font-semibold hover:underline">View Full Schedule →</Link>

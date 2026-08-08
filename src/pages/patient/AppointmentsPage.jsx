@@ -92,9 +92,9 @@ export default function AppointmentsPage() {
   }
 
   return (
-    <div className="flex-1 px-12 py-10 max-w-7xl mx-auto w-full">
+    <div className="flex-1 px-4 md:px-12 py-6 md:py-10 max-w-7xl mx-auto w-full">
       <header className="mb-12 reveal">
-        <h1 className="text-4xl font-medium tracking-tight text-on-surface font-headline mb-2">My Appointments</h1>
+        <h1 className="text-2xl md:text-4xl font-medium tracking-tight text-on-surface font-headline mb-2">My Appointments</h1>
         <div className="w-16 h-1 bg-primary rounded-full"></div>
       </header>
 

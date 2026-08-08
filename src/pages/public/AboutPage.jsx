@@ -2,14 +2,14 @@ export default function AboutPage() {
   return (
     <main className="pt-20 pb-20">
       {/* Hero Section: Editorial Pulse */}
-      <section className="max-w-7xl mx-auto px-8 mb-32 pt-12">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 mb-16 md:mb-32 pt-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
           <div className="lg:col-span-8 reveal">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-container text-on-primary-container rounded-full mb-6">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
               <span className="text-[10px] font-bold tracking-widest uppercase">The Clinical Curator</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-medium tracking-tight leading-[1.1] mb-8 text-on-background">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-medium tracking-tight leading-[1.1] mb-8 text-on-background">
               Bridging the gap between <br />
               <span className="text-primary italic">Intelligence</span> &amp; Empathy.
             </h1>
@@ -26,7 +26,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission, Vision, Values: Bento Grid */}
-      <section className="max-w-7xl mx-auto px-8 mb-40">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 mb-20 md:mb-40">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-10 bg-surface-container-low rounded-[2rem] flex flex-col justify-between min-h-[320px] reveal">
             <span className="material-symbols-outlined text-primary text-4xl">lightbulb</span>

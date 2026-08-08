@@ -121,7 +121,7 @@ export default function MySchedulePage() {
   }
 
   return (
-    <div className="flex-1 px-12 py-10 max-w-7xl mx-auto w-full">
+    <div className="flex-1 px-4 md:px-12 py-6 md:py-10 max-w-7xl mx-auto w-full">
       <header className="mb-10 flex justify-between items-end reveal">
         <div>
           <h1 className="text-4xl font-semibold text-on-surface tracking-tight mb-2">My Schedule</h1>

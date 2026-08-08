@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
 
 export default function HomePage() {
   const [symptoms, setSymptoms] = useState('')
@@ -22,7 +22,7 @@ export default function HomePage() {
   return (
     <main className="pt-24">
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-8 pt-12 md:pt-24 pb-20 grid lg:grid-cols-2 gap-16 items-center">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pt-12 md:pt-24 pb-20 grid lg:grid-cols-2 gap-16 items-center">
         <div className="space-y-8 reveal">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/30 text-on-primary-container border border-primary-container/50">
             <span className="relative flex h-2 w-2">

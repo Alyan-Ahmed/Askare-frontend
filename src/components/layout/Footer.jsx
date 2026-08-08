@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import Logo from './Logo'
+import { useAuth } from '../../context/AuthContext'
+import Logo from '../common/Logo'
 
 export function Footer({ role }) {
   const { user } = useAuth()

@@ -105,10 +105,10 @@ export default function ContactPage() {
   }, [chatOpen])
 
   return (
-    <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+    <main className="pt-20 md:pt-32 pb-12 md:pb-20 px-4 md:px-6 max-w-7xl mx-auto">
       {/* Hero & Emergency Disclaimer */}
       <header className="mb-16 reveal">
-        <h1 className="text-5xl md:text-7xl font-medium text-on-background tracking-tight mb-8">Connect with <span className="text-primary italic">Askare</span></h1>
+        <h1 className="text-3xl sm:text-5xl md:text-7xl font-medium text-on-background tracking-tight mb-8">Connect with <span className="text-primary italic">Askare</span></h1>
         <div className="bg-tertiary-container/30 border-l-4 border-tertiary p-6 rounded-xl max-w-3xl">
           <div className="flex items-start gap-4">
             <span className="material-symbols-outlined text-tertiary mt-1" style={{ fontVariationSettings: "'FILL' 1" }}>emergency</span>

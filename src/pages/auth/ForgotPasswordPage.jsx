@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import Logo from '../components/Logo'
-import { Footer } from '../components/Footer'
+import Logo from '../../components/common/Logo'
+import { Footer } from '../../components/layout/Footer'
 
 const VALID_OTP = '123456'
 const knownEmails = ['alyan.patient@gmail.com', 'dr.arsalan@gmail.com']

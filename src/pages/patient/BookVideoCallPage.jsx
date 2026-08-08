@@ -199,7 +199,7 @@ export default function BookVideoCallPage() {
               </div>
             </div>
             {/* Right */}
-            <div className="flex-1 p-8 md:p-12 overflow-y-auto">
+            <div className="flex-1 p-4 md:p-12 overflow-y-auto">
               <div className="hidden md:flex justify-end mb-4"><button className="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high transition-colors" onClick={() => setModal(null)}>close</button></div>
               <h2 className="text-2xl font-semibold text-on-surface font-headline mb-8">Schedule Video Call</h2>
               {/* Calendar */}

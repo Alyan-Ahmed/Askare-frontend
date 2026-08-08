@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import Logo from '../components/Logo'
-import { Footer } from '../components/Footer'
+import Logo from '../../components/common/Logo'
+import { Footer } from '../../components/layout/Footer'
 
 export default function ResetPasswordPage() {
   const [newPass, setNewPass] = useState('')

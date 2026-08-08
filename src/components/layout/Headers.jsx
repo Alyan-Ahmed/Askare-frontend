@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import Logo from './Logo'
-import NotificationPanel from './NotificationPanel'
-import ProfileDropdown from './ProfileDropdown'
-import { useAuth } from '../context/AuthContext'
+import Logo from '../common/Logo'
+import NotificationPanel from '../common/NotificationPanel'
+import ProfileDropdown from '../common/ProfileDropdown'
+import { useAuth } from '../../context/AuthContext'
 
 const patientLinks = [
   { to: '/', label: 'Home' },
